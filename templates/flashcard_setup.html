@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Flashcard Setup - Japanese Evaluator{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <h1 style="text-align:center;">📚 Flashcard Setup</h1>
+  
+  {% if review_count > 0 %}
+    <div style="background: #e8f4fd; border: 1px solid #0066cc; padding: 10px; margin: 10px 0; text-align: center; border-radius: 0;">
+      <strong>📖 Review Available:</strong> {{ review_count }} words ready for review
+    </div>
+  {% endif %}
+  
+  <form method="GET" action="{{ url_for('flashcard.study') }}" style="max-width: 500px; margin: 0 auto;">
+    <div style="margin-bottom: 1.5em;">
+      <label for="level">JLPT Level:</label>
+      <select name="level" id="level" style="width: 100%; padding: 8px; border: 1px solid #888; border-radius: 0;">
+        <option value="N5">N5 (Beginner)</option>
+        <option value="N4">N4 (Elementary)</option>
+        <option value="N3">N3 (Intermediate)</option>
+        <option value="N2">N2 (Pre-Advanced)</option>
+        <option value="N1">N1 (Advanced)</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom: 1.5em;">
+      <label for="count">Number of Cards:</label>
+      <input type="number" name="count" id="count" min="1" max="100" value="10" style="width: 100%; padding: 8px; border: 1px solid #888; border-radius: 0;">
+    </div>
+    
+    <div style="margin-bottom: 1.5em;">
+      <label>Card Display Mode:</label>
+      <div style="margin-top: 0.5em;">
+        <input type="radio" name="front_mode" id="kanji_mode" value="kanji" checked>
+        <label for="kanji_mode" style="display: inline; margin-left: 0.5em;">Front: Kanji + Reading / Back: Meaning + Type</label>
+      </div>
+      <div style="margin-top: 0.5em;">
+        <input type="radio" name="front_mode" id="meaning_mode" value="meaning">
+        <label for="meaning_mode" style="display: inline; margin-left: 0.5em;">Front: Meaning + Type / Back: Kanji + Reading</label>
+      </div>
+    </div>
+    
+    <div style="text-align: center;">
+      <button type="submit" style="padding: 12px 24px; font-size: 1.2em; background: #e0e0e0; border: 1px solid #888; border-radius: 0; cursor: pointer;">
+        🚀 Start Learning
+      </button>
+    </div>
+  </form>
+  
+  <div style="margin-top: 2em; text-align: center;">
+    <p><strong>How to use:</strong></p>
+    <ul style="display: inline-block; text-align: left;">
+      <li>Click the card to flip it</li>
+      <li>Choose "✅ Learned" if you know the word</li>
+      <li>Choose "❌ Not Learned" if you need more practice</li>
+      <li>The system will schedule reviews based on your performance</li>
+    </ul>
+  </div>
+</div>
+{% endblock %} 

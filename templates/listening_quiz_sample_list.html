@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content-wrapper">
+  <div class="main-content" style="max-width: 700px; margin: 0 auto;">
+    <h2>Listening Quiz Sample</h2>
+    <div style="background:#f0f8ff; border:1px solid #2196f3; border-radius:8px; padding:1em; margin-bottom:1.5em; text-align:center; font-size:1.1em;">
+      これはサンプルです。他のリスニングクイズはPatreonメンバー限定です。<br>
+      <a href="{{ url_for('patreon.login') }}" style="color:#fff; background:#ff424d; padding:0.5em 1.5em; border-radius:6px; text-decoration:none; font-weight:bold;">Patreonでログイン</a>
+    </div>
+    <ul>
+      {% for quiz_id in quiz_ids %}
+        <li>
+          <a href="{{ url_for('listening_quiz.listening_quiz_sample_quiz', quiz_id=quiz_id) }}">{{ quiz_id|capitalize }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %} 

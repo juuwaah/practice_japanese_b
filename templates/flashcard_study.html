@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Flashcard Study - Japanese Evaluator{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div style="text-align: center; margin-bottom: 1em;">
+    <h2>📚 Flashcard Study</h2>
+    <p>Card {{ current_index + 1 }} of {{ total_count }}</p>
+  </div>
+  
+  {% if word %}
+    <div id="flashcard" class="flashcard" onclick="flipCard()" style="cursor: pointer;">
+      <div id="card-front" class="card-side" style="display: block;">
+        {% if front_mode == 'kanji' %}
+          {% if word.kanji %}
+            <div class="card-main-text">{{ word.kanji }}</div>
+            <div class="card-sub-text">{{ word.word }}</div>
+          {% else %}
+            <div class="card-main-text">{{ word.word }}</div>
+          {% endif %}
+        {% else %}
+          <div class="card-main-text">{{ word.meaning }}</div>
+          <div class="card-sub-text">{{ word.type }}</div>
+        {% endif %}
+      </div>
+      
+      <div id="card-back" class="card-side" style="display: none;">
+        {% if front_mode == 'kanji' %}
+          <div class="card-main-text">{{ word.meaning }}</div>
+          <div class="card-sub-text">{{ word.type }}</div>
+        {% else %}
+          {% if word.kanji %}
+            <div class="card-main-text">{{ word.kanji }}</div>
+            <div class="card-sub-text">{{ word.word }}</div>
+          {% else %}
+            <div class="card-main-text">{{ word.word }}</div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    
+    <div id="answer-buttons" style="display: none; text-align: center; margin-top: 2em;">
+      <form method="POST" style="display: inline-block;">
+        <input type="hidden" name="word_id" value="{{ word.id }}">
+        <button type="submit" name="action" value="learned" style="padding: 12px 24px; font-size: 1.2em; background: #90EE90; border: 1px solid #888; border-radius: 0; cursor: pointer; margin-right: 1em;">
+          ✅ Learned!
+        </button>
+        <button type="submit" name="action" value="not_learned" style="padding: 12px 24px; font-size: 1.2em; background: #FFB6C1; border: 1px solid #888; border-radius: 0; cursor: pointer;">
+          ❌ Not Learned
+        </button>
+      </form>
+    </div>
+    
+    <div style="text-align: center; margin-top: 1em;">
+      <p style="color: #666; font-size: 0.9em;">Click the card to flip it</p>
+    </div>
+  {% else %}
+    <div style="text-align: center;">
+      <p>No words available for this level.</p>
+      <a href="{{ url_for('flashcard.flashcard_index') }}" style="color: #000; text-decoration: underline;">Back to Setup</a>
+    </div>
+  {% endif %}
+</div>
+
+
+
+<script>
+let isFlipped = false;
+
+function flipCard() {
+  const front = document.getElementById('card-front');
+  const back = document.getElementById('card-back');
+  const answerButtons = document.getElementById('answer-buttons');
+  
+  if (!isFlipped) {
+    front.style.display = 'none';
+    back.style.display = 'flex';
+    answerButtons.style.display = 'block';
+    isFlipped = true;
+  }
+}
+</script>
+{% endblock %} 

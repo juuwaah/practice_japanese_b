@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Vocabulary Quiz{% endblock %}
+
+{% block content %}
+<div class="main-content">
+<h1>JLPT Vocabulary Quiz</h1>
+
+{% if message %}
+  <p style="color:red;">{{ message }}</p>
+{% endif %}
+
+<form method="post">
+  <label>
+    JLPT Level:
+    <select name="level">
+      {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+        <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div style="display:flex; gap:1em; flex-wrap:wrap;">
+    <button type="submit" name="action" value="generate">Generate Quiz (or press R)</button>
+  </div>
+</form>
+
+{% if question %}
+  <div class="result">
+    <h3>Question</h3>
+    {# Split question into meaning and Japanese sentence #}
+    {% set qlines = question.split('\n') %}
+    <p>
+      {{ qlines[0] }}<br>
+      {% if qlines|length > 1 %}
+        （{{ qlines[1] }}）
+      {% endif %}
+    </p>
+    <div class="vocab-tile-options">
+      {% for option in options %}
+        <form method="post" style="display:inline; margin:0; padding:0;">
+          <input type="hidden" name="level" value="{{ level }}">
+          <input type="hidden" name="question" value="{{ question }}">
+          <input type="hidden" name="answer" value="{{ answer }}">
+          <input type="hidden" name="options" value='{{ options|tojson }}'>
+          <input type="hidden" name="user_answer" value="{{ option }}">
+          <button type="submit" name="action" value="submit" class="vocab-tile-btn">{{ option }}</button>
+        </form>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% if result %}
+  <div class="result feedback-block">
+    <h3>{{ result }}</h3>
+    {% if explanation %}
+      {% set lines = explanation.split('\n') %}
+      <p class="feedback-translation">{{ lines[0] }}</p>
+      <ul class="feedback-options">
+        {% for line in lines[1:] if line.startswith('- ') %}
+          <li>{{ line[2:] }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if examples %}
+      <h4>Example Sentences:</h4>
+      <ul>
+        {% for ex in examples %}
+          <li>{{ ex }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  const form = document.querySelector('form');
+  const generateBtn = form ? form.querySelector('button[name="action"][value="generate"]') : null;
+  document.addEventListener('keydown', function(e) {
+    // R for Generate Quiz (only when NOT in input/textarea)
+    const tag = document.activeElement.tagName;
+    if (generateBtn && (e.key === 'r' || e.key === 'R') &&
+        !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey &&
+        tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      e.preventDefault();
+      generateBtn.click();
+    }
+  });
+})();
+</script>
+{% endblock %}

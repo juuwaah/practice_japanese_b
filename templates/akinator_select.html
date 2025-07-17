@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content-wrapper">
+  <div class="main-content" style="max-width: 400px;">
+    <h2>JLPTことばアキネーター</h2>
+    <form method="post">
+      <label for="role">ロール:</label>
+      <select name="role" id="role" required>
+        <option value="user">あなたがアキネーター（You guesser）</option>
+        <option value="gpt">ChatGPTがアキネーター（AI guesses your word）</option>
+      </select>
+      <label for="level">JLPTレベル:</label>
+      <select name="level" id="level" required>
+        {% for lvl in levels %}
+        <option value="{{ lvl }}">{{ lvl }}</option>
+        {% endfor %}
+      </select>
+      <div style="margin-top: 2em; text-align: center;">
+        <button type="submit">スタート</button>
+      </div>
+    </form>
+    <div class="howto-wrapper" style="max-width:400px; margin: 2em auto 1.5em auto;">
+      <button id="howto-toggle" style="width:100%; padding:0.8em 1em; font-size:1.1em; font-weight:bold; background:#f0f0f0; border:1px solid #bbb; border-radius:10px; cursor:pointer; text-align:left;">
+        How to play / 遊び方🔽
+      </button>
+      <div id="howto-content" style="display:none; background:#fafafa; border:1px solid #ddd; border-radius:10px; margin-top:0.5em; padding:1.2em; font-size:1em;">
+        <div style="margin-bottom:1em;">
+          <b>How to play</b><br>
+          This app has two modes:<br>
+          1. <b>AI guesses</b>: The user thinks of a JLPT word, and the AI (ChatGPT) asks questions to guess it. The user answers with "はい (Yes)", "いいえ (No)", "わからない (Don't know)", or "ときどき (Sometimes)". The game ends when the user presses the "正解！" button after the AI guesses correctly.<br>
+          2. <b>User guesses</b>: The AI thinks of a JLPT word, and the user asks questions in Japanese to narrow it down. The user can guess by asking "○○ですか？", ask for a hint (ヒント), or give up (降参/こたえ).
+        </div>
+        <div>
+          <b>遊び方</b><br>
+          本アプリは2つのモードがあります：<br>
+          1. <b>AIが当てる</b>: ユーザーがJLPT単語を考え、AI（ChatGPT）が質問して当てます。ユーザーは「はい」「いいえ」「わからない」「ときどき」で答え、AIが正解を当てたら「正解！」ボタンを押して終了します。<br>
+          2. <b>あなたが当てる</b>: AIがJLPT単語を考え、ユーザーが日本語で質問して単語を絞り込みます。「○○ですか？」で推測、ヒントや降参も使えます。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// How to play dropdown toggle
+(function() {
+  var btn = document.getElementById('howto-toggle');
+  var content = document.getElementById('howto-content');
+  if(btn && content) {
+    btn.onclick = function() {
+      if(content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        btn.innerHTML = 'How to play / 遊び方▲';
+      } else {
+        content.style.display = 'none';
+        btn.innerHTML = 'How to play / 遊び方🔽';
+      }
+    }
+  }
+})();
+</script>
+{% endblock %} 

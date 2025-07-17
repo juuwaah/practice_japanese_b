@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content-wrapper">
+  <div class="main-content" style="max-width: 700px; margin: 0 auto;">
+    <h2>Listening Quiz</h2>
+    {% if audio_url %}
+    <div class="audio-player" style="display:flex; align-items:center; gap:1em; margin-bottom:1.5em;">
+      <button type="button" class="play-btn" data-idx="0">▶️</button>
+      <button type="button" class="pause-btn" data-idx="0">⏸️</button>
+      <input type="range" class="progress-bar" value="0" min="0" max="100" step="0.1" style="width:360px;">
+      <span class="time-remaining">0:00</span>
+      <audio class="audio-el" src="{{ audio_url }}"></audio>
+    </div>
+    {% endif %}
+    {% if results and results.is_submitted %}
+      <div style="background:#e0ffe0; border:1px solid #8bc34a; border-radius:8px; padding:1em; margin-bottom:1.5em; text-align:center; font-size:1.2em;">
+        Score: {{ results.correct_count }} / {{ results.total }}
+      </div>
+    {% endif %}
+    <form method="post" autocomplete="off">
+      {% for q in questions %}
+        {% set q_index = loop.index0 %}
+        <div class="question-block" style="margin-bottom:2em;">
+          <div style="font-weight:bold; margin-bottom:0.5em;">Q{{ loop.index }}. {{ q.text }}</div>
+          <div style="display:flex; flex-direction:column; gap:0.5em;">
+            {% for choice in q.choices %}
+              {% set is_correct = choice.value.startswith('T)') %}
+              {% set user_ans = results.user_answers[q_index] if results and results.is_submitted else None %}
+              <label style="display:flex; align-items:center; gap:0.5em;">
+                <input type="radio" name="answer_{{ q_index }}" value="{{ choice.value }}" {% if results and results.is_submitted %}disabled{% endif %}
+                  {% if user_ans == choice.value %}checked{% endif %}>
+                {{ choice.label }}
+                {% if results and results.is_submitted %}
+                  {% if user_ans == choice.value %}
+                    {% if is_correct %}
+                      <span style="color:green; font-weight:bold;">◯</span>
+                    {% else %}
+                      <span style="color:red; font-weight:bold;">✕</span>
+                    {% endif %}
+                  {% elif is_correct %}
+                    <span style="color:#2196f3; font-weight:bold;">（正解）</span>
+                  {% endif %}
+                {% endif %}
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      {% if not (results and results.is_submitted) %}
+        <button type="submit" style="padding:0.8em 2em; border-radius:8px; background:#333; color:#fff; font-weight:bold; font-size:1.1em; border:none;">送信</button>
+      {% endif %}
+    </form>
+    {% if results and results.is_submitted %}
+      <form method="get" style="text-align:center; margin-top:1.5em;">
+        <button type="submit" style="padding:0.7em 2em; border-radius:8px; background:#2196f3; color:#fff; font-weight:bold; font-size:1.1em; border:none;">もう一度やる</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const players = document.querySelectorAll('.audio-player');
+  players.forEach((player, idx) => {
+    const audio = player.querySelector('.audio-el');
+    const playBtn = player.querySelector('.play-btn');
+    const pauseBtn = player.querySelector('.pause-btn');
+    const progress = player.querySelector('.progress-bar');
+    const timeRem = player.querySelector('.time-remaining');
+
+    playBtn.onclick = () => {
+      document.querySelectorAll('.audio-el').forEach(a => { if(a !== audio) a.pause(); });
+      audio.play();
+    };
+    pauseBtn.onclick = () => audio.pause();
+
+    // 再生中のバー更新
+    audio.addEventListener('timeupdate', () => {
+      if(audio.duration) {
+        progress.value = (audio.currentTime / audio.duration) * 100;
+        const rem = Math.max(0, audio.duration - audio.currentTime);
+        const min = Math.floor(rem / 60);
+        const sec = Math.floor(rem % 60).toString().padStart(2, '0');
+        timeRem.textContent = `${min}:${sec}`;
+      }
+    });
+    audio.addEventListener('ended', () => {
+      progress.value = 0;
+      timeRem.textContent = '0:00';
+    });
+    audio.addEventListener('loadedmetadata', () => {
+      const rem = audio.duration;
+      const min = Math.floor(rem / 60);
+      const sec = Math.floor(rem % 60).toString().padStart(2, '0');
+      timeRem.textContent = `${min}:${sec}`;
+    });
+
+    // シーク（ドラッグで移動）
+    progress.addEventListener('input', (e) => {
+      if(audio.duration) {
+        audio.currentTime = (progress.value / 100) * audio.duration;
+      }
+    });
+  });
+});
+</script>
+{% endblock %} 

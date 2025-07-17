@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main-content-wrapper">
+  <div class="main-content" style="max-width: 700px; margin: 0 auto;">
+    <h2>Listening Quiz</h2>
+    <ul>
+      {% for quiz_id in quiz_ids %}
+        <li>
+          <a href="{{ url_for('listening_quiz.listening_quiz', quiz_id=quiz_id) }}">{{ quiz_id|capitalize }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

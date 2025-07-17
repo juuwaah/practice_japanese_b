@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Grammar Quiz{% endblock %}
+
+{% block content %}
+<div class="main-content">
+<h1>Japanese Translation Practice App</h1>
+
+{% if message %}
+  <p style="color:red;">{{ message }}</p>
+{% endif %}
+
+<form method="post">
+  <label>
+    JLPT Level:
+    <select name="level">
+      {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+        <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>
+    Translation Direction:
+    {% for code, label in directions.items() %}
+      <input type="radio" name="direction" value="{{ code }}"
+        {% if direction == code %}checked{% endif %}> {{ label }}
+    {% endfor %}
+  </label>
+
+  <label>
+    Translate this sentence:
+    <div style="border: 1px solid #ccc; padding: 0.5em; background: #f2f2f2; min-height: 2em;">
+      {{ original }}
+    </div>
+    <input type="hidden" name="original" value="{{ original }}">
+  </label>
+
+  <label>
+    Translation:
+    <textarea name="translation" style="width:100%; min-width:100%; max-width:100%;">{{ translation }}</textarea>
+  </label>
+
+  <div style="display:flex; gap:1em; flex-wrap:wrap;">
+    <button type="submit" name="action" value="generate">Generate Sentence (or press R)</button>
+    <button type="submit" name="action" value="score">Score (or press Shift+Enter)</button>
+  </div>
+</form>
+
+{% if grammar %}
+  <div class="result">
+    <h3>Score</h3>
+    <p>Grammar: {{ grammar }} / 3</p>
+    <p>Meaning: {{ meaning }} / 3</p>
+    {% if direction == 'en-ja' %}
+    <h4>Model Answers</h4>
+    <ul>
+      {% for ans in model_answer %}
+        <li>{{ ans }}</li>
+      {% endfor %}
+    </ul>
+    {# Show very casual language answer if available #}
+    {% if casual_answer %}
+      <h4>Very Casual Language（Conversational Japanese with friends, family, etc.）</h4>
+      <div style="background:#f9f9f9; border-left:4px solid #aaa; padding:0.5em 1em; margin-bottom:1em;">
+        {{ casual_answer }}
+      </div>
+    {% endif %}
+    {% endif %}
+    <h4>Feedback</h4>
+    <p>{{ feedback }}</p>
+  </div>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  const form = document.querySelector('form');
+  const generateBtn = form.querySelector('button[name="action"][value="generate"]');
+  const scoreBtn = form.querySelector('button[name="action"][value="score"]');
+  console.log("generateBtn:", generateBtn);
+  console.log("scoreBtn:", scoreBtn);
+
+  document.addEventListener('keydown', function(e) {
+    // R for Generate Example Sentence (only when NOT in input/textarea)
+    const tag = document.activeElement.tagName;
+    if ((e.key === 'r' || e.key === 'R') &&
+        !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey &&
+        tag !== 'INPUT' && tag !== 'TEXTAREA') {
+      e.preventDefault();
+      generateBtn.click();
+    }
+    // Shift+Enter for Score (works anywhere)
+    if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault();
+      scoreBtn.click();
+    }
+  });
+})();
+</script>
+{% endblock %}

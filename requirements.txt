@@ -1,0 +1,16 @@
+Flask==2.3.3
+openai==1.14.3
+python-dotenv==1.0.1
+pandas==2.0.3
+openpyxl==3.1.2
+flask-login==0.6.3
+flask-wtf==1.2.1
+wtforms==3.1.1
+sqlalchemy==2.0.23
+flask_sqlalchemy==3.1.1
+email-validator==2.1.0
+apscheduler==3.10.4
+gunicorn==21.2.0
+matplotlib==3.7.2
+seaborn==0.12.2
+Flask-Dance

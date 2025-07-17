@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Japanese Evaluator{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <h1 style="text-align:center;">Onomatopoeia of the day</h1>
+  <div style="font-size:3em; text-align:center; margin:1em 0; color: #ffe600; text-shadow: 2px 2px 0 #000, 0 0 10px #fff200; font-family: 'Impact', 'Arial Black', 'sans-serif';">{{ onomatope }}</div>
+  <p style="text-align:center;">what does this mean?</p>
+  <div style="display:flex; justify-content:center; gap:1em; margin-bottom:2em; flex-wrap: wrap;">
+    {% for opt in options %}
+      <form method="post" style="display:inline;">
+        <input type="hidden" name="selected" value="{{ opt }}">
+        <button type="submit" class="quiz-option-btn" style="font-size:1.2em;">{{ opt }}</button>
+      </form>
+    {% endfor %}
+  </div>
+  {% if answered %}
+    <div style="font-size:2em; color:{{ 'green' if correct else 'red' }}; text-align:center; margin-top:1em;">
+      {{ 'nice!' if correct else 'owah...' }}
+    </div>
+    <div style="text-align:center;">
+      <strong>Example sentence(s):</strong>
+      <ul style="display:inline-block; text-align:left;">
+        {% for ex, ex_en in example_pairs %}
+          <li>
+            {{ ex }}<br>
+            <span style="color:#444; font-size:0.98em; margin-left:1em;">{{ ex_en }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

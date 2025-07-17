@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Japanese Evaluator{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <h1 style="text-align:center;">Register</h1>
+  
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div style="background: #ffcccc; border: 1px solid #ff0000; padding: 10px; margin: 10px 0; text-align: center;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  <form method="POST" style="max-width: 400px; margin: 0 auto;">
+    {{ form.hidden_tag() }}
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.username.label }}
+      {{ form.username(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+      {% if form.username.errors %}
+        {% for error in form.username.errors %}
+          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.password.label }}
+      {{ form.password(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+      {% if form.password.errors %}
+        {% for error in form.password.errors %}
+          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.password2.label }}
+      {{ form.password2(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+      {% if form.password2.errors %}
+        {% for error in form.password2.errors %}
+          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div style="text-align: center;">
+      {{ form.submit(style="padding: 10px 20px; font-size: 1.1em;") }}
+    </div>
+  </form>
+  
+  <div style="text-align: center; margin-top: 2em;">
+    <p>Already have an account? <a href="{{ url_for('login') }}" style="color: #000; text-decoration: underline;">Login here</a></p>
+  </div>
+</div>
+{% endblock %} 

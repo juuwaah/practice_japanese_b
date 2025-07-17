@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Japanese Evaluator{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <h1 style="text-align:center;">Login</h1>
+  
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div style="background: #ffcccc; border: 1px solid #ff0000; padding: 10px; margin: 10px 0; text-align: center;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  <form method="POST" style="max-width: 400px; margin: 0 auto;">
+    {{ form.hidden_tag() }}
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.username.label }}
+      {{ form.username(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+      {% if form.username.errors %}
+        {% for error in form.username.errors %}
+          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.password.label }}
+      {{ form.password(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+      {% if form.password.errors %}
+        {% for error in form.password.errors %}
+          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 1em;">
+      {{ form.remember_me() }} {{ form.remember_me.label }}
+    </div>
+    
+    <div style="text-align: center;">
+      {{ form.submit(style="padding: 10px 20px; font-size: 1.1em;") }}
+    </div>
+  </form>
+  
+  <div style="text-align: center; margin-top: 2em;">
+    <p>Don't have an account? <a href="{{ url_for('register') }}" style="color: #000; text-decoration: underline;">Register here</a></p>
+    <hr style="margin:2em 0;">
+    <a href="{{ url_for('patreon.login') }}" style="display:inline-block; background:#ff424d; color:#fff; padding:0.8em 2em; border-radius:8px; font-weight:bold; font-size:1.1em; text-decoration:none;">Patreonでログイン</a>
+  </div>
+</div>
+{% endblock %} 
