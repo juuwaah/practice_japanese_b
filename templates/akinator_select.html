@@ -1,61 +1,67 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}{{ _('akinator_setup') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}JLPT {{ _('word_akinator') }} {{ _('akinator_setup') }}{% endblock %}
+
 {% block content %}
-<div class="main-content-wrapper">
-  <div class="main-content" style="max-width: 400px;">
-    <h2>JLPTことばアキネーター</h2>
-    <form method="post">
-      <label for="role">ロール:</label>
-      <select name="role" id="role" required>
-        <option value="user">あなたがアキネーター（You guesser）</option>
-        <option value="gpt">ChatGPTがアキネーター（AI guesses your word）</option>
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>{{ _('word_akinator') }}</h1>
+</div>
+
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #F0F0F0; max-width: 280px; margin-left: auto; margin-right: auto;">
+  <form method="post">
+    <div style="margin-bottom: 12px;">
+      <label for="role" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
+        {{ _('game_mode') }}:
+      </label>
+      <select name="role" id="role" required style="width: 100%; font-size: 9px; padding: 2px;">
+        <option value="user" {% if default_role == 'user' %}selected{% endif %}>{{ _('you_are_akinator') }}</option>
+        <option value="gpt" {% if default_role == 'gpt' %}selected{% endif %}>{{ _('ai_is_akinator') }}</option>
       </select>
-      <label for="level">JLPTレベル:</label>
-      <select name="level" id="level" required>
+    </div>
+    
+    <div style="margin-bottom: 16px;">
+      <label for="level" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
+        {{ _('jlpt_level') }}:
+      </label>
+      <select name="level" id="level" required style="width: 100%; font-size: 9px; padding: 2px;">
         {% for lvl in levels %}
-        <option value="{{ lvl }}">{{ lvl }}</option>
+        <option value="{{ lvl }}" {% if default_level == lvl %}selected{% endif %}>{{ lvl }}</option>
         {% endfor %}
       </select>
-      <div style="margin-top: 2em; text-align: center;">
-        <button type="submit">スタート</button>
-      </div>
-    </form>
-    <div class="howto-wrapper" style="max-width:400px; margin: 2em auto 1.5em auto;">
-      <button id="howto-toggle" style="width:100%; padding:0.8em 1em; font-size:1.1em; font-weight:bold; background:#f0f0f0; border:1px solid #bbb; border-radius:10px; cursor:pointer; text-align:left;">
-        How to play / 遊び方🔽
+    </div>
+    
+    <div style="text-align: center;">
+      <button type="submit" style="padding: 6px 20px; font-size: 9px; font-weight: bold;">
+        {{ _('start_game') }}
       </button>
-      <div id="howto-content" style="display:none; background:#fafafa; border:1px solid #ddd; border-radius:10px; margin-top:0.5em; padding:1.2em; font-size:1em;">
-        <div style="margin-bottom:1em;">
-          <b>How to play</b><br>
-          This app has two modes:<br>
-          1. <b>AI guesses</b>: The user thinks of a JLPT word, and the AI (ChatGPT) asks questions to guess it. The user answers with "はい (Yes)", "いいえ (No)", "わからない (Don't know)", or "ときどき (Sometimes)". The game ends when the user presses the "正解！" button after the AI guesses correctly.<br>
-          2. <b>User guesses</b>: The AI thinks of a JLPT word, and the user asks questions in Japanese to narrow it down. The user can guess by asking "○○ですか？", ask for a hint (ヒント), or give up (降参/こたえ).
-        </div>
-        <div>
-          <b>遊び方</b><br>
-          本アプリは2つのモードがあります：<br>
-          1. <b>AIが当てる</b>: ユーザーがJLPT単語を考え、AI（ChatGPT）が質問して当てます。ユーザーは「はい」「いいえ」「わからない」「ときどき」で答え、AIが正解を当てたら「正解！」ボタンを押して終了します。<br>
-          2. <b>あなたが当てる</b>: AIがJLPT単語を考え、ユーザーが日本語で質問して単語を絞り込みます。「○○ですか？」で推測、ヒントや降参も使えます。
-        </div>
-      </div>
+    </div>
+  </form>
+</div>
+
+<div style="border: 1px solid #000; padding: 8px; background: #F8F8F8; margin-bottom: 12px;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
+    {{ _('how_to_play') }}:
+  </div>
+  
+  <div style="font-size: 8px; line-height: 1.4;">
+    <div style="margin-bottom: 6px;">
+      <div style="font-weight: bold; margin-bottom: 2px;">{{ _('mode_1_ai_guesses') }}</div>
+      <div>{{ _('mode_1_description') }}</div>
+    </div>
+    
+    <div>
+      <div style="font-weight: bold; margin-bottom: 2px;">{{ _('mode_2_you_guess') }}</div>
+      <div>{{ _('mode_2_description') }}</div>
     </div>
   </div>
 </div>
-<script>
-// How to play dropdown toggle
-(function() {
-  var btn = document.getElementById('howto-toggle');
-  var content = document.getElementById('howto-content');
-  if(btn && content) {
-    btn.onclick = function() {
-      if(content.style.display === 'none' || content.style.display === '') {
-        content.style.display = 'block';
-        btn.innerHTML = 'How to play / 遊び方▲';
-      } else {
-        content.style.display = 'none';
-        btn.innerHTML = 'How to play / 遊び方🔽';
-      }
-    }
-  }
-})();
-</script>
-{% endblock %} 
+
+<div style="border: 1px dotted #808080; padding: 6px; background: #F0F0F0; font-size: 8px; color: #404040;">
+  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('tips') }}:</div>
+  <div>{{ _('tip_1') }}</div>
+  <div>{{ _('tip_2') }}</div>
+  <div>{{ _('tip_3') }}</div>
+</div>
+{% endblock %}

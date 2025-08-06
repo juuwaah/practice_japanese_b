@@ -1,21 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Flashcard Setup - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('flashcard_setup') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('flashcard_setup') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <h1 style="text-align:center;">📚 Flashcard Setup</h1>
-  
-  {% if review_count > 0 %}
-    <div style="background: #e8f4fd; border: 1px solid #0066cc; padding: 10px; margin: 10px 0; text-align: center; border-radius: 0;">
-      <strong>📖 Review Available:</strong> {{ review_count }} words ready for review
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>{{ _('flashcard_setup') }}</h1>
+</div>
+
+<!-- Patreonメンバー向けメッセージ -->
+<div style="border: 2px solid #FF6B6B; padding: 8px; margin-bottom: 12px; background: #FFF5F5; text-align: center;">
+  <div style="font-size: 9px; font-weight: bold; color: #FF6B6B; margin-bottom: 4px;">
+    🎯 Patreonメンバー限定機能
+  </div>
+  <div style="font-size: 8px; color: #666;">
+    フラッシュカード機能をご利用いただき、ありがとうございます！
+  </div>
+</div>
+
+{% if review_count > 0 %}
+  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF; text-align: center;">
+    <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">
+      {{ _('review_available') }}
     </div>
-  {% endif %}
-  
-  <form method="GET" action="{{ url_for('flashcard.study') }}" style="max-width: 500px; margin: 0 auto;">
-    <div style="margin-bottom: 1.5em;">
-      <label for="level">JLPT Level:</label>
-      <select name="level" id="level" style="width: 100%; padding: 8px; border: 1px solid #888; border-radius: 0;">
+    <div style="font-size: 10px;">
+      {{ review_count }} {{ _('words_ready_for_review') }}
+    </div>
+  </div>
+{% endif %}
+
+<div style="border: 1px solid #000; padding: 12px; background: #F0F0F0; max-width: 300px; margin: 0 auto;">
+  <form method="GET" action="{{ url_for('flashcard.study') }}">
+    <div style="margin-bottom: 12px;">
+      <label for="level" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
+        {{ _('jlpt_level') }}:
+      </label>
+      <select name="level" id="level" style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000;">
         <option value="N5">N5 (Beginner)</option>
         <option value="N4">N4 (Elementary)</option>
         <option value="N3">N3 (Intermediate)</option>
@@ -24,38 +45,56 @@
       </select>
     </div>
     
-    <div style="margin-bottom: 1.5em;">
-      <label for="count">Number of Cards:</label>
-      <input type="number" name="count" id="count" min="1" max="100" value="10" style="width: 100%; padding: 8px; border: 1px solid #888; border-radius: 0;">
+    <div style="margin-bottom: 12px;">
+      <label for="count" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
+        {{ _('number_of_cards') }}:
+      </label>
+      <input type="number" name="count" id="count" min="1" max="100" value="10" 
+             style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
     </div>
     
-    <div style="margin-bottom: 1.5em;">
-      <label>Card Display Mode:</label>
-      <div style="margin-top: 0.5em;">
+    <div style="margin-bottom: 16px;">
+      <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px;">{{ _('card_display_mode') }}:</div>
+      
+      <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 4px; background: #F8F8F8;">
         <input type="radio" name="front_mode" id="kanji_mode" value="kanji" checked>
-        <label for="kanji_mode" style="display: inline; margin-left: 0.5em;">Front: Kanji + Reading / Back: Meaning + Type</label>
+        <label for="kanji_mode" style="font-size: 8px; margin-left: 4px; font-weight: normal;">
+          {{ _('front_kanji_reading') }}<br>
+          <span style="margin-left: 12px;">{{ _('back_meaning_type') }}</span>
+        </label>
       </div>
-      <div style="margin-top: 0.5em;">
+      
+      <div style="border: 1px dotted #808080; padding: 4px; background: #F8F8F8;">
         <input type="radio" name="front_mode" id="meaning_mode" value="meaning">
-        <label for="meaning_mode" style="display: inline; margin-left: 0.5em;">Front: Meaning + Type / Back: Kanji + Reading</label>
+        <label for="meaning_mode" style="font-size: 8px; margin-left: 4px; font-weight: normal;">
+          {{ _('front_meaning_type') }}<br>
+          <span style="margin-left: 12px;">{{ _('back_kanji_reading') }}</span>
+        </label>
       </div>
     </div>
     
     <div style="text-align: center;">
-      <button type="submit" style="padding: 12px 24px; font-size: 1.2em; background: #e0e0e0; border: 1px solid #888; border-radius: 0; cursor: pointer;">
-        🚀 Start Learning
+      <button type="submit" style="padding: 6px 20px; font-size: 9px; font-weight: bold;">
+        {{ _('start_learning') }}
       </button>
     </div>
   </form>
-  
-  <div style="margin-top: 2em; text-align: center;">
-    <p><strong>How to use:</strong></p>
-    <ul style="display: inline-block; text-align: left;">
-      <li>Click the card to flip it</li>
-      <li>Choose "✅ Learned" if you know the word</li>
-      <li>Choose "❌ Not Learned" if you need more practice</li>
-      <li>The system will schedule reviews based on your performance</li>
-    </ul>
+</div>
+
+<div style="border: 1px solid #000; padding: 8px; margin-top: 16px; background: #F8F8F8;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
+    {{ _('how_to_use') }}:
+  </div>
+  <div style="font-size: 8px; line-height: 1.4;">
+    <div style="margin-bottom: 3px;">• Click the card to flip it and see the answer</div>
+    <div style="margin-bottom: 3px;">• Choose "✅ Learned" if you know the word well</div>
+    <div style="margin-bottom: 3px;">• Choose "❌ Not Learned" if you need more practice</div>
+    <div>• The system schedules reviews based on your performance</div>
   </div>
 </div>
-{% endblock %} 
+
+<div style="border: 1px dotted #808080; padding: 6px; margin-top: 8px; background: #F0F0F0; font-size: 8px; color: #404040;">
+  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('spaced_repetition') }}:</div>
+  <div>{{ _('spaced_repetition_desc') }}</div>
+</div>
+{% endblock %}

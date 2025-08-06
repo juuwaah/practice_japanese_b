@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 import openai
 import os
 import re
@@ -6,6 +6,7 @@ import json
 from dotenv import load_dotenv
 import pandas as pd
 import random
+from google_sheets_helper import load_grammar_data_from_sheets
 # from utils.furigana import text_to_ruby_html  # 削除
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
@@ -13,15 +14,28 @@ load_dotenv()
 
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# 文法構文リスト（Excelから読み込み）
+# 文法構文リスト（Google Sheetsから読み込み）
 grammar_dict = {}
 
 def load_grammar():
     global grammar_dict
-    df_path = "database/JLPT grammar.xlsx"
+    grammar_sheet_id = os.getenv('GOOGLE_SHEETS_GRAMMAR_ID')
+    
     for level in ["N5", "N4", "N3", "N2", "N1"]:
-        df = pd.read_excel(df_path, sheet_name=level)
-        grammar_list = df["Grammar"].dropna().tolist()
+        # Google Sheetsからデータを読み込み
+        grammar_list = load_grammar_data_from_sheets(grammar_sheet_id, level)
+        
+        if grammar_list is None:
+            # Fallback to Excel if Google Sheets fails
+            try:
+                df_path = "database/JLPT grammar.xlsx"
+                df = pd.read_excel(df_path, sheet_name=level)
+                grammar_list = df["Grammar"].dropna().tolist()
+                print(f"Excel fallback used for {level}: {len(grammar_list)} patterns loaded")
+            except Exception as e:
+                print(f"Excel fallback also failed for {level}: {e}")
+                grammar_list = []
+        
         grammar_dict[level] = grammar_list
 
 load_grammar()
@@ -120,10 +134,45 @@ Create one short English sentence that could naturally be translated into Japane
     return re.split(r'→|:|\n', response.choices[0].message.content.strip())[0]
 
 def score_translation(original, student_translation, direction, level):
+    # For Japanese → English direction, provide scoring and examples but no feedback
+    if direction == "ja-en":
+        prompt = f"""
+Original Japanese sentence: {original}
+Student English translation: {student_translation}
+Translation direction: Japanese → English
+JLPT Level: {level}
+
+Please evaluate and return a JSON object like this:
+{{
+  "grammar": 1-3,
+  "meaning": 1-3,
+  "model_answer": ["...", "..."],
+  "casual_answer": "",
+  "feedback": ""
+}}
+
+For scoring ("grammar" and "meaning"), evaluate how well the student captured the Japanese grammar structure and meaning in English.
+For "model_answer", provide two natural and correct English translations as model answers.
+Leave "casual_answer" and "feedback" as empty strings since this is Japanese to English practice.
+
+Respond only with JSON.
+"""
+        
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4
+        )
+
+        raw = response.choices[0].message.content
+        json_text = extract_json(raw)
+        return json.loads(json_text)
+    
+    # Only provide full feedback for English → Japanese direction
     prompt = f"""
 Original sentence: {original}
 Student translation: {student_translation}
-Translation direction: {"English → Japanese" if direction == "en-ja" else "Japanese → English"}
+Translation direction: English → Japanese
 JLPT Level: {level}
 
 Please evaluate and return a JSON object like this:

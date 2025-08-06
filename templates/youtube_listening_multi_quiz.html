@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}{{ base_quiz.title }} - YouTube リスニングクイズ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ base_quiz.title }}</h1>
+        <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level) }}" 
+           class="btn btn-secondary">{{ base_quiz.level }}一覧に戻る</a>
+    </div>
+    
+    <!-- YouTube動画 -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="embed-responsive embed-responsive-16by9" style="max-width: 800px; margin: 0 auto;">
+                <iframe id="main-video" class="embed-responsive-item" 
+                        src="https://www.youtube.com/embed/{{ base_quiz.video_id }}?start={{ base_quiz.start }}&end={{ base_quiz.end }}&autoplay=0&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+                        allow="autoplay"></iframe>
+            </div>
+            <div class="mt-2">
+                <div id="video-info" class="alert alert-info small">
+                    <strong>📺 再生範囲:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span><br>
+                    <small>※ この範囲のみが再生されます。シークバーで他の場所をクリックしても指定範囲外は再生されません。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- クイズ問題（複数） -->
+    {% if not show_answers %}
+    <!-- 回答フォーム -->
+    <form method="POST">
+        {% for quiz in quizzes %}
+        <div class="row mb-4">
+            <div class="col-lg-12" style="max-width: 800px; margin: 0 auto;">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5 class="card-title mb-0" style="font-size: 1.1rem; font-weight: 600;">問題{{ quiz.quiz_num }}</h5>
+                        </div>
+                        {% if quiz.start and quiz.end and (quiz.start != base_quiz.start or quiz.end != base_quiz.end) %}
+                        <div class="mb-3">
+                            <div class="embed-responsive embed-responsive-16by9" style="max-width: 300px;">
+                                <iframe class="embed-responsive-item" 
+                                        src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=0&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+                                        allow="autoplay"></iframe>
+                            </div>
+                            <small class="text-muted">📺 この問題の動画 ({{ '%d:%02d'|format(quiz.start//60, quiz.start%60) }} - {{ '%d:%02d'|format(quiz.end//60, quiz.end%60) }})</small>
+                        </div>
+                        {% endif %}
+                        <p class="card-text" style="font-size: 1.1rem; font-weight: 600; line-height: 1.6;">{{ quiz.question }}</p>
+                        
+                        {% set choices = [] %}
+                        {% for i in range(1, 5) %}
+                            {% set opt = quiz.get('opt' + i|string, '').strip() %}
+                            {% if opt %}
+                                {% set _ = choices.append({'number': i, 'text': opt}) %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for choice in choices %}
+                        <div class="form-check mb-2" style="display: flex; align-items: flex-start;">
+                            <input class="form-check-input" type="radio" name="answer_{{ quiz.quiz_num }}" 
+                                   id="option{{ quiz.quiz_num }}_{{ choice.number }}" value="{{ choice.number }}" required
+                                   style="margin-top: 0.25rem; margin-right: 0.5rem; flex-shrink: 0;">
+                            <label class="form-check-label" for="option{{ quiz.quiz_num }}_{{ choice.number }}"
+                                   style="line-height: 1.5; margin-bottom: 0; font-size: 1rem; font-weight: 400;">
+                                {{ choice.number }}. {{ choice.text }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="row">
+            <div class="col-lg-12" style="max-width: 800px; margin: 0 auto;">
+                <button type="submit" class="btn btn-primary btn-lg">回答する</button>
+            </div>
+        </div>
+    </form>
+    
+    {% else %}
+    <!-- 結果表示 -->
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="text-center mb-4">
+                <div class="alert {% if total_correct == total_questions %}alert-success{% elif total_correct >= total_questions/2 %}alert-warning{% else %}alert-danger{% endif %} shadow-sm border-0" 
+                     style="font-size: 1.1rem; border-radius: 12px;">
+                    <div class="display-4 mb-2">
+                        {% if total_correct == total_questions %}🎉
+                        {% elif total_correct >= total_questions/2 %}👍
+                        {% else %}💪{% endif %}
+                    </div>
+                    <h3 class="mb-2" style="font-weight: 600; font-size: 1.5rem;">{{ total_correct }}/{{ total_questions }}問正解</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% for result in results %}
+    {% set quiz = quizzes[loop.index0] %}
+    <div class="row mb-4">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+                <div class="card-header {% if result.is_correct %}bg-success{% else %}bg-danger{% endif %} text-white" 
+                     style="padding: 1rem 1.5rem;">
+                    <div class="d-flex align-items-center">
+                        <h4 class="mb-0 me-3" style="font-weight: 600; font-size: 1.1rem;">問題{{ result.quiz_num }}</h4>
+                        <span class="badge {% if result.is_correct %}bg-light text-success{% else %}bg-light text-danger{% endif %}" 
+                              style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                            {% if result.is_correct %}✓ 正解{% else %}✗ 不正解{% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 1.5rem;">
+                    <p class="card-text mb-4" style="font-size: 1.1rem; font-weight: 600; line-height: 1.6; color: #2c3e50;">
+                        {{ result.question }}
+                    </p>
+                    
+                    {% set choices = [] %}
+                    {% for i in range(1, 5) %}
+                        {% set opt = quiz.get('opt' + i|string, '').strip() %}
+                        {% if opt %}
+                            {% set _ = choices.append({'number': i, 'text': opt}) %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <div class="choices-container" style="margin-bottom: 1.5rem;">
+                        {% for choice in choices %}
+                        <div class="choice-item mb-3 p-3 rounded" 
+                             style="font-size: 1rem; line-height: 1.5; border: 2px solid 
+                                    {% if choice.number|string == result.correct_answer %}#28a745
+                                    {% elif choice.number|string == result.user_answer %}#dc3545
+                                    {% else %}#e9ecef{% endif %}; 
+                                    background-color: 
+                                    {% if choice.number|string == result.correct_answer %}#d4edda
+                                    {% elif choice.number|string == result.user_answer %}#f8d7da
+                                    {% else %}#f8f9fa{% endif %};">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span style="font-size: 1rem; {% if choice.number|string == result.correct_answer %}color: #155724; font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px;{% elif choice.number|string == result.user_answer %}color: #721c24; font-weight: 600;{% else %}color: #495057; font-weight: 400;{% endif %}">
+                                    {{ choice.number }}. {{ choice.text }}
+                                </span>
+                                {% if choice.number|string == result.correct_answer %}
+                                    <span class="badge bg-success" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">✓ 正解</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if result.explanation %}
+                    <div class="explanation-box mt-4 p-4 rounded" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #007bff;">
+                        <h5 class="mb-3" style="color: #495057; font-weight: 600; font-size: 1.1rem;">📝 解説</h5>
+                        <p class="mb-3" style="font-size: 1rem; line-height: 1.6; color: #495057; margin: 0; font-weight: 400;">{{ result.explanation }}</p>
+                        {% if result.explanation_time %}
+                        <button onclick="jumpToTime({{ result.explanation_time }})" 
+                                class="btn btn-outline-primary btn-sm mt-2" 
+                                style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 0; font-weight: 500;">
+                            🎥 解説箇所を見る ({{ result.explanation_time }}秒)
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <div class="row mt-5 mb-4">
+        <div class="col-lg-10 mx-auto text-center">
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level) }}" 
+                   class="btn btn-primary btn-lg" 
+                   style="font-size: 1rem; padding: 0.75rem 2rem; border-radius: 0; font-weight: 500; min-width: 160px;">
+                    📚 次のクイズへ
+                </a>
+                <a href="{{ url_for('youtube_listening.listening_quiz', quiz_id=base_quiz.id) }}" 
+                   class="btn btn-outline-secondary btn-lg" 
+                   style="font-size: 1rem; padding: 0.75rem 2rem; border-radius: 0; font-weight: 500; min-width: 160px;">
+                    🔄 もう一度挑戦
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- YouTubeチャンネルリンク -->
+    {% if base_quiz.youtube_channel_page and base_quiz.channel_name %}
+    <div class="row mt-4 mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card" style="border-radius: 0; border: 1px solid #e9ecef;">
+                <div class="card-body text-center" style="padding: 1.5rem;">
+                    <p class="mb-3" style="font-size: 1rem; color: #6c757d; margin-bottom: 1rem;">
+                        この動画のチャンネルはこちら
+                    </p>
+                    <a href="{{ base_quiz.youtube_channel_page }}" target="_blank" rel="noopener noreferrer" 
+                       class="btn btn-outline-danger" 
+                       style="font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: 0; font-weight: 500; text-decoration: none;">
+                        <img src="{{ base_quiz.channel_icon }}" alt="YouTube" 
+                             class="retro-channel-icon"
+                             style="width: 24px; height: 24px; margin-right: 0.5rem; vertical-align: middle;">
+                        {{ base_quiz.channel_name }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* 80年代ゲーム風レトロアイコン枠線 */
+.retro-channel-icon {
+    position: relative;
+    border: 2px solid #00ff41;
+    box-shadow: 
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #808080,
+        2px 2px 0 #404040,
+        3px 3px 0 #202020;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+    padding: 1px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.retro-channel-icon:hover {
+    border-color: #ff0080;
+    box-shadow: 
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #808080,
+        2px 2px 0 #800040,
+        3px 3px 0 #400020,
+        0 0 8px #ff0080;
+    animation: retro-glow 0.5s ease-in-out;
+}
+
+@keyframes retro-glow {
+    0% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #404040, 3px 3px 0 #202020; }
+    50% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 12px #ff0080; }
+    100% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 8px #ff0080; }
+}
+
+/* レトロテーマのボタンハイライト */
+.btn-outline-danger:hover .retro-channel-icon {
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
+</style>
+
+<script>
+function jumpToTime(seconds) {
+    const iframe = document.querySelector('#main-video');
+    const videoId = '{{ base_quiz.video_id }}';
+    const endTime = {{ base_quiz.end|default(0) }};
+    
+    const newSrc = `https://www.youtube.com/embed/${videoId}?start=${seconds}&end=${endTime}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0`;
+    iframe.src = newSrc;
+}
+</script>
+{% endblock %}

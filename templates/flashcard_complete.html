@@ -1,154 +1,209 @@
 {% extends "base.html" %}
 
-{% block title %}Study Complete - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('flashcard_complete') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('study_session_complete') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <div style="text-align: center;">
-    <h1>🎉 Study Complete!</h1>
-    <p style="font-size: 1.2em; margin: 1em 0;">Great job! You've completed your flashcard session.</p>
-    
-    <!-- ナビゲーションボタン -->
-    <div style="margin: 2em 0;">
-      <a href="{{ url_for('flashcard.flashcard_index') }}" style="padding: 12px 24px; font-size: 1.2em; background: #e0e0e0; border: 1px solid #888; border-radius: 0; cursor: pointer; text-decoration: none; color: #000; margin-right: 1em;">
-        📚 Study More
-      </a>
-      <a href="{{ url_for('home') }}" style="padding: 12px 24px; font-size: 1.2em; background: #e0e0e0; border: 1px solid #888; border-radius: 0; cursor: pointer; text-decoration: none; color: #000;">
-        🏠 Back to Home
-      </a>
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>{{ _('session_complete') }}</h1>
+</div>
+
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF; text-align: center;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">
+    {{ _('great_job') }}
+  </div>
+  <div style="font-size: 9px; margin-bottom: 8px;">
+    {{ _('flashcard_session_completed') }}
+  </div>
+  <div style="font-size: 8px; color: #404040;">
+    {{ _('progress_saved_automatically') }}
+  </div>
+</div>
+
+<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F0F0F0;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
+    {{ _('session_summary') }}:
+  </div>
+  
+  <div style="font-size: 8px; margin-bottom: 4px;">
+    {{ _('cards_studied') }}: <span style="font-weight: bold;">{{ total_learned + total_not_learned }}</span>
+  </div>
+  <div style="font-size: 8px; margin-bottom: 4px;">
+    {{ _('learned') }}: <span style="font-weight: bold;">{{ total_learned }}</span>
+  </div>
+  <div style="font-size: 8px;">
+    {{ _('need_review') }}: <span style="font-weight: bold;">{{ total_not_learned }}</span>
+  </div>
+</div>
+
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF; text-align: center;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">
+    {{ _('session_summary') }}
+  </div>
+  <div style="display: flex; justify-content: center; gap: 2em; margin: 1em 0;">
+    <div style="text-align: center;">
+      <div style="font-size: 2em; color: #000;">{{ total_learned }}</div>
+      <div>☑︎　{{ _('learned') }}</div>
     </div>
-    
-    <!-- 学習結果サマリー -->
-    <div style="margin: 2em 0; padding: 1em; background: #f0f0f0; border: 1px solid #888;">
-      <h3>📊 Session Summary</h3>
-      <div style="display: flex; justify-content: center; gap: 2em; margin: 1em 0;">
-        <div style="text-align: center;">
-          <div style="font-size: 2em; color: #4CAF50;">{{ total_learned }}</div>
-          <div>✅ Learned</div>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-size: 2em; color: #f44336;">{{ total_not_learned }}</div>
-          <div>❌ Need Review</div>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-size: 2em; color: #2196F3;">{{ total_learned + total_not_learned }}</div>
-          <div>📚 Total</div>
-        </div>
-      </div>
+    <div style="text-align: center;">
+      <div style="font-size: 2em; color: #000;">{{ total_not_learned }}</div>
+      <div>×　{{ _('need_review') }}</div>
     </div>
-    
-    <!-- 学習結果テーブル -->
-    <div style="margin: 2em 0; padding: 1em; background: #f0f0f0; border: 1px solid #888;">
-      <h3>📋 Detailed Results</h3>
-      
-      {% if learned_words %}
-      <div style="margin: 1em 0;">
-        <h4 style="color: #4CAF50;">✅ Learned Words ({{ learned_words|length }})</h4>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0;">
-            <thead>
-              <tr style="background: #e0e0e0;">
-                <th style="border: 1px solid #888; padding: 8px;">Kanji</th>
-                <th style="border: 1px solid #888; padding: 8px;">Reading</th>
-                <th style="border: 1px solid #888; padding: 8px;">Meaning</th>
-                <th style="border: 1px solid #888; padding: 8px;">Type</th>
-                <th style="border: 1px solid #888; padding: 8px;">Study Count</th>
-                <th style="border: 1px solid #888; padding: 8px;">Next Review</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for word in learned_words %}
-              <tr>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.kanji if word.kanji else '-' }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.word }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.meaning }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.type }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.study_count }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      {% endif %}
-      
-      {% if not_learned_words %}
-      <div style="margin: 1em 0;">
-        <h4 style="color: #f44336;">❌ Words Needing Review ({{ not_learned_words|length }})</h4>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0;">
-            <thead>
-              <tr style="background: #e0e0e0;">
-                <th style="border: 1px solid #888; padding: 8px;">Kanji</th>
-                <th style="border: 1px solid #888; padding: 8px;">Reading</th>
-                <th style="border: 1px solid #888; padding: 8px;">Meaning</th>
-                <th style="border: 1px solid #888; padding: 8px;">Type</th>
-                <th style="border: 1px solid #888; padding: 8px;">Study Count</th>
-                <th style="border: 1px solid #888; padding: 8px;">Next Review</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for word in not_learned_words %}
-              <tr>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.kanji if word.kanji else '-' }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.word }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.meaning }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.type }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.study_count }}</td>
-                <td style="border: 1px solid #888; padding: 8px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      {% endif %}
-    </div>
-    
-    <!-- 忘却曲線グラフ -->
-    <div style="margin: 2em 0; padding: 1em; background: #f0f0f0; border: 1px solid #888;">
-      <h3>🧠 Forgetting Curve Analysis ({{ forgetting_curve_data.jlpt_level }})</h3>
-      <div style="margin: 1em 0;">
-        <canvas id="forgettingCurveChart" width="600" height="300" style="border: 1px solid #888; background: white;"></canvas>
-      </div>
-      <div style="font-size: 0.9em; color: #666;">
-        <p>This shows your learning progress and the theoretical forgetting curve.</p>
-        <p>Total words in {{ forgetting_curve_data.jlpt_level }}: {{ forgetting_curve_data.total_words }}</p>
-      </div>
-    </div>
-    
-    <!-- 学習のヒント -->
-    <div style="margin-top: 2em; padding: 1em; background: #f0f0f0; border: 1px solid #888;">
-      <h3>💡 Tips for Effective Learning:</h3>
-      <ul style="display: inline-block; text-align: left;">
-        <li>Review words regularly based on the spaced repetition schedule</li>
-        <li>Focus on words you marked as "Not Learned"</li>
-        <li>Practice with different JLPT levels to build vocabulary systematically</li>
-        <li>Use the card flip mode that works best for your learning style</li>
-      </ul>
+    <div style="text-align: center;">
+      <div style="font-size: 2em; color: #000;">{{ total_learned + total_not_learned }}</div>
+      <div>{{ _('total') }}</div>
     </div>
   </div>
 </div>
 
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  
+  {% if learned_words %}
+  <div style="margin: 1em 0;">
+    <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 4px;">{{ _('learned_words') }} ({{ learned_words|length }})</div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0; font-size: 8px;">
+        <thead>
+          <tr style="background: #e0e0e0;">
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('kanji') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('reading') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('meaning') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('type') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('study_count') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('next_review') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for word in learned_words %}
+          <tr>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.kanji if word.kanji else '-' }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.word }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.meaning }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.type }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.study_count }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  
+  {% if not_learned_words %}
+  <div style="margin: 1em 0;">
+    <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 4px;">{{ _('words_needing_review') }} ({{ not_learned_words|length }})</div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0; font-size: 8px;">
+        <thead>
+          <tr style="background: #e0e0e0;">
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('kanji') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('reading') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('meaning') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('type') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('study_count') }}</th>
+            <th style="border: 1px solid #888; padding: 4px;">{{ _('next_review') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for word in not_learned_words %}
+          <tr>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.kanji if word.kanji else '-' }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.word }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.meaning }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.type }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.study_count }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">{{ _('review_schedule') }} ({{ forgetting_curve_data.jlpt_level }})</div>
+  <div style="margin: 1em 0;">
+    <canvas id="forgettingCurveChart" width="600" height="300" style="border: 1px solid #888; background: white;"></canvas>
+  </div>
+  <div style="font-size: 9px; color: #666;">
+    <p>{{ _('complete_review_schedule_desc') }}</p>
+    <p>{{ _('total_words_with_schedule') }}: {{ all_review_words|length if all_review_words else 0 }}</p>
+  </div>
+</div>
+
+
+<div style="border: 1px dotted #808080; padding: 6px; background: #F0F0F0; font-size: 8px; color: #404040; text-align: center;">
+  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('spaced_repetition_info') }}:</div>
+  <div>{{ _('spaced_repetition_desc_complete') }}</div>
+</div>
+
+{% if next_review_time %}
+  <div style="text-align: center; margin-top: 12px;">
+    <div style="border: 1px solid #000; padding: 4px; background: #F8F8F8; font-size: 8px; display: inline-block;">
+      <div style="font-weight: bold; margin-bottom: 2px;">{{ _('next_review') }}:</div>
+      <div>{{ next_review_time.strftime('%Y-%m-%d %H:%M') if next_review_time else _('no_reviews_scheduled') }}</div>
+    </div>
+  </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+  <a href="{{ url_for('flashcard.flashcard_index') }}" 
+     style="display: inline-block; background: #FFFFFF; border: 2px solid #000; 
+            padding: 12px 24px; font-size: 12px; text-decoration: none; color: #000;
+            font-weight: bold;">
+    🏠 {{ _('back_to_flashcard_home') }}
+  </a>
+</div>
+
 <script>
-// 忘却曲線グラフの描画
+// 復習スケジュールグラフの描画
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('forgettingCurveChart');
     const ctx = canvas.getContext('2d');
     
-    // データの準備
-    const studyCounts = {{ forgetting_curve_data.study_counts | tojson }};
-    const theoreticalRetention = {{ forgetting_curve_data.theoretical_retention | tojson }};
-    
     // グラフの設定
     const width = canvas.width;
     const height = canvas.height;
-    const padding = 40;
+    const padding = 50;
+    
+    // 復習データの収集（not_learned_wordsのnext_reviewから）
+    const reviewSchedule = {};
+    const maxDays = 14; // 14日間を表示
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // 初期化（0〜14日）
+    for (let i = 0; i <= maxDays; i++) {
+        reviewSchedule[i] = 0;
+    }
+    
+    // all_review_wordsのnext_reviewデータを処理（learned/not_learned両方含む）
+    {% if all_review_words %}
+        {% for word in all_review_words %}
+            {% if word.next_review %}
+                const reviewDate{{ loop.index }} = new Date('{{ word.next_review.strftime('%Y-%m-%d') }}');
+                const daysDiff{{ loop.index }} = Math.ceil((reviewDate{{ loop.index }} - today) / (1000 * 60 * 60 * 24));
+                if (daysDiff{{ loop.index }} >= 0 && daysDiff{{ loop.index }} <= maxDays) {
+                    reviewSchedule[daysDiff{{ loop.index }}]++;
+                }
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    // 最大値を求める（縦軸スケール用）
+    const maxReviews = Math.max(...Object.values(reviewSchedule), 1);
+    
+    // 背景をクリア
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, width, height);
     
     // 軸の描画
     ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     
     // X軸
     ctx.beginPath();
@@ -162,64 +217,106 @@ document.addEventListener('DOMContentLoaded', function() {
     ctx.lineTo(padding, height - padding);
     ctx.stroke();
     
-    // ラベルの描画
+    // 棒グラフを描画
+    const barWidth = (width - 2 * padding) / (maxDays + 1);
+    
+    Object.entries(reviewSchedule).forEach(([day, count]) => {
+        const dayNum = parseInt(day);
+        const x = padding + dayNum * barWidth + barWidth/2;
+        const barHeight = (count / maxReviews) * (height - 2 * padding - 20);
+        const y = height - padding - barHeight;
+        
+        if (count > 0) {
+            // 棒の色を決定（今日は黒、それ以外はグレー）
+            ctx.fillStyle = dayNum === 0 ? '#000000' : '#808080';
+            
+            // 棒を描画
+            ctx.fillRect(x - barWidth/3, y, barWidth*2/3, barHeight);
+            
+            // 棒の枠線
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x - barWidth/3, y, barWidth*2/3, barHeight);
+            
+            // 数値ラベル（棒の上）
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(count.toString(), x, y - 5);
+        }
+    });
+    
+    // X軸ラベル（日数）
     ctx.fillStyle = '#000';
-    ctx.font = '12px Arial';
+    ctx.font = '10px Arial';
     ctx.textAlign = 'center';
     
-    // X軸ラベル
-    for (let i = 0; i <= 5; i++) {
-        const x = padding + (i * (width - 2 * padding) / 5);
-        ctx.fillText(i.toString(), x, height - padding + 20);
+    for (let i = 0; i <= maxDays; i += 2) { // 2日おきに表示
+        const x = padding + i * barWidth + barWidth/2;
+        const label = i === 0 ? '{{ _('today') }}' : i + '{{ _('days_abbrev') }}';
+        ctx.fillText(label, x, height - padding + 15);
     }
     
-    // Y軸ラベル
+    // Y軸ラベル（復習数）- 数値に応じて適切な間隔で表示
     ctx.textAlign = 'right';
-    for (let i = 0; i <= 10; i++) {
-        const y = height - padding - (i * (height - 2 * padding) / 10);
-        ctx.fillText((i * 10).toString(), padding - 5, y + 4);
+    ctx.font = '10px Arial';
+    
+    // 適切な間隔を自動決定
+    let interval;
+    if (maxReviews <= 10) {
+        interval = 1;
+    } else if (maxReviews <= 20) {
+        interval = 2;
+    } else if (maxReviews <= 50) {
+        interval = 5;
+    } else if (maxReviews <= 100) {
+        interval = 10;
+    } else {
+        interval = Math.ceil(maxReviews / 10);
     }
     
-    // 理論的忘却曲線の描画
-    ctx.strokeStyle = '#2196F3';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for (let i = 0; i <= 5; i++) {
-        const x = padding + (i * (width - 2 * padding) / 5);
-        const retention = theoreticalRetention[i] || 45;
-        const y = height - padding - (retention * (height - 2 * padding) / 100);
-        if (i === 0) {
-            ctx.moveTo(x, y);
+    // 0から最大値まで間隔ごとに目盛りを作成
+    const labels = [];
+    for (let value = 0; value <= maxReviews; value += interval) {
+        labels.push(value);
+    }
+    // 最大値が含まれていない場合は追加
+    if (labels[labels.length - 1] !== maxReviews) {
+        labels.push(maxReviews);
+    }
+    
+    // 各ラベルを配置
+    labels.forEach((value, index) => {
+        if (labels.length > 1) {
+            const ratio = value / maxReviews;
+            const y = height - padding - ratio * (height - 2 * padding - 20);
+            ctx.fillText(value.toString(), padding - 5, y + 3);
         } else {
-            ctx.lineTo(x, y);
+            // 値が1つだけの場合は中央に配置
+            const y = height - padding - 0.5 * (height - 2 * padding - 20);
+            ctx.fillText(value.toString(), padding - 5, y + 3);
         }
-    }
-    ctx.stroke();
+    });
     
-    // 実際の学習データの描画
-    ctx.fillStyle = '#4CAF50';
-    for (let i = 0; i <= 5; i++) {
-        const count = studyCounts[i] || 0;
-        if (count > 0) {
-            const x = padding + (i * (width - 2 * padding) / 5);
-            const y = height - padding - 20;
-            const barHeight = Math.min(count * 5, height - 2 * padding - 40);
-            ctx.fillRect(x - 10, y - barHeight, 20, barHeight);
-            
-            // 数値ラベル
-            ctx.fillStyle = '#000';
-            ctx.textAlign = 'center';
-            ctx.fillText(count.toString(), x, y - barHeight - 5);
-            ctx.fillStyle = '#4CAF50';
-        }
-    }
+    // 軸タイトル
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 14px Arial';
     
-    // 凡例
+    // X軸タイトル
+    ctx.fillText('{{ _('days_until_review') }}', width / 2, height - 10);
+    
+    // Y軸タイトル
+    ctx.save();
+    ctx.translate(15, height / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('{{ _('words_to_review') }}', 0, 0);
+    ctx.restore();
+    
+    // 簡単な凡例
     ctx.fillStyle = '#000';
-    ctx.font = '14px Arial';
+    ctx.font = '12px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText('Blue line: Theoretical forgetting curve', padding, height - 60);
-    ctx.fillText('Green bars: Your actual study count', padding, height - 40);
+    ctx.fillText('{{ _('review_schedule_chart_desc') }}', padding, 25);
 });
 </script>
-{% endblock %} 
+{% endblock %}

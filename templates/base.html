@@ -2,49 +2,580 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Japanese Evaluator{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{% block title %}{{ _('japanese_learning_app') }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style-retro.css') }}">
 </head>
-<body>
-  <div class="footer-bar">
-    <div class="footer-tiles">
-      <a href="{{ url_for('home') }}">🏠 Home / Onomatopeia of the day</a>
-      <div class="dropdown">
-        <a href="#" class="dropdown-toggle">🎯 Quizzes</a>
-        <div class="dropdown-menu">
-          <a href="{{ url_for('grammar.grammar_index') }}">📝 Grammar Quiz</a>
-          <a href="{{ url_for('vocab.vocab_index') }}">🗣 Vocabulary Quiz</a>
-          <a href="{{ url_for('flashcard.flashcard_index') }}">📚 Flashcards</a>
-          <div class="dropdown listening-dropdown">
-            <a href="#" class="dropdown-toggle">🎧 Listening quiz</a>
-            <div class="dropdown-menu listening-menu side-menu">
-              <a href="{{ url_for('listening_quiz.listening_quiz_list') }}">Main</a>
-              <a href="{{ url_for('listening_quiz.listening_quiz_sample') }}">Sample</a>
+<body class="font-{{ get_current_font() }}">
+  <!-- Top Menu Bar (like Adobe Illustrator 1987) -->
+  <div class="menu-bar">
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('file') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('home') }}">{{ _('home') }}</a>
+        <a href="{{ url_for('about') }}">{{ _('about') }}</a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('logout') }}">{{ _('logout') }}</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">{{ _('login') }}</a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('quiz') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('grammar.grammar_index') }}">{{ _('grammar') }}</a>
+        <a href="{{ url_for('vocab.vocab_index') }}">{{ _('vocabulary') }}</a>
+        <a href="{{ url_for('flashcard.flashcard_index') }}">{{ _('flashcards') }}</a>
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('games') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('akinator.akinator_index') }}?role=user">{{ _('you_are_akinator') }}</a>
+        <a href="{{ url_for('akinator.akinator_index') }}?role=gpt">{{ _('ai_is_akinator') }}</a>
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('audio') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('youtube_listening.listening_levels') }}">YouTube リスニング</a>
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('help') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('about') }}">{{ _('about') }}</a>
+        <a href="#" id="settings-menu-link">{{ _('settings') }}</a>
+        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('support') }}</a>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
+        {% endif %}
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Feedback Popup Modal -->
+  <div id="feedback-modal" class="feedback-modal" style="display: none;">
+    <div class="feedback-window">
+      <div class="feedback-title-bar">
+        <span>{{ _('feedback') }}</span>
+        <button id="feedback-close" class="feedback-close-btn">×</button>
+      </div>
+      <div class="feedback-content">
+        <form id="feedback-form" method="POST" action="/feedback">
+          <div class="feedback-field">
+            <label>{{ _('name') }}:</label>
+            <input type="text" name="name" id="feedback-name" required>
+          </div>
+          <div class="feedback-field">
+            <label>{{ _('email') }}:</label>
+            <input type="email" name="email" id="feedback-email" required>
+          </div>
+          <div class="feedback-field">
+            <label>{{ _('message') }}:</label>
+            <textarea name="message" id="feedback-message" rows="6" required placeholder="{{ _('feedback_placeholder') }}"></textarea>
+          </div>
+          <div class="feedback-buttons">
+            <button type="submit" class="feedback-btn-submit">{{ _('send') }}</button>
+            <button type="button" id="feedback-cancel" class="feedback-btn-cancel">{{ _('cancel') }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sitemap Popup Modal -->
+  <div id="sitemap-modal" class="sitemap-modal" style="display: none;">
+    <div class="sitemap-window">
+      <div class="sitemap-title-bar">
+        <span>{{ _('sitemap_tool') }}</span>
+        <button id="sitemap-close" class="sitemap-close-btn">×</button>
+      </div>
+      <div class="sitemap-content">
+        <div id="sitemap-loading" style="text-align: center; padding: 20px; font-size: 10px;">
+          {{ _('loading') }}
+        </div>
+        <div id="sitemap-data" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Popup Modal -->
+  <div id="settings-modal" class="settings-modal" style="display: none;">
+    <div class="settings-window">
+      <div class="settings-title-bar">
+        <span>{{ _('settings') }}</span>
+        <button id="settings-close" class="settings-close-btn">×</button>
+      </div>
+      <div class="settings-content">
+        <div style="padding: 12px;">
+          <!-- Language Setting -->
+          <div class="settings-group">
+            <h3 style="font-size: 11px; margin: 0 0 6px 0; font-weight: bold;">{{ _('language') }}</h3>
+            <div class="settings-options">
+              <button class="settings-btn" onclick="changeLanguage('en')">English</button>
+              <button class="settings-btn" onclick="changeLanguage('ja')">日本語</button>
             </div>
           </div>
-          <div class="dropdown akinator-dropdown">
-            <a href="#" class="dropdown-toggle">🧞 Akinator</a>
-            <div class="dropdown-menu akinator-menu">
-              <a href="{{ url_for('akinator.akinator_index') }}?role=user">You guess the word</a>
-              <a href="{{ url_for('akinator.akinator_index') }}?role=gpt">AI guess your word</a>
+          
+          <!-- Font Setting -->
+          <div class="settings-group" style="margin-top: 16px;">
+            <h3 style="font-size: 11px; margin: 0 0 6px 0; font-weight: bold;">{{ _('font') }}</h3>
+            <div class="settings-options">
+              <button class="settings-btn" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</button>
+              <button class="settings-btn" onclick="changeFont('klee')">Klee One (Textbook)</button>
             </div>
+          </div>
+          
+          <!-- Toolbar Note -->
+          <div style="margin-top: 16px; padding: 6px; background: #F0F0F0; border: 1px solid #808080; font-size: 8px; color: #404040;">
+            💡 {{ _('settings_toolbar_note') }}
           </div>
         </div>
       </div>
-      <a href="{{ url_for('about') }}">ℹ️ About / Support</a>
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('logout') }}">🚪 {{ current_user.username }} (Logout)</a>
-      {% else %}
-        <a href="{{ url_for('login') }}">🔑 Login / Register</a>
-      {% endif %}
     </div>
   </div>
+
+  <!-- Left Tool Palette -->
+  <div class="tool-palette">
+    <div class="tool-icon" id="language-tool" title="{{ _('language_selection') }}">🌐</div>
+    <div class="tool-icon" id="font-tool" title="{{ _('select_font') }}">A</div>
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
+    {% endif %}
+    <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+  </div>
+
+  <!-- Main Content Window -->
   <div class="main-content-wrapper">
-    {% block content %}{% endblock %}
+    <div class="window">
+      <div class="title-bar">
+        {% block window_title %}{{ _('japanese_learning_app') }}{% endblock %}
+      </div>
+      <div class="main-content">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
   </div>
+
+  <!-- Global Loading Indicator -->
+  <div id="global-loading" class="global-loading" style="display: none;">
+    <div class="loading-content">
+      <div class="retro-spinner"></div>
+      <div class="loading-text">Processing...</div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>{{ _('ready') }}</span>
+    <span style="margin-left: auto;">
+      {% if current_user.is_authenticated %}
+        {{ _('user') }}: {{ current_user.username }}
+      {% else %}
+        {{ _('not_logged_in') }}
+      {% endif %}
+    </span>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-copyright">
+    {{ _('copyright') }}
+  </div>
+
   {% block scripts %}{% endblock %}
-  <div style="width:100vw; text-align:center; font-size:0.95em; color:#444; margin-top:2em; margin-bottom:0.5em; letter-spacing:0.05em;">
-   copyright. &copy; B
-  </div>
+
+  <script>
+    // Simple tool palette interaction
+    document.querySelectorAll('.tool-icon').forEach(tool => {
+      tool.addEventListener('click', function() {
+        // Special handling for feedback tool
+        if (this.id === 'feedback-tool') {
+          // Check if user is logged in by looking for login/logout links in menu
+          const loginLink = document.querySelector('a[href*="login"]');
+          const logoutLink = document.querySelector('a[href*="logout"]');
+          const isLoggedIn = !loginLink || logoutLink;
+          
+          if (!isLoggedIn) {
+            alert('フィードバック、感想を送るにはログインしてください');
+            window.location.href = '/login';
+            return;
+          }
+          document.getElementById('feedback-modal').style.display = 'flex';
+          return;
+        }
+        
+        // Special handling for sitemap tool
+        if (this.id === 'sitemap-tool') {
+          loadSitemap();
+          return;
+        }
+        
+        // Special handling for language tool
+        if (this.id === 'language-tool') {
+          showLanguageMenu(this);
+          return;
+        }
+        
+        // Special handling for font tool
+        if (this.id === 'font-tool') {
+          showFontMenu(this);
+          return;
+        }
+        
+        document.querySelectorAll('.tool-icon').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // Set selection tool as default active
+    document.querySelector('.tool-icon').classList.add('active');
+    
+    // Feedback modal functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('feedback-modal');
+      const closeBtn = document.getElementById('feedback-close');
+      const cancelBtn = document.getElementById('feedback-cancel');
+      const form = document.getElementById('feedback-form');
+      
+      // Close modal functions
+      function closeModal() {
+        modal.style.display = 'none';
+        form.reset();
+      }
+      
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      
+      // Close when clicking outside the window
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+      
+      // Handle form submission
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        
+        fetch('/feedback', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('{{ _('feedback_success') }}');
+            closeModal();
+          } else {
+            alert('{{ _('feedback_error') }}');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('{{ _('feedback_error') }}');
+        });
+      });
+      
+      // Sitemap modal functionality
+      const sitemapModal = document.getElementById('sitemap-modal');
+      const sitemapCloseBtn = document.getElementById('sitemap-close');
+      
+      // Close sitemap modal function
+      function closeSitemapModal() {
+        sitemapModal.style.display = 'none';
+      }
+      
+      sitemapCloseBtn.addEventListener('click', closeSitemapModal);
+      
+      // Close when clicking outside the window
+      sitemapModal.addEventListener('click', function(e) {
+        if (e.target === sitemapModal) {
+          closeSitemapModal();
+        }
+      });
+
+      // Settings modal functionality
+      const settingsModal = document.getElementById('settings-modal');
+      const settingsCloseBtn = document.getElementById('settings-close');
+      const settingsMenuLink = document.getElementById('settings-menu-link');
+      
+      // Open settings modal function
+      function openSettingsModal() {
+        settingsModal.style.display = 'flex';
+      }
+      
+      // Close settings modal function
+      function closeSettingsModal() {
+        settingsModal.style.display = 'none';
+      }
+      
+      settingsMenuLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        openSettingsModal();
+      });
+      
+      settingsCloseBtn.addEventListener('click', closeSettingsModal);
+      
+      // Close when clicking outside the window
+      settingsModal.addEventListener('click', function(e) {
+        if (e.target === settingsModal) {
+          closeSettingsModal();
+        }
+      });
+    });
+    
+    // Load sitemap data
+    function loadSitemap() {
+      const modal = document.getElementById('sitemap-modal');
+      const loading = document.getElementById('sitemap-loading');
+      const dataDiv = document.getElementById('sitemap-data');
+      
+      modal.style.display = 'flex';
+      loading.style.display = 'block';
+      dataDiv.style.display = 'none';
+      
+      fetch('/sitemap_data')
+        .then(response => response.json())
+        .then(data => {
+          let html = '<div class="sitemap-md">';
+          html += '<pre>┌─────────────────────────────────────────────┐\n';
+          html += '│              🗺️  SITEMAP                   │\n';
+          html += '└─────────────────────────────────────────────┘\n\n';
+          
+          Object.keys(data).forEach((category, categoryIndex) => {
+            if (data[category].length === 0) return;
+            
+            html += `## 📁 ${category}\n`;
+            html += '├─────────────────────────────────────────────\n';
+            
+            data[category].forEach((item, index) => {
+              const isLast = index === data[category].length - 1;
+              const prefix = isLast ? '└──' : '├──';
+              html += `${prefix} <a href="${item.url}">[${item.name}]</a>\n`;
+              html += `${isLast ? '    ' : '│   '} └─ ${item.description}\n`;
+            });
+            
+            html += '\n';
+          });
+          
+          html += '─────────────────────────────────────────────\n';
+          html += '💡 Tip: Click links to navigate to each page\n';
+          html += '</pre></div>';
+          
+          dataDiv.innerHTML = html;
+          loading.style.display = 'none';
+          dataDiv.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error loading sitemap:', error);
+          dataDiv.innerHTML = '<p style="text-align: center; color: #FF0000; font-size: 10px;">Failed to load sitemap</p>';
+          loading.style.display = 'none';
+          dataDiv.style.display = 'block';
+        });
+    }
+    
+    // Language menu functionality
+    let languageMenuOpen = false;
+    
+    function showLanguageMenu(toolElement) {
+      // Remove any existing language menu
+      const existingMenu = document.querySelector('.language-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+        languageMenuOpen = false;
+        return;
+      }
+      
+      const menu = document.createElement('div');
+      menu.className = 'language-menu';
+      menu.innerHTML = `
+        <div class="language-option" onclick="changeLanguage('en')">English</div>
+        <div class="language-option" onclick="changeLanguage('ja')">日本語</div>
+      `;
+      
+      const rect = toolElement.getBoundingClientRect();
+      menu.style.position = 'fixed';
+      menu.style.left = (rect.right + 5) + 'px';
+      menu.style.top = rect.top + 'px';
+      menu.style.backgroundColor = '#C0C0C0';
+      menu.style.border = '2px outset #C0C0C0';
+      menu.style.padding = '2px';
+      menu.style.fontSize = '10px';
+      menu.style.zIndex = '11000';
+      menu.style.minWidth = '80px';
+      
+      document.body.appendChild(menu);
+      languageMenuOpen = true;
+      
+      // Close menu when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeLanguageMenu(e) {
+          if (!menu.contains(e.target) && e.target !== toolElement) {
+            menu.remove();
+            languageMenuOpen = false;
+            document.removeEventListener('click', closeLanguageMenu);
+          }
+        });
+      }, 100);
+    }
+    
+    // Language switching function
+    function changeLanguage(langCode) {
+      // Remove language menu
+      const menu = document.querySelector('.language-menu');
+      if (menu) menu.remove();
+      
+      fetch('/language', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({language: langCode})
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Reload current page instead of going to home
+          window.location.reload();
+        } else {
+          alert('Failed to change language');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error changing language');
+      });
+    }
+
+    // Font menu functionality
+    let fontMenuOpen = false;
+    
+    function showFontMenu(toolElement) {
+      // Remove any existing font menu
+      const existingMenu = document.querySelector('.font-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+        fontMenuOpen = false;
+        return;
+      }
+      
+      const menu = document.createElement('div');
+      menu.className = 'font-menu';
+      menu.innerHTML = `
+        <div class="font-option" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</div>
+        <div class="font-option" onclick="changeFont('klee')">Klee One (Textbook)</div>
+      `;
+      
+      const rect = toolElement.getBoundingClientRect();
+      menu.style.position = 'fixed';
+      menu.style.left = (rect.right + 5) + 'px';
+      menu.style.top = rect.top + 'px';
+      menu.style.backgroundColor = '#C0C0C0';
+      menu.style.border = '2px outset #C0C0C0';
+      menu.style.padding = '2px';
+      menu.style.fontSize = '10px';
+      menu.style.zIndex = '11000';
+      menu.style.minWidth = '120px';
+      
+      document.body.appendChild(menu);
+      fontMenuOpen = true;
+      
+      // Close menu when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeFontMenu(e) {
+          if (!menu.contains(e.target) && e.target !== toolElement) {
+            menu.remove();
+            fontMenuOpen = false;
+            document.removeEventListener('click', closeFontMenu);
+          }
+        });
+      }, 100);
+    }
+    
+    // Font switching function
+    function changeFont(fontFamily) {
+      // Remove font menu
+      const menu = document.querySelector('.font-menu');
+      if (menu) menu.remove();
+      
+      fetch('/font', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({font_family: fontFamily})
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Apply font immediately without reload
+          document.body.className = document.body.className.replace(/font-\w+/g, '');
+          document.body.classList.add('font-' + fontFamily);
+        } else {
+          alert('Failed to change font');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error changing font');
+      });
+    }
+    
+    // Global Loading Indicator Functions
+    window.showLoading = function(message = 'Processing...') {
+      const loadingEl = document.getElementById('global-loading');
+      const textEl = loadingEl.querySelector('.loading-text');
+      textEl.textContent = message;
+      loadingEl.style.display = 'flex';
+    };
+    
+    window.hideLoading = function() {
+      const loadingEl = document.getElementById('global-loading');
+      loadingEl.style.display = 'none';
+    };
+    
+    // Auto-show loading for form submissions and page navigation
+    document.addEventListener('DOMContentLoaded', function() {
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+          // Show loading for all form submissions
+          const hasAI = form.classList.contains('ai-form') || 
+                       form.querySelector('[name="question"]') || 
+                       form.querySelector('[name="answer"]') ||
+                       form.querySelector('[name="translation"]');
+          
+          if (hasAI) {
+            showLoading('AI is thinking...');
+          } else {
+            showLoading('Loading...');
+          }
+        });
+      });
+      
+      // Show loading for navigation links that might take time
+      const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([href^="javascript:"]):not([target="_blank"])');
+      links.forEach(link => {
+        link.addEventListener('click', function(e) {
+          // Skip if it's a sort/filter link (quick operations)
+          if (this.classList.contains('sort-link') || 
+              this.classList.contains('filter-btn') || 
+              this.href.includes('sort=') ||
+              this.href.includes('level=')) {
+            return;
+          }
+          showLoading('Loading...');
+        });
+      });
+    });
+  </script>
 </body>
 </html>

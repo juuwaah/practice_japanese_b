@@ -1,61 +1,66 @@
 {% extends "base.html" %}
 
-{% block title %}Register - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('register') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('user_authentication') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <h1 style="text-align:center;">Register</h1>
-  
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div style="background: #ffcccc; border: 1px solid #ff0000; padding: 10px; margin: 10px 0; text-align: center;">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  
-  <form method="POST" style="max-width: 400px; margin: 0 auto;">
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>{{ _('register') }}</h1>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="error-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div style="max-width: 200px; margin: 0 auto;">
+  <form method="POST">
     {{ form.hidden_tag() }}
     
-    <div style="margin-bottom: 1em;">
-      {{ form.username.label }}
-      {{ form.username(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+    <div style="margin-bottom: 8px;">
+      {{ form.username.label(style="font-size: 9px; font-weight: bold;") }}
+      {{ form.username(style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; margin-top: 2px;") }}
       {% if form.username.errors %}
         {% for error in form.username.errors %}
-          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+          <div style="color: #000; font-size: 8px; background: #F0F0F0; padding: 2px; border: 1px dotted #000; margin-top: 2px;">{{ error }}</div>
         {% endfor %}
       {% endif %}
     </div>
     
-    <div style="margin-bottom: 1em;">
-      {{ form.password.label }}
-      {{ form.password(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+    <div style="margin-bottom: 8px;">
+      {{ form.password.label(style="font-size: 9px; font-weight: bold;") }}
+      {{ form.password(style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; margin-top: 2px;") }}
       {% if form.password.errors %}
         {% for error in form.password.errors %}
-          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+          <div style="color: #000; font-size: 8px; background: #F0F0F0; padding: 2px; border: 1px dotted #000; margin-top: 2px;">{{ error }}</div>
         {% endfor %}
       {% endif %}
     </div>
     
-    <div style="margin-bottom: 1em;">
-      {{ form.password2.label }}
-      {{ form.password2(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
+    <div style="margin-bottom: 12px;">
+      {{ form.password2.label(style="font-size: 9px; font-weight: bold;") }}
+      {{ form.password2(style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; margin-top: 2px;") }}
       {% if form.password2.errors %}
         {% for error in form.password2.errors %}
-          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
+          <div style="color: #000; font-size: 8px; background: #F0F0F0; padding: 2px; border: 1px dotted #000; margin-top: 2px;">{{ error }}</div>
         {% endfor %}
       {% endif %}
     </div>
     
     <div style="text-align: center;">
-      {{ form.submit(style="padding: 10px 20px; font-size: 1.1em;") }}
+      {{ form.submit(style="padding: 4px 16px; font-size: 9px;") }}
     </div>
   </form>
-  
-  <div style="text-align: center; margin-top: 2em;">
-    <p>Already have an account? <a href="{{ url_for('login') }}" style="color: #000; text-decoration: underline;">Login here</a></p>
-  </div>
 </div>
-{% endblock %} 
+
+<div style="text-align: center; margin-top: 16px; padding-top: 8px; border-top: 1px solid #000;">
+  <p style="font-size: 9px; margin-bottom: 8px;">{{ _('already_have_account') }}</p>
+  <a href="{{ url_for('login') }}" style="font-size: 9px; text-decoration: underline;">{{ _('login_here') }}</a>
+</div>
+{% endblock %}

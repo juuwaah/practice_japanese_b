@@ -1,148 +1,223 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}{{ _('akinator_game') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}JLPT {{ _('word_akinator') }}{% endblock %}
+
 {% block content %}
-<div class="main-content-wrapper">
-  <div class="main-content" style="max-width: 600px; display: flex; flex-direction: column; align-items: center; position:relative;">
-    <h2>JLPTことばアキネーター</h2>
-    <a href="{{ url_for('akinator.akinator_index') }}" class="reset-btn" style="position:absolute; top:10px; right:10px; padding:0.5em 1.2em; background:#eee; border:1px solid #bbb; border-radius:8px; color:#333; font-weight:bold; text-decoration:none;">Reset/Change mode</a>
-    <div id="chat-area" style="min-height: 60px; max-height: 220px; width: 500px; margin: 0 auto 1em auto; overflow-y: auto; background: #f5f5f5; border: 1px solid #bbb; border-radius: 12px; padding: 1em; display: flex; flex-direction: column;">
-      {% for msg in history %}
-        <div class="chat-bubble {{ 'user' if msg['role']=='user' else 'gpt' }}">
-          <span>{{ msg['text'] }}</span>
-        </div>
-      {% endfor %}
+<div style="text-align: center; margin-bottom: 12px;">
+  <h1>{{ _('word_akinator') }}</h1>
+  <div style="text-align: right;">
+    <a href="{{ url_for('akinator.akinator_index') }}" 
+       style="font-size: 8px; background: #F0F0F0; border: 1px solid #000; padding: 2px 6px; text-decoration: none;">
+      {{ _('reset_change') }}
+    </a>
+  </div>
+</div>
+
+<div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #F8F8F8; 
+            min-height: 120px; max-height: 180px; overflow-y: auto;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-decoration: underline;">
+    {{ _('conversation') }}:
+  </div>
+  
+  {% for msg in history %}
+    <div style="margin-bottom: 6px; padding: 4px; border: 1px dotted #808080; 
+                background: {% if msg['role']=='user' %}#FFFFFF{% else %}#F0F0F0{% endif %};">
+      <div style="font-size: 8px; font-weight: bold; margin-bottom: 2px;">
+        {% if msg['role']=='user' %}{{ _('you') }}:{% else %}{{ _('ai') }}:{% endif %}
+      </div>
+      <div style="font-size: 9px;">{{ msg['text'] }}</div>
     </div>
-    {% if not gameover %}
-      {% if role == 'user' %}
-        <form id="chat-form" method="post" action="" autocomplete="off" style="width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.5em;">
-          <input type="text" name="message" id="message" placeholder="質問または回答を入力..." style="width: 100%; padding: 0.7em; border-radius: 8px; border: 1px solid #bbb; font-size: 1em; box-sizing: border-box;">
-          <div style="display: flex; gap: 0.5em; width: 100%;">
-            <button type="submit" style="flex:1; padding: 0.7em 1.2em; border-radius: 8px; border: none; background: #333; color: #fff; font-weight: bold; height: 2.8em; display: flex; align-items: center; justify-content: center;">Submit</button>
-            <button type="button" id="hint-btn" style="flex:1; padding: 0.7em 1.2em; border-radius: 8px; border: none; background: #ffd54f; color: #333; font-weight: bold; height: 2.8em; display: flex; align-items: center; justify-content: center; font-size: 1em;">ヒント</button>
-            <button type="button" id="giveup-btn" style="flex:1; padding: 0.7em 1.2em; border-radius: 8px; border: none; background: #e57373; color: #fff; font-weight: bold; height: 2.8em; display: flex; align-items: center; justify-content: center; font-size: 1em;">こうさん/こたえ</button>
-          </div>
+  {% endfor %}
+</div>
+
+{% if not gameover %}
+  {% if role == 'user' %}
+    <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0;">
+      <form id="chat-form" method="post" action="">
+        <div style="margin-bottom: 8px;">
+          <input type="text" name="message" id="message" 
+                 placeholder="{{ _('type_your_question') }}" 
+                 style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
+        </div>
+        
+        <div style="display: flex; gap: 4px;">
+          <button type="submit" style="flex: 1; padding: 4px; font-size: 8px; font-weight: bold;">
+            {{ _('submit_press_enter') }}
+          </button>
+          <button type="button" id="hint-btn" 
+                  style="flex: 1; padding: 4px; font-size: 8px; background: #E0E0E0;">
+            {{ _('hint') }}
+          </button>
+          <button type="button" id="giveup-btn" 
+                  style="flex: 1; padding: 4px; font-size: 8px; background: #D0D0D0;">
+            {{ _('give_up') }}
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div style="text-align: center; margin-top: 8px;">
+      <button id="guess-btn" type="button" 
+              style="width: 80%; padding: 6px; font-size: 9px; font-weight: bold; 
+                     background: #E0FFE0; border: 2px solid #000; margin-bottom: 4px;">
+        {{ _('i_know') }}
+      </button>
+    </div>
+    
+    <div id="guess-form-container" style="display: none; margin-top: 4px;">
+      <form id="guess-form" method="post" style="display: flex; gap: 4px;">
+        <input type="text" name="user_guess" id="user_guess" 
+               placeholder="{{ _('enter_answer') }}" 
+               style="flex: 1; padding: 4px; font-size: 8px; border: 1px solid #000;">
+        <button type="submit" 
+                style="padding: 4px 8px; font-size: 8px; font-weight: bold; 
+                       background: #D0E0FF; border: 1px solid #000;">
+          {{ _('submit_answer') }}
+        </button>
+      </form>
+    </div>
+    
+  {% elif role == 'gpt' %}
+    <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0;">
+      <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-align: center;">
+        {{ _('quick_responses') }}:
+      </div>
+      
+      <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+        <form method="post" style="flex: 1;">
+          <input type="hidden" name="message" value="はい">
+          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
+            {{ _('yes') }}
+          </button>
         </form>
-      {% elif role == 'gpt' %}
-        <div class="quick-reply-btns" style="display: flex; gap: 0.5em; margin-top: 0.7em; justify-content: center;">
-          <form method="post" style="display:inline; flex:1;">
-            <input type="hidden" name="message" value="はい">
-            <button type="submit" class="quick-btn">はい</button>
-          </form>
-          <form method="post" style="display:inline; flex:1;">
-            <input type="hidden" name="message" value="いいえ">
-            <button type="submit" class="quick-btn">いいえ</button>
-          </form>
-          <form method="post" style="display:inline; flex:1;">
-            <input type="hidden" name="message" value="わからない">
-            <button type="submit" class="quick-btn">わからない</button>
-          </form>
-          <form method="post" style="display:inline; flex:1;">
-            <input type="hidden" name="message" value="ときどき">
-            <button type="submit" class="quick-btn">ときどき</button>
-          </form>
-        </div>
-        <div style="width:100%; display:flex; justify-content:center; margin-top: 1em;">
-          <form method="post" style="width:80%;">
-            <input type="hidden" name="message" value="正解！">
-            <button type="submit" style="width:100%; padding:1em; border-radius:12px; border:none; background:#4caf50; color:#fff; font-size:1.2em; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.08); cursor:pointer;">正解！</button>
-          </form>
-        </div>
-      {% endif %}
-    {% else %}
-    <div class="result" style="margin: 2em 0; text-align: center;">
-      <form method="post" action="{{ url_for('akinator.akinator_index') }}" style="display:inline;">
-        <button type="submit">もう一度あそぶ</button>
-      </form>
-      <form method="get" action="{{ url_for('akinator.akinator_index') }}" style="display:inline; margin-left:1em;">
-        <button type="submit">Change role/level</button>
-      </form>
+        
+        <form method="post" style="flex: 1;">
+          <input type="hidden" name="message" value="いいえ">
+          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
+            {{ _('no') }}
+          </button>
+        </form>
+        
+        <form method="post" style="flex: 1;">
+          <input type="hidden" name="message" value="わからない">
+          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
+            {{ _('dont_know') }}
+          </button>
+        </form>
+        
+        <form method="post" style="flex: 1;">
+          <input type="hidden" name="message" value="ときどき">
+          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
+            {{ _('sometimes') }}
+          </button>
+        </form>
+      </div>
+      
+      <div style="text-align: center;">
+        <form method="post" style="display: inline-block; width: 80%;">
+          <input type="hidden" name="message" value="正解！">
+          <button type="submit" 
+                  style="width: 100%; padding: 6px; font-size: 9px; font-weight: bold; 
+                         background: #000; color: #FFF; border: 2px solid #000;">
+            {{ _('correct_exclamation') }}
+          </button>
+        </form>
+      </div>
     </div>
+  {% endif %}
+  
+{% else %}
+  <div style="border: 2px solid #000; padding: 12px; background: #FFFFFF; text-align: center;">
+    <div style="font-size: 10px; font-weight: bold; margin-bottom: 8px;">
+      {{ _('game_over') }}
+    </div>
+    
+    <div style="display: flex; gap: 8px; justify-content: center;">
+      <a href="{{ url_for('akinator.akinator_restart') }}" 
+         style="display: inline-block; padding: 4px 12px; font-size: 9px; 
+                background: #C0C0C0; border: 2px outset #C0C0C0; text-decoration: none; color: black;">
+        {{ _('play_again') }}
+      </a>
+      
+      <a href="{{ url_for('akinator.akinator_index') }}" 
+         style="display: inline-block; padding: 4px 12px; font-size: 9px; 
+                background: #C0C0C0; border: 2px outset #C0C0C0; text-decoration: none; color: black;">
+        {{ _('change_settings') }}
+      </a>
+    </div>
+  </div>
+{% endif %}
+
+<div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px; margin-top: 12px;">
+  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('instructions') }}:</div>
+  <div>
+    {% if role == 'user' %}
+      {{ _('ask_questions_about_ai_word') }}
+    {% else %}
+      {{ _('think_of_jlpt_word') | replace('{level}', session.level or 'N5') }}
     {% endif %}
   </div>
 </div>
 
-<style>
-.chat-bubble {
-  max-width: 80%;
-  margin-bottom: 0.7em;
-  padding: 0.7em 1em;
-  border-radius: 16px;
-  font-size: 1.05em;
-  word-break: break-word;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  display: inline-block;
-}
-.chat-bubble.user {
-  background: #d0eaff;
-  align-self: flex-end;
-  margin-left: auto;
-}
-.chat-bubble.gpt {
-  background: #e6e6e6;
-  align-self: flex-start;
-  margin-right: auto;
-}
-#chat-area {
-  scrollbar-width: thin;
-  scrollbar-color: #bbb #f5f5f5;
-}
-.quick-reply-btns .quick-btn {
-  flex: 1 1 0;
-  min-width: 120px;
-  max-width: 140px;
-  white-space: nowrap;
-  text-align: center;
-  padding: 0.5em 1.2em;
-  border-radius: 8px;
-  border: 1px solid #bbb;
-  background: #f0f0f0;
-  color: #222;
-  font-weight: bold;
-  font-size: 1em;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin: 0 0.1em;
-}
-.quick-reply-btns .quick-btn:hover {
-  background: #d0eaff;
-}
-.reset-btn:hover {
-  background: #d0eaff;
-  color: #111;
-}
-</style>
-
 <script>
-// スクロールを常に一番下に
-window.onload = function() {
-  var chat = document.getElementById('chat-area');
-  if(chat) chat.scrollTop = chat.scrollHeight;
-  // 入力ボックスに自動フォーカス
-  var msgbox = document.getElementById('message');
-  if(msgbox) msgbox.focus();
-  // 降参ボタンで降参コマンド送信
-  var giveup = document.getElementById('giveup-btn');
-  if(giveup && msgbox) {
-    giveup.onclick = function() {
-      msgbox.value = '降参';
-      document.getElementById('chat-form').submit();
-    }
-  }
-  // ヒントボタンでヒントコマンド送信
-  var hint = document.getElementById('hint-btn');
-  if(hint && msgbox) {
-    hint.onclick = function() {
-      msgbox.value = 'ヒント';
-      document.getElementById('chat-form').submit();
-    }
+// Auto-scroll to bottom
+function scrollToBottom() {
+  const chatArea = document.querySelector('div[style*="overflow-y: auto"]');
+  if (chatArea) {
+    setTimeout(function() {
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }, 100);
   }
 }
-// 送信後も自動でフォーカス
-if (window.MutationObserver) {
-  var obs = new MutationObserver(function() {
-    var msgbox = document.getElementById('message');
-    if(msgbox) msgbox.focus();
+
+// Auto-focus message input
+document.addEventListener('DOMContentLoaded', function() {
+  scrollToBottom();
+  
+  const messageInput = document.getElementById('message');
+  if (messageInput) {
+    messageInput.focus();
+  }
+  
+  // 「わかった！」ボタンの処理
+  const guessBtn = document.getElementById('guess-btn');
+  const guessFormContainer = document.getElementById('guess-form-container');
+  const guessInput = document.getElementById('user_guess');
+  
+  if (guessBtn && guessFormContainer && guessInput) {
+    guessBtn.addEventListener('click', function() {
+      guessBtn.style.display = 'none';
+      guessFormContainer.style.display = 'block';
+      guessInput.focus();
+    });
+  }
+  
+  // すべてのフォーム送信後にスクロール
+  const forms = document.querySelectorAll('form');
+  forms.forEach(function(form) {
+    form.addEventListener('submit', function() {
+      setTimeout(scrollToBottom, 200);
+    });
   });
-  obs.observe(document.body, {childList:true,subtree:true});
-}
+});
+
+// Hint and give up button handlers
+document.getElementById('hint-btn')?.addEventListener('click', function() {
+  const messageInput = document.getElementById('message');
+  if (messageInput) {
+    messageInput.value = 'ヒント';
+    document.getElementById('chat-form').submit();
+  }
+});
+
+document.getElementById('giveup-btn')?.addEventListener('click', function() {
+  const messageInput = document.getElementById('message');
+  if (messageInput) {
+    messageInput.value = 'こうさん';
+    document.getElementById('chat-form').submit();
+  }
+});
 </script>
-{% endblock %} 
+{% endblock %}

@@ -5,8 +5,29 @@ import pandas as pd
 import os
 from datetime import datetime, timedelta
 import random
+from functools import wraps
 
 flashcard_bp = Blueprint('flashcard', __name__, url_prefix='/flashcard')
+
+def patreon_required(f):
+    """Patreonログインが必要な機能用デコレーター"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('フラッシュカード機能を利用するにはPatreonログインが必要です。', 'warning')
+            return redirect(url_for('login'))
+        
+        # Patreonログインユーザーかチェック
+        if not current_user.is_patreon:
+            # 現在のログイン方法を確認
+            if hasattr(current_user, 'auth_provider') and current_user.auth_provider == 'google':
+                flash('フラッシュカード機能はPatreonメンバー限定です。一度ログアウトしてPatreonでログインし直してください。', 'warning')
+            else:
+                flash('フラッシュカード機能はPatreonメンバー限定です。Patreonでログインしてください。', 'warning')
+            return redirect(url_for('login'))
+        
+        return f(*args, **kwargs)
+    return decorated_function
 
 def load_vocab_data():
     """Excelファイルから語彙データを読み込んでデータベースに保存"""
@@ -69,7 +90,7 @@ def get_next_review_date(study_count):
         return datetime.utcnow() + timedelta(days=30)
 
 @flashcard_bp.route('/')
-@login_required
+@patreon_required
 def flashcard_index():
     """フラッシュカード設定画面"""
     # 初回アクセス時にデータを読み込み
@@ -81,10 +102,10 @@ def flashcard_index():
         FlashcardProgress.next_review <= datetime.utcnow()
     ).count()
     
-    return render_template('flashcard_setup.html', review_count=review_count)
+    return render_template("flashcard_setup.html", review_count=review_count)
 
 @flashcard_bp.route('/study', methods=['GET', 'POST'])
-@login_required
+@patreon_required
 def study():
     """フラッシュカード学習画面"""
     if request.method == 'GET':
@@ -134,7 +155,7 @@ def study():
         }
         session.modified = True  # セッションの変更を明示的に保存
         
-        return render_template('flashcard_study.html', 
+        return render_template("flashcard_study.html", 
                              word=all_words[0] if all_words else None,
                              front_mode=front_mode,
                              current_index=0,
@@ -161,14 +182,22 @@ def study():
             )
             db.session.add(progress)
         
+        # 復習日チェック：復習日が来ている場合のみnext_reviewを更新
+        today = datetime.utcnow().date()
+        is_review_day = progress.next_review is None or progress.next_review.date() <= today
+        
         if action == 'learned':
             progress.study_count = (progress.study_count or 0) + 1
             progress.status = 'learned'
-            progress.next_review = get_next_review_date(progress.study_count)
+            # 復習日が来ている場合のみnext_reviewを更新
+            if is_review_day:
+                progress.next_review = get_next_review_date(progress.study_count)
         else:
             progress.study_count = (progress.study_count or 0) + 1
             progress.status = 'pending'
-            progress.next_review = get_next_review_date(progress.study_count)
+            # 復習日が来ている場合のみnext_reviewを更新
+            if is_review_day:
+                progress.next_review = get_next_review_date(progress.study_count)
         
         progress.updated_at = datetime.utcnow()
         db.session.commit()
@@ -200,14 +229,14 @@ def study():
         session['study_info'] = updated_study_info
         session.modified = True  # セッションの変更を明示的に保存
         
-        return render_template('flashcard_study.html',
+        return render_template("flashcard_study.html",
                              word=next_word,
                              front_mode=study_info['front_mode'],
                              current_index=current_index,
                              total_count=study_info['total_count'])
 
 @flashcard_bp.route('/complete')
-@login_required
+@patreon_required
 def complete():
     """学習完了画面"""
     # 今回の学習セッションの結果を取得
@@ -246,15 +275,38 @@ def complete():
     # 忘却曲線データを生成
     forgetting_curve_data = generate_forgetting_curve_data(current_user.id, study_info['jlpt_level'])
     
+    # グラフ用：全ての復習対象単語を取得（learned/not_learnedに関係なく）
+    all_review_words = []
+    all_progress = FlashcardProgress.query.filter_by(
+        user_id=current_user.id,
+        jlpt_level=study_info['jlpt_level']
+    ).filter(FlashcardProgress.next_review.isnot(None)).all()
+    
+    for progress in all_progress:
+        vocab = db.session.get(VocabMaster, progress.word_id)
+        if vocab:
+            word_info = {
+                'id': vocab.id,
+                'kanji': vocab.kanji,
+                'word': vocab.word,
+                'meaning': vocab.meaning,
+                'type': vocab.type,
+                'study_count': progress.study_count,
+                'next_review': progress.next_review,
+                'status': progress.status
+            }
+            all_review_words.append(word_info)
+    
     # セッションをクリア
     session.pop('study_info', None)
     
-    return render_template('flashcard_complete.html',
+    return render_template("flashcard_complete.html",
                          learned_words=learned_words,
                          not_learned_words=not_learned_words,
                          total_learned=len(learned_words),
                          total_not_learned=len(not_learned_words),
-                         forgetting_curve_data=forgetting_curve_data)
+                         forgetting_curve_data=forgetting_curve_data,
+                         all_review_words=all_review_words)
 
 def generate_forgetting_curve_data(user_id, jlpt_level):
     """忘却曲線のデータを生成"""
@@ -290,7 +342,7 @@ def generate_forgetting_curve_data(user_id, jlpt_level):
     }
 
 @flashcard_bp.route('/api/flip')
-@login_required
+@patreon_required
 def flip_card():
     """カードをめくるAPI"""
     return jsonify({'success': True}) 

@@ -1,57 +1,59 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('login') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('user_authentication') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <h1 style="text-align:center;">Login</h1>
-  
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div style="background: #ffcccc; border: 1px solid #ff0000; padding: 10px; margin: 10px 0; text-align: center;">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  
-  <form method="POST" style="max-width: 400px; margin: 0 auto;">
-    {{ form.hidden_tag() }}
-    
-    <div style="margin-bottom: 1em;">
-      {{ form.username.label }}
-      {{ form.username(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
-      {% if form.username.errors %}
-        {% for error in form.username.errors %}
-          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
-        {% endfor %}
-      {% endif %}
-    </div>
-    
-    <div style="margin-bottom: 1em;">
-      {{ form.password.label }}
-      {{ form.password(style="width: 100%; padding: 8px; border: 1px solid #888;") }}
-      {% if form.password.errors %}
-        {% for error in form.password.errors %}
-          <div style="color: red; font-size: 0.9em;">{{ error }}</div>
-        {% endfor %}
-      {% endif %}
-    </div>
-    
-    <div style="margin-bottom: 1em;">
-      {{ form.remember_me() }} {{ form.remember_me.label }}
-    </div>
-    
-    <div style="text-align: center;">
-      {{ form.submit(style="padding: 10px 20px; font-size: 1.1em;") }}
-    </div>
-  </form>
-  
-  <div style="text-align: center; margin-top: 2em;">
-    <p>Don't have an account? <a href="{{ url_for('register') }}" style="color: #000; text-decoration: underline;">Register here</a></p>
-    <hr style="margin:2em 0;">
-    <a href="{{ url_for('patreon.login') }}" style="display:inline-block; background:#ff424d; color:#fff; padding:0.8em 2em; border-radius:8px; font-weight:bold; font-size:1.1em; text-decoration:none;">Patreonでログイン</a>
-  </div>
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>{{ _('login') }}</h1>
 </div>
-{% endblock %} 
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="error-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div style="max-width: 300px; margin: 0 auto;">
+    <!-- Google Login Button -->
+    <div style="margin-bottom:16px;">
+        <a href="{{ url_for('google.login') }}" 
+           style="display:block; padding:8px 16px; background:#4285F4; color:#FFFFFF; text-decoration:none; 
+                  border:1px solid #000; font-size:10px; font-weight:bold; text-align:center; cursor:pointer;">
+            {{ _('login_with_google') }}
+        </a>
+    </div>
+    
+    <!-- Patreon Login Button with Premium Info -->
+    <div style="margin-bottom:16px;">
+        <div style="border: 2px solid #FF424D; padding: 6px; background: #FFF5F5; margin-bottom: 6px;">
+            <div style="font-size: 9px; font-weight: bold; color: #FF424D; text-align: center; margin-bottom: 2px;">
+                🎯 フラッシュカード機能
+            </div>
+            <div style="font-size: 8px; color: #666; text-align: center;">
+                Patreonメンバー限定（無料会員もOK）
+            </div>
+        </div>
+        <a href="{{ url_for('patreon.login') }}" 
+           style="display:block; padding:8px 16px; background:#FF424D; color:#FFFFFF; text-decoration:none; 
+                  border:1px solid #000; font-size:10px; font-weight:bold; text-align:center; cursor:pointer;">
+            {{ _('login_with_patreon') }}
+        </a>
+    </div>
+    
+    <div style="border-top:1px dotted #808080; padding-top:12px; margin-top:12px; text-align:center;">
+        <div style="font-size:8px; color:#404040;">
+            {{ _('continue_as_guest') }}
+        </div>
+        <a href="{{ url_for('home') }}" 
+           style="font-size:9px; text-decoration:underline; color:#000; margin-top:4px; display:inline-block;">
+            {{ _('browse_as_guest') }}
+        </a>
+    </div>
+</div>
+{% endblock %}

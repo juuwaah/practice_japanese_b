@@ -1,35 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('onomatopoeia_quiz') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('daily_onomatopoeia_challenge') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <h1 style="text-align:center;">Onomatopoeia of the day</h1>
-  <div style="font-size:3em; text-align:center; margin:1em 0; color: #ffe600; text-shadow: 2px 2px 0 #000, 0 0 10px #fff200; font-family: 'Impact', 'Arial Black', 'sans-serif';">{{ onomatope }}</div>
-  <p style="text-align:center;">what does this mean?</p>
-  <div style="display:flex; justify-content:center; gap:1em; margin-bottom:2em; flex-wrap: wrap;">
-    {% for opt in options %}
-      <form method="post" style="display:inline;">
-        <input type="hidden" name="selected" value="{{ opt }}">
-        <button type="submit" class="quiz-option-btn" style="font-size:1.2em;">{{ opt }}</button>
-      </form>
-    {% endfor %}
+<div style="text-align: center; margin-bottom: 12px;">
+  <h1>{{ _('todays_japanese_onomatopoeia') }}</h1>
+  <div style="text-align: right; margin-bottom: 8px;">
   </div>
-  {% if answered %}
-    <div style="font-size:2em; color:{{ 'green' if correct else 'red' }}; text-align:center; margin-top:1em;">
-      {{ 'nice!' if correct else 'owah...' }}
-    </div>
-    <div style="text-align:center;">
-      <strong>Example sentence(s):</strong>
-      <ul style="display:inline-block; text-align:left;">
-        {% for ex, ex_en in example_pairs %}
-          <li>
-            {{ ex }}<br>
-            <span style="color:#444; font-size:0.98em; margin-left:1em;">{{ ex_en }}</span>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
 </div>
+
+<div style="text-align: center; margin: 16px 0;">
+  <div style="font-size: 24px; font-weight: bold; padding: 8px; border: 2px solid #000; background: #F0F0F0; display: inline-block;">
+    {{ onomatope }}
+  </div>
+</div>
+
+<div style="text-align: center; margin-bottom: 16px;">
+  <p style="font-size: 10px; font-weight: bold;">{{ _('what_does_this_mean') }}</p>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+  {% for opt in options %}
+    <form method="post" style="display: inline;">
+      <input type="hidden" name="selected" value="{{ opt }}">
+      <button type="submit" class="quiz-option-btn">{{ opt }}</button>
+    </form>
+  {% endfor %}
+</div>
+
+{% if answered %}
+  <div class="result-message {% if correct %}result-correct{% else %}result-incorrect{% endif %}">
+    {{ _('correct_well_done') if correct else _('incorrect_try_again') }}
+  </div>
+  
+  <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F8F8F8;">
+    <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px;">{{ _('example_sentences') }}:</div>
+    <ul style="text-align: left; margin-left: 16px;">
+      {% for jp, en in example_pairs %}
+        <li style="margin-bottom: 4px;">
+          <div style="font-weight: bold;">{{ jp }}</div>
+          <div style="font-size: 8px; color: #404040;">{{ en }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  
+{% endif %}
 {% endblock %}

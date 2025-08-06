@@ -1,69 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Flashcard Study - Japanese Evaluator{% endblock %}
+{% block title %}{{ _('flashcard_study') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('flashcard_study_session') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-  <div style="text-align: center; margin-bottom: 1em;">
-    <h2>📚 Flashcard Study</h2>
-    <p>Card {{ current_index + 1 }} of {{ total_count }}</p>
+<div style="text-align: center; margin-bottom: 12px;">
+  <h1>📚 {{ _('flashcard_study') }}</h1>
+  <div style="font-size: 9px; border: 1px solid #000; padding: 2px 6px; background: #F0F0F0; display: inline-block;">
+    {{ _('card_progress').replace('{current}', (current_index + 1)|string).replace('{total}', total_count|string) }}
   </div>
-  
-  {% if word %}
-    <div id="flashcard" class="flashcard" onclick="flipCard()" style="cursor: pointer;">
-      <div id="card-front" class="card-side" style="display: block;">
+</div>
+
+{% if word %}
+  <div style="text-align: center; margin-bottom: 16px;">
+    <div id="flashcard" class="flashcard" onclick="flipCard()" 
+         style="width: 240px; height: 160px; border: 2px solid #000; background: #FFFFFF; 
+                margin: 0 auto; cursor: pointer; box-shadow: 2px 2px 0px #808080; 
+                display: flex; align-items: center; justify-content: center; position: relative;">
+      
+      <div id="card-front" class="card-side" style="display: flex; flex-direction: column; align-items: center; padding: 16px; text-align: center;">
         {% if front_mode == 'kanji' %}
           {% if word.kanji %}
-            <div class="card-main-text">{{ word.kanji }}</div>
-            <div class="card-sub-text">{{ word.word }}</div>
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">{{ word.kanji }}</div>
+            <div style="font-size: 12px; color: #404040;">{{ word.word }}</div>
           {% else %}
-            <div class="card-main-text">{{ word.word }}</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ word.word }}</div>
           {% endif %}
         {% else %}
-          <div class="card-main-text">{{ word.meaning }}</div>
-          <div class="card-sub-text">{{ word.type }}</div>
+          <div style="font-size: 16px; font-weight: bold; margin-bottom: 4px;">{{ word.meaning }}</div>
+          <div style="font-size: 10px; color: #404040;">{{ word.type }}</div>
         {% endif %}
       </div>
       
-      <div id="card-back" class="card-side" style="display: none;">
+      <div id="card-back" class="card-side" style="display: none; flex-direction: column; align-items: center; padding: 16px; text-align: center;">
         {% if front_mode == 'kanji' %}
-          <div class="card-main-text">{{ word.meaning }}</div>
-          <div class="card-sub-text">{{ word.type }}</div>
+          <div style="font-size: 16px; font-weight: bold; margin-bottom: 4px;">{{ word.meaning }}</div>
+          <div style="font-size: 10px; color: #404040;">{{ word.type }}</div>
         {% else %}
           {% if word.kanji %}
-            <div class="card-main-text">{{ word.kanji }}</div>
-            <div class="card-sub-text">{{ word.word }}</div>
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">{{ word.kanji }}</div>
+            <div style="font-size: 12px; color: #404040;">{{ word.word }}</div>
           {% else %}
-            <div class="card-main-text">{{ word.word }}</div>
+            <div style="font-size: 20px; font-weight: bold;">{{ word.word }}</div>
           {% endif %}
         {% endif %}
       </div>
     </div>
-    
-    <div id="answer-buttons" style="display: none; text-align: center; margin-top: 2em;">
-      <form method="POST" style="display: inline-block;">
+  </div>
+  
+  <div id="answer-buttons" style="display: none; text-align: center; margin-bottom: 16px;">
+    <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0; display: inline-block;">
+      <form method="POST" style="display: inline;">
         <input type="hidden" name="word_id" value="{{ word.id }}">
-        <button type="submit" name="action" value="learned" style="padding: 12px 24px; font-size: 1.2em; background: #90EE90; border: 1px solid #888; border-radius: 0; cursor: pointer; margin-right: 1em;">
-          ✅ Learned!
+        
+        <button type="submit" name="action" value="learned" 
+                style="padding: 6px 16px; font-size: 9px; background: #FFFFFF; border: 1px solid #000; 
+                       margin-right: 8px; cursor: pointer; font-weight: bold;">
+          ✅ {{ _('learned') }}
         </button>
-        <button type="submit" name="action" value="not_learned" style="padding: 12px 24px; font-size: 1.2em; background: #FFB6C1; border: 1px solid #888; border-radius: 0; cursor: pointer;">
-          ❌ Not Learned
+        
+        <button type="submit" name="action" value="not_learned" 
+                style="padding: 6px 16px; font-size: 9px; background: #D0D0D0; border: 1px solid #000; 
+                       cursor: pointer; font-weight: bold;">
+          ❌ {{ _('not_learned') }}
         </button>
       </form>
     </div>
-    
-    <div style="text-align: center; margin-top: 1em;">
-      <p style="color: #666; font-size: 0.9em;">Click the card to flip it</p>
+  </div>
+  
+  <div style="text-align: center; margin-bottom: 12px;">
+    <div style="font-size: 8px; color: #404040; border: 1px dotted #808080; padding: 4px; background: #F8F8F8; display: inline-block;">
+      {{ _('click_card_to_flip') }}
     </div>
-  {% else %}
-    <div style="text-align: center;">
-      <p>No words available for this level.</p>
-      <a href="{{ url_for('flashcard.flashcard_index') }}" style="color: #000; text-decoration: underline;">Back to Setup</a>
+  </div>
+  
+{% else %}
+  <div style="text-align: center; border: 2px solid #000; padding: 16px; background: #F0F0F0;">
+    <div style="font-size: 10px; font-weight: bold; margin-bottom: 8px;">
+      {{ _('no_words_available') }}
     </div>
-  {% endif %}
+    <div style="font-size: 9px; margin-bottom: 12px;">
+      {{ _('no_words_available_desc') }}
+    </div>
+    <a href="{{ url_for('flashcard.flashcard_index') }}" 
+       style="font-size: 9px; background: #FFFFFF; border: 1px solid #000; padding: 4px 12px; text-decoration: none;">
+      {{ _('back_to_setup') }}
+    </a>
+  </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 16px;">
+  <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px; display: inline-block;">
+    <div style="font-weight: bold; margin-bottom: 2px;">{{ _('progress') }}:</div>
+    <div style="width: 120px; height: 8px; border: 1px solid #000; background: #FFFFFF; position: relative;">
+      <div style="width: {{ ((current_index + 1) / total_count * 100)|round }}%; height: 100%; 
+                  background: #000000; position: absolute; top: 0; left: 0;"></div>
+    </div>
+  </div>
 </div>
-
-
 
 <script>
 let isFlipped = false;
@@ -78,7 +113,27 @@ function flipCard() {
     back.style.display = 'flex';
     answerButtons.style.display = 'block';
     isFlipped = true;
+  } else {
+    front.style.display = 'flex';
+    back.style.display = 'none';
+    isFlipped = false;
   }
 }
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (!isFlipped) {
+      flipCard();
+    }
+  } else if (e.key === '1' && isFlipped) {
+    e.preventDefault();
+    document.querySelector('button[value="learned"]').click();
+  } else if (e.key === '2' && isFlipped) {
+    e.preventDefault();
+    document.querySelector('button[value="not_learned"]').click();
+  }
+});
 </script>
-{% endblock %} 
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Japanese Learning App{% endblock %}
+
+{% block window_title %}管理者ダッシュボード{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>📊 管理者ダッシュボード</h1>
+</div>
+
+<!-- 統計情報 -->
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">統計情報</div>
+  
+  <div style="display: flex; justify-content: space-around; margin: 8px 0;">
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: bold; color: #008080;">{{ total_users }}</div>
+      <div style="font-size: 9px;">総ユーザー数</div>
+    </div>
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: bold; color: #800080;">{{ unread_feedback }}</div>
+      <div style="font-size: 9px;">未読フィードバック</div>
+    </div>
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: bold; color: #008000;">{{ recent_users }}</div>
+      <div style="font-size: 9px;">過去7日間の新規登録</div>
+    </div>
+  </div>
+</div>
+
+<!-- 管理メニュー -->
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #F0F0F0;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">管理メニュー</div>
+  
+  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <a href="{{ url_for('admin_feedback') }}" 
+       style="background: #FFFFFF; border: 1px solid #000; padding: 6px 12px; text-decoration: none; 
+              color: #000; font-size: 9px; font-weight: bold; display: inline-block;">
+      📝 フィードバック管理 ({{ total_feedback }})
+    </a>
+    <a href="{{ url_for('admin_users') }}" 
+       style="background: #FFFFFF; border: 1px solid #000; padding: 6px 12px; text-decoration: none; 
+              color: #000; font-size: 9px; font-weight: bold; display: inline-block;">
+      👥 ユーザー管理
+    </a>
+  </div>
+</div>
+
+<!-- 最近のフィードバック -->
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">最近のフィードバック</div>
+  
+  {% if recent_feedback %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+        <thead>
+          <tr style="background: #E0E0E0;">
+            <th style="border: 1px solid #888; padding: 4px;">日時</th>
+            <th style="border: 1px solid #888; padding: 4px;">名前</th>
+            <th style="border: 1px solid #888; padding: 4px;">メッセージ</th>
+            <th style="border: 1px solid #888; padding: 4px;">状態</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for feedback in recent_feedback %}
+          <tr>
+            <td style="border: 1px solid #888; padding: 4px;">
+              {{ feedback.created_at.strftime('%m/%d %H:%M') }}
+            </td>
+            <td style="border: 1px solid #888; padding: 4px;">{{ feedback.name }}</td>
+            <td style="border: 1px solid #888; padding: 4px;">
+              {{ feedback.message[:50] }}{% if feedback.message|length > 50 %}...{% endif %}
+            </td>
+            <td style="border: 1px solid #888; padding: 4px;">
+              <span style="color: {% if feedback.status == 'unread' %}#FF0000{% else %}#008000{% endif %};">
+                {% if feedback.status == 'unread' %}未対応{% else %}対応済み{% endif %}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="text-align: center; margin-top: 8px;">
+      <a href="{{ url_for('admin_feedback') }}" 
+         style="font-size: 9px; text-decoration: underline; color: #000;">
+        すべてのフィードバックを見る →
+      </a>
+    </div>
+  {% else %}
+    <div style="text-align: center; color: #808080; font-size: 9px;">
+      フィードバックはありません
+    </div>
+  {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+  <a href="{{ url_for('logout') }}" 
+     style="background: #D0D0D0; border: 1px solid #000; padding: 8px 16px; text-decoration: none; 
+            color: #000; font-size: 9px; font-weight: bold;">
+    ログアウト
+  </a>
+</div>
+{% endblock %}

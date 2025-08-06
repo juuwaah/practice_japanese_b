@@ -4,8 +4,9 @@ import pandas as pd
 import random
 import openai
 import json
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session
 import re
+from google_sheets_helper import load_vocab_data_from_sheets
 
 vocab_bp = Blueprint("vocab", __name__, url_prefix="/vocab")
 
@@ -16,9 +17,19 @@ def get_main_reading(word):
 
 def generate_vocab_quiz(level):
     import re
-    # 1. Load Excel for the selected level
-    df = pd.read_excel("database/JLPT vocabulary.xlsx", sheet_name=level)
-    df = df.dropna(subset=["Kanji", "Word", "Meaning", "Type"])
+    # 1. Load data from Google Sheets for the selected level
+    sheet_id = os.getenv('GOOGLE_SHEETS_ID')
+    df = load_vocab_data_from_sheets(sheet_id, level)
+    if df is None:
+        # Fallback to Excel if Google Sheets fails
+        try:
+            df = pd.read_excel("database/JLPT vocabulary.xlsx", sheet_name=level)
+            df = df.dropna(subset=["Kanji", "Word", "Meaning", "Type"])
+        except Exception as e:
+            print(f"Excel fallback also failed: {e}")
+            return None
+    else:
+        df = df.dropna(subset=["Kanji", "Word", "Meaning", "Type"])
     # 2. Extract allowed kanji for this level
     allowed_kanji = set(''.join(df["Kanji"].dropna().astype(str).tolist()))
     allowed_kanji_str = ''.join(sorted(allowed_kanji))
@@ -29,27 +40,39 @@ def generate_vocab_quiz(level):
     kanji = row["Kanji"]
     word_type = row["Type"]
     # Get 3 distractors (different words, same Type)
-    distractor_rows = df[(df["Word"] != word) & (df["Type"] == word_type)].sample(3)
+    same_type_df = df[(df["Word"] != word) & (df["Type"] == word_type)]
+    if len(same_type_df) >= 3:
+        distractor_rows = same_type_df.sample(3)
+    else:
+        # If not enough same type, get remaining from different types
+        distractor_rows = same_type_df
+        remaining_needed = 3 - len(same_type_df)
+        if remaining_needed > 0:
+            other_rows = df[df["Word"] != word].sample(remaining_needed)
+            distractor_rows = pd.concat([distractor_rows, other_rows])
+    
     distractors = distractor_rows[["Word", "Kanji"]].values.tolist()
     # options: [(word, kanji), ...]
     options = [[word, kanji]] + distractors
     random.shuffle(options)
-    # ひらがな（漢字）の形に変換
+    # ひらがな（漢字）の形に変換 - 辞書形のまま表示
     options_display = [f"{w}（{k}）" if pd.notna(k) and str(k).strip() else f"{w}" for w, k in options]
     # 4. Use GPT to generate a Japanese sentence with the blank already in place
     prompt = f"""
-あなたは日本語教師です。以下の単語を使って、自然な日本語の文を1つ作ってください。
+あなたは日本語教師です。以下の単語を使って、語彙クイズの自然な日本語の文を1つ作ってください。
 - 単語: {kanji}（{word}）
 - この単語は品詞グループ「{word_type}」です。
 - 文はJLPT {level}レベルの学習者向けに簡単にしてください。
 - 単語の該当箇所は必ず '＿＿' で空欄にしてください。
-- その空欄には、単語の元の形（動詞の場合は辞書形、形容詞の場合は原形）がそのまま入る文にしてください。
+- 【重要】空欄には単語の辞書形（原形）をそのまま入れてください。動詞は活用させず、形容詞も語尾変化させずに使ってください。
+- 動詞なら「〜する」「〜た」などの活用形ではなく、辞書形のまま使える文脈にしてください。
+- 形容詞なら「〜い」「〜な」の語尾変化をさせずに使える文脈にしてください。
+- 名詞の場合はそのまま使ってください。
 - 単語は文中で1回だけ使い、他の語と混同しないようにしてください。
-- 空欄以外の場所に正解の単語やその一部（例：「運転する」なら「運転」や「する」など）が絶対に現れないようにしてください。
+- 空欄以外の場所に正解の単語やその一部が絶対に現れないようにしてください。
 - 文中で使う漢字は必ず「{level}までに習う漢字」だけにしてください。それ以外の難しい漢字はひらがなで書いてください。
 - 選択肢や問題文には「・」や不自然な記号を絶対に含めないでください。
 - 出力は日本語の例文1文のみ。他の情報や選択肢リスト、ヒントなどは絶対に含めないでください。
-- 例文の中に正解の単語やその一部が空欄以外に現れていた場合は、その問題は不正解とみなします。絶対に出力しないでください。
 """
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     # 5. 生成文のバリデーション: 答えやその一部が空欄以外に現れていないか、記号が含まれていないか
@@ -80,6 +103,7 @@ def generate_vocab_quiz(level):
     else:
         # 何度やってもダメなら最後の生成文を使う
         pass
+    # 正解も辞書形のまま表示
     answer_display = f"{word}（{kanji}）" if pd.notna(kanji) and str(kanji).strip() else word
     return {
         "question": f"Q: {meaning}\n{quiz_sentence}",
@@ -446,9 +470,18 @@ def safe_strip(val):
     return val.strip() if isinstance(val, str) else ""
 
 def generate_feedback_and_examples(word, kanji, meaning, level, quiz_sentence, options):
-    # Load allowed words from Excel for the selected level
-    df = pd.read_excel("database/JLPT vocabulary.xlsx", sheet_name=level)
-    allowed_words = df["Word"].dropna().unique().tolist()
+    # Load allowed words from Google Sheets for the selected level
+    sheet_id = os.getenv('GOOGLE_SHEETS_ID')
+    df = load_vocab_data_from_sheets(sheet_id, level)
+    if df is None:
+        # Fallback to Excel if Google Sheets fails
+        try:
+            df = pd.read_excel("database/JLPT vocabulary.xlsx", sheet_name=level)
+        except Exception as e:
+            print(f"Excel fallback failed: {e}")
+            df = pd.DataFrame()  # Empty dataframe as last resort
+    
+    allowed_words = df["Word"].dropna().unique().tolist() if not df.empty else []
     allowed_words_str = ", ".join(allowed_words)
     # Identify all options (not just distractors)
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -512,45 +545,77 @@ def vocab_index():
 
     if request.method == "POST":
         if request.form.get("action") == "generate":
-            quiz = generate_vocab_quiz(level)
-        elif request.form.get("action") == "submit":
-            options_json = request.form.get("options", "[]")
             try:
-                options = json.loads(options_json)
-            except Exception:
-                options = []
-            quiz = {
-                "question": request.form.get("question", ""),
-                "options": options,
-                "answer": request.form.get("answer", ""),
-                "kanji": request.form.get("kanji", ""),
-                "word": request.form.get("word", ""),
-                "meaning": request.form.get("meaning", ""),
-                "sentence": request.form.get("sentence", "")
-            }
-            selected_option = request.form.get("user_answer")
+                quiz = generate_vocab_quiz(level)
+                # Store quiz in session for retro template compatibility
+                session['current_quiz'] = quiz
+                print(f"Generated quiz: {quiz}")  # Debug log
+            except Exception as e:
+                print(f"Error generating quiz: {e}")  # Debug log
+                quiz = None
+                session['current_quiz'] = None
+        elif request.form.get("action") in ["submit", "answer"]:
+            # Get quiz from session or reconstruct from form data
+            quiz = session.get('current_quiz')
+            if not quiz:
+                # Fallback: reconstruct from form data (modern template)
+                options_json = request.form.get("options", "[]")
+                try:
+                    options = json.loads(options_json)
+                except Exception:
+                    options = []
+                quiz = {
+                    "question": request.form.get("question", ""),
+                    "options": options,
+                    "answer": request.form.get("answer", ""),
+                    "kanji": request.form.get("kanji", ""),
+                    "word": request.form.get("word", ""),
+                    "meaning": request.form.get("meaning", ""),
+                    "sentence": request.form.get("sentence", "")
+                }
+            selected_option = request.form.get("user_answer") or request.form.get("answer")
             if selected_option == quiz["answer"]:
-                result = "✅ Correct!"
+                result = "Correct!"
             else:
-                result = f"❌ Incorrect. The correct answer was: {quiz['answer']}"
+                result = f"Incorrect. The correct answer was: {quiz['answer']}"
                 # Generate feedback and examples for incorrect answer
                 explanation, examples = generate_feedback_and_examples(
                     quiz["word"], quiz["kanji"], quiz["meaning"], level, quiz["question"], quiz["options"]
                 )
     else:
         # GETリクエスト時は必ずクイズを生成
-        quiz = generate_vocab_quiz(level)
-        if not isinstance(quiz, dict):
-            quiz = {
-                "question": None,
-                "options": [],
-                "answer": None
-            }
+        try:
+            quiz = generate_vocab_quiz(level)
+            # Store quiz in session for retro template compatibility
+            session['current_quiz'] = quiz
+            print(f"GET request - Generated quiz: {quiz}")  # Debug log
+        except Exception as e:
+            print(f"GET request - Error generating quiz: {e}")  # Debug log
+            quiz = None
+            session['current_quiz'] = None
+        
+    if not quiz or not isinstance(quiz, dict):
+        quiz = {
+            "question": None,
+            "options": [],
+            "answer": None
+        }
 
+    # Prepare question data for template compatibility
+    question_data = None
+    if quiz and quiz.get("question"):
+        # For retro template - create question object with required properties
+        question_data = {
+            'kanji': quiz.get('kanji', ''),
+            'word': quiz.get('word', ''),
+            'id': 1  # Simple ID for form compatibility
+        }
+    
     return render_template(
         "vocab.html",
         level=level,
-        question=quiz["question"] if quiz else None,
+        question=quiz["question"] if quiz else None,  # For modern template string format
+        question_data=question_data,  # For retro template object format
         options=quiz["options"] if quiz else [],
         answer=quiz["answer"] if quiz else None,
         explanation=explanation,

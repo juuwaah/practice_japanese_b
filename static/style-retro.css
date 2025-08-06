@@ -1,0 +1,1151 @@
+/* Adobe Illustrator 1987 Style CSS */
+
+/* Import pixel/bitmap fonts - 1980s style */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Import Japanese fonts - 日本語フォント */
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap');
+
+/* 日本語対応ピクセルフォント - Japanese Pixel Fonts */
+@font-face {
+  font-family: 'BestTen';
+  src: url('https://cdn.jsdelivr.net/gh/utatane-moriyama/BestTen@master/BestTen-CRT.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/utatane-moriyama/BestTen@master/BestTen-CRT.woff') format('woff');
+  font-display: swap;
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NostalgicDot';
+  src: url('https://cdn.jsdelivr.net/gh/utatane-moriyama/BestTen@master/BestTen-DOT.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/utatane-moriyama/BestTen@master/BestTen-DOT.woff') format('woff');
+  font-display: swap;
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* フォールバック用ピクセルフォント - Fallback Pixel Font */
+@font-face {
+  font-family: 'PixelFont';
+  src: url('data:font/truetype;charset=utf-8;base64,') format('truetype');
+  font-display: swap;
+}
+
+/* ピクセル度合い調整変数 - Pixel Intensity Control Variables */
+:root {
+  /* フォントサイズ設定 - Font Size Settings */
+  --pixel-font-size-tiny: 8px;     /* 極小サイズ - Ultra small */
+  --pixel-font-size-small: 9px;    /* 小サイズ - Small (current default) */
+  --pixel-font-size-medium: 10px;  /* 中サイズ - Medium */
+  --pixel-font-size-large: 11px;   /* 大サイズ - Large */
+  
+  /* 文字間隔設定 - Letter Spacing Settings */
+  --pixel-letter-spacing-tight: 0.2px;   /* 密集 - Tight */
+  --pixel-letter-spacing-normal: 0.5px;  /* 標準 - Normal (current) */
+  --pixel-letter-spacing-loose: 0.8px;   /* 疎 - Loose */
+  --pixel-letter-spacing-wide: 1.2px;    /* 広い - Wide */
+  
+  /* 行間設定 - Line Height Settings */
+  --pixel-line-height-compact: 1.0;   /* コンパクト - Compact */
+  --pixel-line-height-normal: 1.1;    /* 標準 - Normal (current) */
+  --pixel-line-height-relaxed: 1.2;   /* リラックス - Relaxed */
+  
+  /* テキストシャドウ設定 - Text Shadow Settings */
+  --pixel-shadow-none: none;                    /* シャドウなし - No shadow */
+  --pixel-shadow-light: 0.5px 0.5px 0px #808080; /* 軽いシャドウ - Light shadow */
+  --pixel-shadow-normal: 1px 1px 0px #808080;   /* 標準シャドウ - Normal shadow (current) */
+  --pixel-shadow-heavy: 1.5px 1.5px 0px #808080; /* 重いシャドウ - Heavy shadow */
+  
+  /* スケール設定 - Scale Settings */
+  --pixel-scale-tiny: 0.9;     /* 縮小 - Shrink */
+  --pixel-scale-normal: 1.0;   /* 標準 - Normal (current) */
+  --pixel-scale-large: 1.1;    /* 拡大 - Enlarge */
+  --pixel-scale-huge: 1.2;     /* 大拡大 - Large enlarge */
+  
+  /* フォント選択 - Font Selection */
+  --pixel-font-bestten: 'BestTen', 'VT323', 'Press Start 2P', 'PixelFont', 'Courier Prime', monospace;
+  --pixel-font-nostalgic: 'NostalgicDot', 'VT323', 'BestTen', 'Press Start 2P', 'PixelFont', monospace;
+  --pixel-font-fallback: 'VT323', 'Press Start 2P', 'PixelFont', 'Courier Prime', 'Perfect DOS VGA 437', 'Monaco', 'Consolas', 'Courier New', monospace;
+  
+  /* 日本語対応フォント - Japanese Support Fonts */
+  --font-dotgothic: 'DotGothic16', 'VT323', 'Press Start 2P', monospace;
+  --font-klee: 'Klee One', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif;
+  
+  /* 現在の設定 - Current Active Settings */
+  --current-font-family: var(--font-dotgothic);  /* DotGothic16をメインに */
+  --current-font-size: 16px;   /* 日本語・英語統一サイズ */
+  --current-letter-spacing: var(--pixel-letter-spacing-normal);  /* 標準文字間隔 */
+  --current-line-height: var(--pixel-line-height-normal);      /* 読みやすい行間 */
+  --current-text-shadow: none;                         /* シャドウなし */
+  --current-scale: var(--pixel-scale-normal);          /* 標準スケール */
+  
+  /* 英語文字サイズ調整 - English character size adjustment */
+  --english-font-size: 16px;  /* 日本語と統一 */
+}
+
+/* Use system fonts that resemble Chicago bitmap */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Force pixelated rendering for all elements */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Enhanced pixelated text rendering */
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label {
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  text-rendering: geometricPrecision;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0;
+  /* 変数を使用した文字間隔 - Variable-based letter spacing */
+  letter-spacing: var(--current-letter-spacing);
+}
+
+/* Extra pixelated effect for headings */
+h1, h2, h3 {
+  font-weight: bold;
+  text-shadow: none;
+  font-size: var(--current-font-size);
+  transform: scale(var(--current-scale));
+  transform-origin: top left;
+  /* 1980s chunky pixelated look */
+  font-stretch: condensed;
+  text-rendering: optimizeSpeed;
+}
+
+/* 日本語文字に対する特別なスタイリング - Special styling for Japanese characters */
+*:lang(ja), .japanese-text, [lang="ja"] {
+  font-size: calc(var(--current-font-size) * 1.15) !important;
+}
+
+/* 英語文字に対する特別なスタイリング - Special styling for English characters */
+*:lang(en), .english-text, [lang="en"] {
+  font-size: var(--english-font-size) !important;
+}
+
+/* 混在テキスト用の調整 - Mixed text adjustment */
+.mixed-text .japanese-char {
+  font-size: 1.15em;
+  vertical-align: baseline;
+}
+
+.mixed-text .english-char {
+  font-size: 1em;
+  vertical-align: baseline;
+}
+
+/* フォント切り替え - Font Switching */
+body.font-dotgothic {
+  --current-font-family: var(--font-dotgothic);
+}
+
+body.font-klee {
+  --current-font-family: var(--font-klee);
+}
+
+/* フォント確実適用 - Ensure font application */
+body.font-dotgothic *:not(.tool-icon) {
+  font-family: var(--font-dotgothic) !important;
+  /* ピクセルフォント用の設定を維持 */
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  text-rendering: geometricPrecision;
+}
+
+body.font-klee *:not(.tool-icon) {
+  font-family: var(--font-klee) !important;
+  /* 教科書体用のスムーズなレンダリング */
+  font-smooth: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-ligatures: normal;
+  font-feature-settings: normal;
+}
+
+/* 英語の単語や文字を含む要素の調整 - Adjustment for elements containing English words */
+.quiz-option-btn, button, input[type="submit"], .card-main-text {
+  font-size: var(--english-font-size);
+}
+
+/* Monospace elements should be extra crisp */
+code, pre, .monospace {
+  font-family: var(--current-font-family);
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  letter-spacing: var(--current-letter-spacing);
+}
+
+body {
+  font-family: var(--current-font-family);
+  font-size: var(--current-font-size);
+  line-height: var(--current-line-height);
+  /* 1980s Adobe style: white background with dots creating gray appearance */
+  background-color: #FFFFFF;
+  background-image: radial-gradient(circle, #C0C0C0 0.4px, transparent 0.4px);
+  background-size: 1.5px 1.5px;
+  background-position: 0 0, 0.75px 0.75px;
+  background-attachment: fixed;
+  color: #000000;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  text-rendering: geometricPrecision;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0;
+  /* Transform removed to allow position: fixed to work properly */
+  /* transform: scale(var(--current-scale)); */
+  /* transform-origin: top left; */
+  letter-spacing: var(--current-letter-spacing);
+}
+
+/* Classic Mac window styling - 1980s enhanced */
+.window {
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #808080, 4px 4px 0px #404040;
+  margin: 4px;
+  /* Subtle dot pattern on window background */
+  background-image: radial-gradient(circle, #F8F8F8 0.3px, transparent 0.3px);
+  background-size: 4px 4px;
+  background-attachment: fixed;
+}
+
+/* Top menu bar (like File, Edit, View) */
+.menu-bar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #000000;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: bold;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 12000 !important;
+  width: 100% !important;
+}
+
+.menu-item {
+  padding: 2px 8px;
+  cursor: pointer;
+  position: relative;
+  color: #000000;
+  text-decoration: none;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.menu-item:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* Dropdown menus */
+.menu-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #FFFFFF;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px #808080;
+  min-width: 120px;
+  z-index: 12001;
+}
+
+.menu-dropdown:hover .menu-content {
+  display: block;
+}
+
+.menu-content a {
+  display: block;
+  padding: 2px 8px;
+  color: #000000;
+  text-decoration: none;
+  font-size: 9px;
+  border-bottom: 1px dotted #C0C0C0;
+}
+
+.menu-content a:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.menu-content a:last-child {
+  border-bottom: none;
+}
+
+/* Left tool palette */
+.tool-palette {
+  position: fixed;
+  left: 8px;
+  top: 28px;
+  width: 48px;
+  background-color: #F0F0F0;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px #808080;
+  padding: 4px;
+  z-index: 10000;
+  /* Prevent movement during zoom */
+  transform-origin: top left;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.tool-icon {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #808080;
+  margin: 2px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: bold;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--current-font-family);
+}
+
+.tool-icon:hover {
+  border: 1px solid #000000;
+  background-color: #C0C0C0;
+}
+
+.tool-icon.active {
+  background-color: #0080FF;
+  color: #FFFFFF;
+  border: 1px solid #0066CC;
+}
+
+/* Main content area */
+.main-content-wrapper {
+  margin-left: 68px; /* Space for tool palette */
+  padding: 8px;
+  margin-top: 20px; /* Space for fixed menu bar */
+}
+
+.main-content {
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #808080, 4px 4px 0px #404040;
+  padding: 12px;
+  min-height: 400px;
+  /* Subtle dot pattern on content background */
+  background-image: radial-gradient(circle, #FAFAFA 0.2px, transparent 0.2px);
+  background-size: 3px 3px;
+  background-attachment: fixed;
+}
+
+/* Title bar style */
+.title-bar {
+  background-color: #F0F0F0;
+  border-bottom: 1px solid #000000;
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: bold;
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* Buttons */
+button, input[type="submit"] {
+  background-color: #F0F0F0;
+  border: 1px solid #000000;
+  color: #000000;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: var(--english-font-size);
+  cursor: pointer;
+  box-shadow: 1px 1px 0px #808080;
+}
+
+button:hover, input[type="submit"]:hover {
+  background-color: #E0E0E0;
+}
+
+button:active, input[type="submit"]:active {
+  background-color: #D0D0D0;
+  box-shadow: inset 1px 1px 0px #808080;
+}
+
+/* Form elements */
+input[type="text"], input[type="email"], input[type="password"], 
+input[type="number"], textarea, select {
+  background-color: #FFFFFF;
+  border: 1px solid #000000;
+  color: #000000;
+  padding: 2px 4px;
+  font-family: inherit;
+  font-size: 14px;
+  box-shadow: inset 1px 1px 0px #808080;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, 
+input[type="password"]:focus, input[type="number"]:focus,
+textarea:focus, select:focus {
+  outline: none;
+  border: 1px solid #000000;
+  box-shadow: inset 2px 2px 0px #808080;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  color: #000000;
+}
+
+/* Headers - larger for accessibility */
+h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #000000;
+  text-align: center;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #000000;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #000000;
+}
+
+/* Paragraphs - larger for accessibility */
+p {
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  color: #000000;
+}
+
+/* Links */
+a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+a:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* Lists */
+ul, ol {
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+
+li {
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+/* Quiz specific styles */
+.quiz-option-btn {
+  background-color: #F0F0F0;
+  border: 1px solid #000000;
+  color: #000000;
+  padding: 4px 12px;
+  margin: 2px;
+  font-family: inherit;
+  font-size: var(--english-font-size);
+  cursor: pointer;
+  box-shadow: 1px 1px 0px #808080;
+  min-width: 80px;
+}
+
+.quiz-option-btn:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* Result messages */
+.result-message {
+  font-size: var(--english-font-size);
+  text-align: center;
+  margin: 8px 0;
+  font-weight: bold;
+  padding: 4px;
+  border: 1px solid #000000;
+}
+
+.result-correct {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.result-incorrect {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* Flashcard styles */
+.flashcard {
+  width: 200px;
+  height: 120px;
+  border: 2px solid #000000;
+  background-color: #FFFFFF;
+  margin: 8px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #808080;
+}
+
+.card-side {
+  text-align: center;
+  padding: 8px;
+}
+
+.card-main-text {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.card-sub-text {
+  font-size: 12px;
+  color: #404040;
+}
+
+/* Status bar at bottom */
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background-color: #F0F0F0;
+  border-top: 1px solid #000000;
+  padding: 2px 8px;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Disable text selection for UI elements */
+.menu-bar, .tool-palette, .title-bar, .status-bar {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Classic Mac scrollbar simulation */
+::-webkit-scrollbar {
+  width: 16px;
+  background-color: #F0F0F0;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #F0F0F0;
+  border: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #C0C0C0;
+  border: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #A0A0A0;
+}
+
+/* Error/message styles */
+.error-message {
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+  padding: 8px;
+  margin: 8px 0;
+  font-size: 9px;
+  color: #000000;
+}
+
+/* Footer adjustments */
+.footer-copyright {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8px;
+  color: #404040;
+  background-color: #C0C0C0;
+  padding: 2px;
+  z-index: 999;
+}
+
+/* Hide elements that don't fit the retro aesthetic */
+.modern-only {
+  display: none;
+}
+
+/* Win95/MacOS7.5 Style Input Controls for Retro Design */
+input[type="checkbox"], input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 1px inset #C0C0C0;
+  background: #F0F0F0;
+  position: relative;
+  vertical-align: middle;
+  margin-right: 4px;
+  font-size: var(--pixel-font-size-small);
+}
+
+input[type="checkbox"] {
+  border-radius: 0;
+}
+
+input[type="radio"] {
+  border-radius: 0; /* 四角形にする */
+}
+
+input[type="checkbox"]:checked {
+  background: #F0F0F0;
+}
+
+input[type="radio"]:checked {
+  background: #F0F0F0;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: -1px;
+  width: 6px;
+  height: 10px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ラジオボタンにばってんマーク（retro版） */
+input[type="radio"]:checked::after {
+  content: '×';
+  position: absolute;
+  left: 1px;
+  top: -2px;
+  width: 10px;
+  height: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+  line-height: 10px;
+}
+
+input[type="checkbox"]:focus, input[type="radio"]:focus {
+  outline: 1px dotted #000;
+  outline-offset: 1px;
+}
+
+/* Fixed Footer Layout for Retro Design */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content-wrapper {
+  flex: 1;
+  padding-bottom: 30px; /* Space for footer */
+}
+
+/* Feedback Modal - 1980s Style */
+.feedback-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.7);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback-window {
+  width: 320px;
+  background-color: #F0F0F0;
+  border: 2px outset #C0C0C0;
+  box-shadow: 2px 2px 4px #808080;
+  font-family: var(--current-font-family);
+  font-size: var(--current-font-size);
+}
+
+.feedback-title-bar {
+  background-color: #008080;
+  color: #FFFFFF;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+}
+
+.feedback-close-btn {
+  background-color: #C0C0C0;
+  border: 1px outset #C0C0C0;
+  color: #000000;
+  font-size: 8px;
+  width: 14px;
+  height: 12px;
+  cursor: pointer;
+  padding: 0;
+  font-weight: bold;
+}
+
+.feedback-close-btn:hover {
+  background-color: #A0A0A0;
+}
+
+.feedback-close-btn:active {
+  border: 1px inset #C0C0C0;
+}
+
+.feedback-content {
+  padding: 8px;
+}
+
+.feedback-field {
+  margin-bottom: 8px;
+}
+
+.feedback-field label {
+  display: block;
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  color: #000000;
+}
+
+.feedback-field input[type="text"],
+.feedback-field input[type="email"],
+.feedback-field textarea {
+  width: 100%;
+  background-color: #FFFFFF;
+  border: 1px inset #C0C0C0;
+  color: #000000;
+  padding: 2px 4px;
+  font-family: var(--current-font-family);
+  font-size: 9px;
+  box-sizing: border-box;
+}
+
+.feedback-field textarea {
+  resize: none;
+  min-height: 60px;
+}
+
+.feedback-field input:focus,
+.feedback-field textarea:focus {
+  outline: none;
+  background-color: #FFFFCC;
+}
+
+.feedback-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.feedback-btn-submit,
+.feedback-btn-cancel {
+  background-color: #F0F0F0;
+  border: 1px outset #C0C0C0;
+  color: #000000;
+  padding: 4px 12px;
+  font-family: var(--current-font-family);
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 60px;
+}
+
+.feedback-btn-submit:hover,
+.feedback-btn-cancel:hover {
+  background-color: #E0E0E0;
+}
+
+.feedback-btn-submit:active,
+.feedback-btn-cancel:active {
+  border: 1px inset #C0C0C0;
+  background-color: #D0D0D0;
+}
+
+.feedback-btn-submit {
+  background-color: #008080;
+  color: #FFFFFF;
+}
+
+.feedback-btn-submit:hover {
+  background-color: #006666;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 640px) {
+  .tool-palette {
+    position: fixed;
+    left: 4px;
+    top: 24px;
+    width: 44px;
+    max-height: calc(100vh - 50px);
+    z-index: 9999;
+    transform-origin: top left;
+  }
+  
+  .main-content-wrapper {
+    margin-left: 56px;
+    margin-top: 40px; /* Increased space for multi-line menu on mobile */
+  }
+  
+  .menu-bar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 20px;
+  }
+}
+
+/* Language Menu - High Priority */
+.language-menu {
+  z-index: 11000 !important;
+  position: fixed !important;
+}
+
+.language-option {
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 9px;
+  border-bottom: 1px dotted #808080;
+}
+
+.language-option:hover {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.language-option:last-child {
+  border-bottom: none;
+}
+
+/* Sitemap Modal - 1980s Style */
+.sitemap-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.7);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sitemap-window {
+  width: 480px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background-color: #F0F0F0;
+  border: 2px outset #C0C0C0;
+  box-shadow: 2px 2px 4px #808080;
+  font-family: var(--current-font-family);
+  font-size: var(--current-font-size);
+  display: flex;
+  flex-direction: column;
+}
+
+.sitemap-title-bar {
+  background-color: #800080;
+  color: #FFFFFF;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.sitemap-close-btn {
+  background-color: #C0C0C0;
+  border: 1px outset #C0C0C0;
+  color: #000000;
+  font-size: 8px;
+  width: 14px;
+  height: 12px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.sitemap-close-btn:hover {
+  background-color: #D0D0D0;
+}
+
+.sitemap-close-btn:active {
+  border: 1px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.sitemap-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sitemap-md {
+  font-family: 'Monaco', 'Courier New', monospace;
+  background-color: #000000;
+  color: #00FF00;
+  padding: 12px;
+  font-size: 8px;
+  line-height: 1.3;
+  border: 1px inset #C0C0C0;
+  overflow-x: auto;
+}
+
+.sitemap-md pre {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  white-space: pre;
+}
+
+.sitemap-md a {
+  color: #00FFFF;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.sitemap-md a:hover {
+  color: #FFFFFF;
+  background-color: #0000FF;
+  text-decoration: none;
+}
+
+/* Settings Modal - 1980s Style */
+.settings-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.7);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-window {
+  width: 300px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background-color: #F0F0F0;
+  border: 2px outset #C0C0C0;
+  box-shadow: 2px 2px 4px #808080;
+  font-family: var(--current-font-family);
+  font-size: var(--current-font-size);
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-title-bar {
+  background-color: #800080;
+  color: #FFFFFF;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.settings-close-btn {
+  background-color: #C0C0C0;
+  border: 1px outset #C0C0C0;
+  color: #000000;
+  font-size: 8px;
+  width: 14px;
+  height: 12px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.settings-close-btn:hover {
+  background-color: #D0D0D0;
+}
+
+.settings-close-btn:active {
+  border: 1px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.settings-content {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.settings-group {
+  margin-bottom: 12px;
+}
+
+.settings-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-btn {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 4px 8px;
+  font-size: 9px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--current-font-family);
+}
+
+.settings-btn:hover {
+  background-color: #E0E0E0;
+}
+
+.settings-btn:active {
+  border: 2px inset #C0C0C0;
+}
+
+/* Global Loading Indicator - 1980s Style */
+.global-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.3);
+  z-index: 15000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-content {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--current-font-family);
+  box-shadow: 2px 2px 4px #808080;
+  min-width: 120px;
+}
+
+.retro-spinner {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #808080;
+  border-top: 1px solid #000000;
+  border-radius: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    #FFFFFF,
+    #FFFFFF 2px,
+    #C0C0C0 2px,
+    #C0C0C0 4px
+  );
+  animation: retro-spin 1s linear infinite;
+  position: relative;
+}
+
+.retro-spinner::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  background: #000000;
+  transform: translate(-50%, -50%);
+  animation: retro-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes retro-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes retro-pulse {
+  0% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.loading-text {
+  font-size: 10px;
+  font-weight: bold;
+  color: #000000;
+  text-align: center;
+  animation: retro-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes retro-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.5; }
+}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - YouTube リスニングクイズ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ quiz.title }}</h1>
+        <a href="{{ url_for('youtube_listening.listening_quiz_list', level=quiz.level) }}" 
+           class="btn btn-secondary">{{ quiz.level }}一覧に戻る</a>
+    </div>
+    
+    <!-- YouTube動画 -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="embed-responsive embed-responsive-16by9" style="max-width: 800px; margin: 0 auto;">
+                <iframe class="embed-responsive-item" 
+                        src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+                        allow="autoplay"></iframe>
+            </div>
+            <div class="mt-2">
+                <div class="alert alert-info small">
+                    <strong>📺 再生範囲:</strong> {{ '%d:%02d'|format(quiz.start//60, quiz.start%60) }} - {{ '%d:%02d'|format(quiz.end//60, quiz.end%60) }} ({{ '%d:%02d'|format((quiz.end - quiz.start)//60, (quiz.end - quiz.start)%60) }})<br>
+                    <small>※ この範囲のみが再生されます。シークバーで他の場所をクリックしても指定範囲外は再生されません。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- クイズ問題 -->
+    <div class="row">
+        <div class="col-lg-12" style="max-width: 800px; margin: 0 auto;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">問題</h5>
+                    <p class="card-text">{{ quiz.question }}</p>
+                    
+                    {% if not show_answer %}
+                    <!-- 回答フォーム -->
+                    <form method="POST">
+                        {% for choice in choices %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="answer" 
+                                   id="option{{ choice.number }}" value="{{ choice.number }}">
+                            <label class="form-check-label" for="option{{ choice.number }}">
+                                {{ choice.number }}. {{ choice.text }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-primary mt-3">回答する</button>
+                    </form>
+                    
+                    {% else %}
+                    <!-- 結果表示 -->
+                    <div class="alert {% if result.is_correct %}alert-success{% else %}alert-danger{% endif %}">
+                        <h6>
+                            {% if result.is_correct %}
+                                ✓ 正解！
+                            {% else %}
+                                ✗ 不正解
+                            {% endif %}
+                        </h6>
+                        <p class="mb-0">
+                            あなたの回答: {{ result.user_answer }}番<br>
+                            正解: {{ result.correct_answer }}番
+                        </p>
+                    </div>
+                    
+                    <!-- 選択肢一覧（結果表示時） -->
+                    {% for choice in choices %}
+                    <div class="mb-2 {% if choice.number|string == result.correct_answer %}text-success fw-bold{% elif choice.number|string == result.user_answer %}text-danger{% endif %}">
+                        {{ choice.number }}. {{ choice.text }}
+                        {% if choice.number|string == result.correct_answer %}
+                            <span class="badge bg-success">正解</span>
+                        {% elif choice.number|string == result.user_answer %}
+                            <span class="badge bg-danger">あなたの回答</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    {% if result.explanation %}
+                    <div class="mt-3 p-3 bg-light rounded">
+                        <h6>解説</h6>
+                        <p class="mb-2">{{ result.explanation }}</p>
+                        {% if result.explanation_time %}
+                        <button onclick="jumpToTime({{ result.explanation_time }})" class="btn btn-sm btn-outline-primary">
+                            解説箇所を見る ({{ result.explanation_time }}秒)
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        {% set same_id_quizzes = [] %}
+                        {% for q in quiz_data if q.id == quiz.id %}
+                            {% set _ = same_id_quizzes.append(q) %}
+                        {% endfor %}
+                        
+                        {% if same_id_quizzes|length > 1 %}
+                        <div class="mb-3">
+                            <small class="text-muted">同じ動画の他の問題:</small><br>
+                            {% for q in same_id_quizzes %}
+                            <a href="{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id, quiz_num=q.quiz_num) }}" 
+                               class="btn btn-sm {% if q.quiz_num == quiz.quiz_num %}btn-primary{% else %}btn-outline-primary{% endif %} me-1">
+                                問題{{ q.quiz_num }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('youtube_listening.listening_quiz_list', level=quiz.level) }}" 
+                           class="btn btn-primary">クイズ一覧に戻る</a>
+                        <button onclick="location.reload()" class="btn btn-outline-secondary">もう一度挑戦</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function jumpToTime(seconds) {
+    // YouTube iframeのsrcを更新して指定時間にジャンプ
+    const iframe = document.querySelector('iframe');
+    const videoId = '{{ quiz.video_id }}';
+    const endTime = {{ quiz.end }};
+    
+    // 新しいsrcを作成（指定時間から開始、end時間で停止、制限付き）
+    const newSrc = `https://www.youtube.com/embed/${videoId}?start=${seconds}&end=${endTime}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1`;
+    iframe.src = newSrc;
+}
+</script>
+{% endblock %}

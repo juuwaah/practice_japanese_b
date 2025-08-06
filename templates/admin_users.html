@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Japanese Learning App{% endblock %}
+
+{% block window_title %}ユーザー管理{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>👥 ユーザー管理</h1>
+  <div style="margin-top: 8px;">
+    <a href="{{ url_for('admin_dashboard') }}" 
+       style="font-size: 9px; text-decoration: underline; color: #000;">
+      ← ダッシュボードに戻る
+    </a>
+  </div>
+</div>
+
+{% if users_list.items %}
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+      <thead>
+        <tr style="background: #E0E0E0;">
+          <th style="border: 1px solid #888; padding: 4px;">ID</th>
+          <th style="border: 1px solid #888; padding: 4px;">ユーザー名</th>
+          <th style="border: 1px solid #888; padding: 4px;">登録日</th>
+          <th style="border: 1px solid #888; padding: 4px;">最終ログイン</th>
+          <th style="border: 1px solid #888; padding: 4px;">プロバイダ</th>
+          <th style="border: 1px solid #888; padding: 4px;">権限</th>
+          <th style="border: 1px solid #888; padding: 4px;">フィードバック</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users_list.items %}
+        <tr>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">{{ user.id }}</td>
+          <td style="border: 1px solid #888; padding: 4px; font-weight: bold;">
+            {{ user.username }}
+            {% if user.is_admin %}
+              <span style="color: #FF0000; font-size: 7px;">[ADMIN]</span>
+            {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            {{ user.created_at.strftime('%Y/%m/%d %H:%M') }}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            {% if user.last_login %}
+              {{ user.last_login.strftime('%Y/%m/%d %H:%M') }}
+            {% else %}
+              未ログイン
+            {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">{{ user.auth_provider }}</td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            {% if user.is_admin %}
+              <span style="color: #FF0000;">管理者</span>
+            {% elif user.is_patreon %}
+              <span style="color: #FF6600;">Patreon</span>
+            {% else %}
+              <span style="color: #666;">一般</span>
+            {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            {{ user.feedback|length }}件
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ページネーション -->
+{% if users_list.pages > 1 %}
+<div style="text-align: center; margin: 16px 0;">
+  <div style="border: 1px solid #000; padding: 4px; background: #F0F0F0; display: inline-block;">
+    {% if users_list.has_prev %}
+      <a href="{{ url_for('admin_users', page=users_list.prev_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        前へ
+      </a>
+    {% endif %}
+    
+    {% for page_num in users_list.iter_pages() %}
+      {% if page_num %}
+        {% if page_num != users_list.page %}
+          <a href="{{ url_for('admin_users', page=page_num) }}" 
+             style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                    text-decoration: none; color: #000; font-size: 8px;">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span style="padding: 2px 6px; margin: 0 2px; background: #000000; color: #FFFFFF; 
+                       border: 1px solid #000; font-size: 8px;">
+            {{ page_num }}
+          </span>
+        {% endif %}
+      {% else %}
+        <span style="padding: 2px 6px; margin: 0 2px; font-size: 8px;">…</span>
+      {% endif %}
+    {% endfor %}
+    
+    {% if users_list.has_next %}
+      <a href="{{ url_for('admin_users', page=users_list.next_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        次へ
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- 統計情報 -->
+<div style="border: 1px solid #000; padding: 8px; background: #F0F0F0; margin-top: 16px;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">統計情報</div>
+  <div style="font-size: 8px;">
+    総ユーザー数: {{ users_list.total }}人 | 
+    管理者: {{ users_list.items|selectattr('is_admin')|list|length }}人 | 
+    Patreonユーザー: {{ users_list.items|selectattr('is_patreon')|list|length }}人
+  </div>
+</div>
+
+{% else %}
+<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0;">
+  <div style="font-size: 12px; margin-bottom: 8px;">👤</div>
+  <div style="font-size: 10px;">ユーザーはまだ登録されていません</div>
+</div>
+{% endif %}
+{% endblock %}

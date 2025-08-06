@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Management - Japanese Learning App{% endblock %}
+
+{% block window_title %}フィードバック管理{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>📝 フィードバック管理</h1>
+  <div style="margin-top: 8px;">
+    <a href="{{ url_for('admin_dashboard') }}" 
+       style="font-size: 9px; text-decoration: underline; color: #000;">
+      ← ダッシュボードに戻る
+    </a>
+  </div>
+</div>
+
+{% if feedback_list.items %}
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+      <thead>
+        <tr style="background: #E0E0E0;">
+          <th style="border: 1px solid #888; padding: 4px; width: 80px;">日時</th>
+          <th style="border: 1px solid #888; padding: 4px; width: 80px;">名前</th>
+          <th style="border: 1px solid #888; padding: 4px; width: 120px;">メール</th>
+          <th style="border: 1px solid #888; padding: 4px;">メッセージ</th>
+          <th style="border: 1px solid #888; padding: 4px; width: 60px;">状態</th>
+          <th style="border: 1px solid #888; padding: 4px; width: 80px;">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feedback in feedback_list.items %}
+        <tr id="feedback-{{ feedback.id }}" 
+            style="{% if feedback.status == 'unread' %}background: #FFFFCC;{% endif %}">
+          <td style="border: 1px solid #888; padding: 4px;">
+            {{ feedback.created_at.strftime('%Y/%m/%d %H:%M') }}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">{{ feedback.name }}</td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            <a href="mailto:{{ feedback.email }}" style="color: #000; text-decoration: underline;">
+              {{ feedback.email }}
+            </a>
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            <div style="max-width: 300px; word-wrap: break-word;">
+              {{ feedback.message }}
+            </div>
+            {% if feedback.user %}
+            <div style="font-size: 7px; color: #666; margin-top: 2px;">
+              ユーザー: {{ feedback.user.username }}
+            </div>
+            {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            <span style="color: {% if feedback.status == 'unread' %}#FF0000{% else %}#008000{% endif %};">
+              {% if feedback.status == 'unread' %}未対応{% else %}対応済み{% endif %}
+            </span>
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            {% if feedback.status == 'unread' %}
+            <button onclick="markAsRead({{ feedback.id }})" 
+                    style="background: #008080; color: #FFFFFF; border: 1px solid #000; 
+                           padding: 2px 6px; font-size: 7px; cursor: pointer;">
+              対応済みにする
+            </button>
+            {% else %}
+            <button disabled 
+                    style="background: #CCCCCC; color: #666666; border: 1px solid #000; 
+                           padding: 2px 6px; font-size: 7px; cursor: not-allowed;">
+              対応済み
+            </button>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ページネーション -->
+{% if feedback_list.pages > 1 %}
+<div style="text-align: center; margin: 16px 0;">
+  <div style="border: 1px solid #000; padding: 4px; background: #F0F0F0; display: inline-block;">
+    {% if feedback_list.has_prev %}
+      <a href="{{ url_for('admin_feedback', page=feedback_list.prev_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        前へ
+      </a>
+    {% endif %}
+    
+    {% for page_num in feedback_list.iter_pages() %}
+      {% if page_num %}
+        {% if page_num != feedback_list.page %}
+          <a href="{{ url_for('admin_feedback', page=page_num) }}" 
+             style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                    text-decoration: none; color: #000; font-size: 8px;">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span style="padding: 2px 6px; margin: 0 2px; background: #000000; color: #FFFFFF; 
+                       border: 1px solid #000; font-size: 8px;">
+            {{ page_num }}
+          </span>
+        {% endif %}
+      {% else %}
+        <span style="padding: 2px 6px; margin: 0 2px; font-size: 8px;">…</span>
+      {% endif %}
+    {% endfor %}
+    
+    {% if feedback_list.has_next %}
+      <a href="{{ url_for('admin_feedback', page=feedback_list.next_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        次へ
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% else %}
+<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0;">
+  <div style="font-size: 12px; margin-bottom: 8px;">📭</div>
+  <div style="font-size: 10px;">フィードバックはまだありません</div>
+</div>
+{% endif %}
+
+<script>
+function markAsRead(feedbackId) {
+  fetch(`/admin/feedback/${feedbackId}/mark_read`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const row = document.getElementById(`feedback-${feedbackId}`);
+      row.style.background = '';
+      const statusSpan = row.querySelector('span[style*="color: #FF0000"]');
+      if (statusSpan) {
+        statusSpan.style.color = '#008000';
+        statusSpan.textContent = '対応済み';
+      }
+      const button = row.querySelector('button');
+      if (button) {
+        button.outerHTML = '<button disabled style="background: #CCCCCC; color: #666666; border: 1px solid #000; padding: 2px 6px; font-size: 7px; cursor: not-allowed;">対応済み</button>';
+      }
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('エラーが発生しました');
+  });
+}
+</script>
+{% endblock %}

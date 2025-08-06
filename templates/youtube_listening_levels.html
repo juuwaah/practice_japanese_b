@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube リスニング - JLPT レベル選択{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">YouTube リスニングクイズ</h1>
+    <p class="lead">JLPTレベルを選択してください</p>
+    
+    <div class="row">
+        {% for level_data in levels %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ level_data.level }}</h5>
+                    <p class="card-text">
+                        クイズ数: {{ level_data.count }}個<br>
+                        総時間: {{ (level_data.total_duration // 60) }}分{{ (level_data.total_duration % 60) }}秒
+                    </p>
+                    <a href="{{ url_for('youtube_listening.listening_quiz_list', level=level_data.level) }}" 
+                       class="btn btn-primary">開始</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if not levels %}
+    <div class="alert alert-info">
+        <p>現在利用可能なクイズがありません。</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,50 +1,75 @@
 {% extends "base.html" %}
 
-{% block title %}Vocabulary Quiz{% endblock %}
+{% block title %}{{ _('vocabulary_quiz') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('vocabulary_quiz') }}{% endblock %}
 
 {% block content %}
-<div class="main-content">
-<h1>JLPT Vocabulary Quiz</h1>
+<div style="text-align: center; margin-bottom: 12px;">
+  <h1>{{ _('vocabulary_quiz') }}</h1>
+</div>
 
 {% if message %}
-  <p style="color:red;">{{ message }}</p>
+  <div class="error-message">
+    {{ message }}
+  </div>
 {% endif %}
 
-<form method="post">
-  <label>
-    JLPT Level:
-    <select name="level">
-      {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
-        <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
-      {% endfor %}
-    </select>
-  </label>
+<div style="border: 1px solid #000; padding: 8px; margin-bottom: 16px; background: #F0F0F0;">
+  <form method="post">
+    <div style="margin-bottom: 8px;">
+      <label style="font-size: 9px; font-weight: bold;">{{ _('jlpt_level') }}:</label>
+      <select name="level" style="width: 80px; font-size: 9px; margin-left: 4px;">
+        {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+          <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-  <div style="display:flex; gap:1em; flex-wrap:wrap;">
-    <button type="submit" name="action" value="generate">Generate Quiz (or press R)</button>
-  </div>
-</form>
+    <div style="text-align: center;">
+      <button type="submit" name="action" value="generate" style="padding: 4px 16px; font-size: 9px;">{{ _('generate_quiz_press_r') }}</button>
+    </div>
+  </form>
+</div>
 
-{% if question %}
-  <div class="result">
-    <h3>Question</h3>
-    {# Split question into meaning and Japanese sentence #}
-    {% set qlines = question.split('\n') %}
-    <p>
-      {{ qlines[0] }}<br>
-      {% if qlines|length > 1 %}
-        （{{ qlines[1] }}）
+{% if question_data %}
+  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF;">
+    <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
+      {{ _('question') }}:
+    </div>
+    
+    <div style="border: 1px solid #000; padding: 6px; background: #F8F8F8; margin-bottom: 8px;">
+      {% if question %}
+        {# Split question into meaning and Japanese sentence #}
+        {% set qlines = question.split('\n') %}
+        <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-align: center;">
+          {{ qlines[0] }}
+        </div>
+        {% if qlines|length > 1 %}
+          <div style="font-size: 11px; text-align: center; font-family: monospace;">
+            {{ qlines[1] }}
+          </div>
+        {% endif %}
       {% endif %}
-    </p>
-    <div class="vocab-tile-options">
+    </div>
+    
+    <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">
+      {{ _('choose_correct_word') }}:
+    </div>
+    
+    <div style="display: flex; flex-direction: column; gap: 4px;">
       {% for option in options %}
-        <form method="post" style="display:inline; margin:0; padding:0;">
+        <form method="post" style="margin: 0;">
           <input type="hidden" name="level" value="{{ level }}">
           <input type="hidden" name="question" value="{{ question }}">
           <input type="hidden" name="answer" value="{{ answer }}">
           <input type="hidden" name="options" value='{{ options|tojson }}'>
           <input type="hidden" name="user_answer" value="{{ option }}">
-          <button type="submit" name="action" value="submit" class="vocab-tile-btn">{{ option }}</button>
+          <button type="submit" name="action" value="submit" 
+                  style="width: 100%; text-align: left; padding: 4px 8px; font-size: 9px; 
+                         background: #F0F0F0; border: 1px solid #000;">
+            {{ option }}
+          </button>
         </form>
       {% endfor %}
     </div>
@@ -52,45 +77,63 @@
 {% endif %}
 
 {% if result %}
-  <div class="result feedback-block">
-    <h3>{{ result }}</h3>
+  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; 
+              background: {% if '✅' in result %}#FFFFFF{% else %}#F0F0F0{% endif %};">
+    <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px;">
+      {{ result }}
+    </div>
+    
     {% if explanation %}
-      {% set lines = explanation.split('\n') %}
-      <p class="feedback-translation">{{ lines[0] }}</p>
-      <ul class="feedback-options">
+      <div style="border: 1px solid #000; padding: 4px; background: #F8F8F8; margin-bottom: 6px;">
+        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('explanation') }}:</div>
+        {% set lines = explanation.split('\n') %}
+        <div style="font-size: 9px;">{{ lines[0] }}</div>
         {% for line in lines[1:] if line.startswith('- ') %}
-          <li>{{ line[2:] }}</li>
+          <div style="font-size: 8px; margin-left: 8px;">{{ line }}</div>
         {% endfor %}
-      </ul>
+      </div>
     {% endif %}
+    
     {% if examples %}
-      <h4>Example Sentences:</h4>
-      <ul>
+      <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0;">
+        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('examples') }}:</div>
         {% for ex in examples %}
-          <li>{{ ex }}</li>
+          <div style="font-size: 8px; font-family: monospace; margin-bottom: 2px;">
+            {{ ex }}
+          </div>
         {% endfor %}
-      </ul>
+      </div>
     {% endif %}
+    
+    <div style="text-align: center; margin-top: 8px;">
+      <form method="post" style="display: inline;">
+        <input type="hidden" name="level" value="{{ level }}">
+        <button type="submit" name="action" value="generate" 
+                style="padding: 4px 12px; font-size: 9px;">
+          {{ _('next_question_press_r') }}
+        </button>
+      </form>
+    </div>
   </div>
 {% endif %}
-</div>
-{% endblock %}
 
-{% block scripts %}
+<div style="text-align: center; margin-top: 16px;">
+  <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px;">
+    <div style="font-weight: bold; margin-bottom: 2px;">{{ _('quick_keys') }}:</div>
+    <div>{{ _('quick_keys_vocab') }}</div>
+  </div>
+</div>
+
 <script>
-(function() {
-  const form = document.querySelector('form');
-  const generateBtn = form ? form.querySelector('button[name="action"][value="generate"]') : null;
-  document.addEventListener('keydown', function(e) {
-    // R for Generate Quiz (only when NOT in input/textarea)
-    const tag = document.activeElement.tagName;
-    if (generateBtn && (e.key === 'r' || e.key === 'R') &&
-        !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey &&
-        tag !== 'INPUT' && tag !== 'TEXTAREA') {
-      e.preventDefault();
-      generateBtn.click();
-    }
-  });
-})();
+document.addEventListener('keydown', function(e) {
+  // R for Generate New Question (only when NOT in input/textarea)
+  const tag = document.activeElement.tagName;
+  if ((e.key === 'r' || e.key === 'R') &&
+      !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey &&
+      tag !== 'INPUT' && tag !== 'TEXTAREA') {
+    e.preventDefault();
+    document.querySelector('button[value="generate"]').click();
+  }
+});
 </script>
 {% endblock %}

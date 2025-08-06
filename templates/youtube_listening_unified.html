@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube リスニング - JLPT練習{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>YouTubeリスニングクイズ</h1>
+    
+    <!-- フィルター -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <label>レベル選択:</label>
+            <div class="filter-buttons">
+                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order) }}" 
+                   class="filter-btn {% if selected_level == 'all' %}active{% endif %}">
+                    全て ({{ level_counts.values() | sum }})
+                </a>
+                {% for level in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+                    {% if level in level_counts %}
+                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order) }}" 
+                       class="filter-btn {% if selected_level == level %}active{% endif %}">
+                        {{ level }} ({{ level_counts[level] }})
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- レトロ表形式クイズ一覧 -->
+    {% if quizzes %}
+    <div class="retro-table-container">
+        <table class="retro-table">
+            <thead>
+                <tr>
+                    <th class="col-level">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='level', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'level' and current_order == 'asc' %}active{% endif %}">
+                            レベル ↑
+                        </a>
+                    </th>
+                    <th class="col-title">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='title', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'title' and current_order == 'asc' %}active{% endif %}">
+                            タイトル ↑
+                        </a>
+                    </th>
+                    <th class="col-duration">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'length' and current_order == 'asc' %}active{% endif %}">
+                            時間 ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='desc') }}" 
+                           class="sort-link {% if current_sort == 'length' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                    <th class="col-channel">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'channel' and current_order == 'asc' %}active{% endif %}">
+                            Video from ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='desc') }}" 
+                           class="sort-link {% if current_sort == 'channel' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                    <th class="col-played">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'played' and current_order == 'asc' %}active{% endif %}">
+                            プレイ回数 ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='desc') }}" 
+                           class="sort-link {% if current_sort == 'played' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                    <th class="col-id">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='id', order='asc') }}" 
+                           class="sort-link {% if current_sort == 'id' and current_order == 'asc' %}active{% endif %}">
+                            ID ↑
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id) }}'">
+                    <td class="col-level">
+                        <span class="level-badge level-{{ quiz.level.lower() }}">{{ quiz.level }}</span>
+                    </td>
+                    <td class="col-title">{{ quiz.title }}</td>
+                    <td class="col-duration">{{ '%d:%02d'|format(quiz.duration//60, quiz.duration%60) }}</td>
+                    <td class="col-channel">
+                        {% if quiz.channel_name %}
+                            {{ quiz.channel_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="col-played">
+                        {% if quiz.play_count > 0 %}
+                            {{ quiz.play_count }}
+                        {% endif %}
+                    </td>
+                    <td class="col-id">{{ quiz.id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-quiz-message">
+        {% if selected_level == 'all' %}
+            現在利用可能なクイズがありません。
+        {% else %}
+            {{ selected_level }}レベルのクイズが見つかりません。
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+/* レトロ表形式スタイル */
+.filter-section {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: #F0F0F0;
+    border: 1px solid #000000;
+    box-shadow: 1px 1px 0px #808080;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: #F0F0F0;
+    border: 1px solid #000000;
+    color: #000000;
+    padding: 2px 6px;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 1px 1px 0px #808080;
+}
+
+.filter-btn:hover {
+    background-color: #E0E0E0;
+    color: #000000;
+    text-decoration: none;
+}
+
+.filter-btn.active {
+    background-color: #000000;
+    color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+}
+
+.retro-table-container {
+    background-color: #FFFFFF;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px 0px #808080;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+.retro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background-color: #FFFFFF;
+}
+
+.retro-table th {
+    background-color: #C0C0C0;
+    border: 1px solid #000000;
+    padding: 4px 8px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.retro-table td {
+    border: 1px solid #808080;
+    padding: 4px 8px;
+    vertical-align: middle;
+    background-color: #FFFFFF;
+    height: 24px;
+}
+
+.retro-table tbody tr:nth-child(even) {
+    background-color: #F8F8F8;
+}
+
+.retro-table tbody tr:nth-child(even) td {
+    background-color: #F8F8F8;
+}
+
+.retro-table tbody tr:hover {
+    background-color: #E0E0E0;
+}
+
+.retro-table tbody tr:hover td {
+    background-color: #E0E0E0;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background-color: #D0D0D0 !important;
+}
+
+.clickable-row:hover td {
+    background-color: #D0D0D0 !important;
+}
+
+.sort-link {
+    color: #000000;
+    text-decoration: none;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+.sort-link:hover {
+    background-color: #808080;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.sort-link.active {
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 1px 3px;
+}
+
+.level-badge {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 4px;
+    border: 1px solid #000000;
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.level-badge.level-n5 { background-color: #00FF00; color: #000000; }
+.level-badge.level-n4 { background-color: #00FFFF; color: #000000; }
+.level-badge.level-n3 { background-color: #FFFF00; color: #000000; }
+.level-badge.level-n2 { background-color: #FF8000; color: #000000; }
+.level-badge.level-n1 { background-color: #FF0000; color: #FFFFFF; }
+
+.action-btn {
+    background-color: #F0F0F0;
+    border: 1px solid #000000;
+    color: #000000;
+    padding: 2px 8px;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 1px 1px 0px #808080;
+    display: inline-block;
+}
+
+.action-btn:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.col-id { width: 60px; text-align: center; }
+.col-level { width: 80px; text-align: center; }
+.col-title { 
+    width: auto; 
+    min-width: 200px; 
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.col-duration { width: 80px; text-align: center; }
+.col-channel { 
+    width: 120px; 
+    text-align: center;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.col-played { width: 80px; text-align: center; }
+
+.no-quiz-message {
+    background-color: #FFFFFF;
+    border: 2px solid #000000;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    margin: 8px 0;
+    box-shadow: 2px 2px 0px #808080;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .retro-table {
+        font-size: 12px;
+    }
+    
+    .retro-table th,
+    .retro-table td {
+        padding: 2px 4px;
+    }
+    
+    .col-title {
+        min-width: 150px;
+    }
+    
+    .filter-buttons {
+        width: 100%;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        text-align: center;
+        min-width: 60px;
+    }
+}
+</style>
+{% endblock %}

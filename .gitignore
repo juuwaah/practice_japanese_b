@@ -1,0 +1,55 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Flask
+instance/
+.webassets-cache
+flask.log
+app.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Google Service Account Keys
+*.json
+!.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+
+# Cache
+*.cache
+.onomatope_cache.json
+
+# Temporary files
+*.tmp
+*.temp
+
+# Railway
+.railway/
+
