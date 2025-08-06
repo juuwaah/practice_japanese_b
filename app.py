@@ -51,7 +51,7 @@ google_bp = make_google_blueprint(
 )
 
 # Force HTTPS for production
-if not app.debug:
+if os.getenv('RAILWAY_ENVIRONMENT') or not app.debug:
     google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
 app.register_blueprint(google_bp, url_prefix="/auth")
 
@@ -624,8 +624,8 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     scope=["identity"]
 )
 
-# Force HTTPS for production
-if not app.debug:
+# Force HTTPS for production  
+if os.getenv('RAILWAY_ENVIRONMENT') or not app.debug:
     patreon_blueprint.redirect_url = "https://web-production-65363.up.railway.app/auth/patreon/authorized"
 
 app.register_blueprint(patreon_blueprint, url_prefix="/auth")
