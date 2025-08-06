@@ -49,6 +49,10 @@ google_bp = make_google_blueprint(
            "openid"],
     storage=SQLAlchemyStorage(OAuthConsumerMixin, db.session, user=lambda: current_user)
 )
+
+# Force HTTPS for production
+if not app.debug:
+    google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
 app.register_blueprint(google_bp, url_prefix="/auth")
 
 # Database configuration - use absolute path
@@ -617,13 +621,17 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     base_url="https://www.patreon.com/api/oauth2/api/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
-    redirect_url="/patreon_login/patreon/authorized",
     scope=["identity"]
 )
-app.register_blueprint(patreon_blueprint, url_prefix="/patreon_login")
+
+# Force HTTPS for production
+if not app.debug:
+    patreon_blueprint.redirect_url = "https://web-production-65363.up.railway.app/auth/patreon/authorized"
+
+app.register_blueprint(patreon_blueprint, url_prefix="/auth")
 
 
-@app.route('/patreon_login/patreon/authorized')
+@app.route('/auth/patreon/authorized')
 def patreon_login_authorized():
     resp = patreon_blueprint.session.get("identity")
     print("Patreon API response:", resp.text)
