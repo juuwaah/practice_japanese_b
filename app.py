@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 from routes.grammar import grammar_bp
 from routes.vocab import vocab_bp
 from routes.akinator import akinator_bp
@@ -33,6 +34,9 @@ CACHE_FILE = ".onomatope_cache.json"
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-development-only')
 
+# Fix Railway reverse proxy for HTTPS
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 # Force HTTPS for OAuth in production
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 app.config['SERVER_NAME'] = 'web-production-65363.up.railway.app'
@@ -62,6 +66,11 @@ def record_auth(setup_state):
     
 # Force HTTPS redirect manually
 google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
+
+# Debug: Print actual redirect URL being used
+print(f"DEBUG: Google BP redirect_url = {google_bp.redirect_url}")
+print(f"DEBUG: Flask app config = {app.config.get('PREFERRED_URL_SCHEME')}")
+print(f"DEBUG: Flask app SERVER_NAME = {app.config.get('SERVER_NAME')}")
 app.register_blueprint(google_bp, url_prefix="/auth")
 
 # Database configuration - use absolute path
