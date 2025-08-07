@@ -80,9 +80,13 @@ if database_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     print(f"DEBUG: Using PostgreSQL: {database_url[:50]}...")
 else:
-    # Railway SQLite fallback - use writable directory
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/app.db'
-    print("DEBUG: Using SQLite: /tmp/app.db")
+    # Railway SQLite fallback - use current directory which is persistent
+    import tempfile
+    db_dir = os.path.join(os.getcwd(), 'data')
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_dir}/app.db'
+    print(f"DEBUG: Using SQLite: {db_dir}/app.db")
     
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -653,6 +657,23 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
 
 app.register_blueprint(patreon_blueprint, url_prefix="/auth")
 
+# Initialize database tables (works with both Flask dev server and gunicorn)
+try:
+    with app.app_context():
+        # Ensure database directory exists for SQLite
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        if 'sqlite' in db_uri and not os.getenv('DATABASE_URL'):
+            db_path = db_uri.replace('sqlite:///', '')
+            db_dir = os.path.dirname(db_path)
+            os.makedirs(db_dir, exist_ok=True)
+            print(f"DEBUG: SQLite directory ensured: {db_dir}")
+        
+        db.create_all()
+        print("DEBUG: Database tables created successfully")
+except Exception as e:
+    print(f"DEBUG: Database table creation error: {e}")
+    import traceback
+    traceback.print_exc()
 
 @app.route('/auth/patreon/authorized')
 def patreon_login_authorized():
@@ -685,11 +706,5 @@ def patreon_login_authorized():
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
-    with app.app_context():
-        try:
-            db.create_all()
-            print("DEBUG: Database tables created successfully")
-        except Exception as e:
-            print(f"DEBUG: Database table creation error: {e}")
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, port=port, host='0.0.0.0')
