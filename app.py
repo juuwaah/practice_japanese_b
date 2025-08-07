@@ -33,6 +33,10 @@ CACHE_FILE = ".onomatope_cache.json"
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-development-only')
 
+# Force HTTPS for OAuth in production
+app.config['PREFERRED_URL_SCHEME'] = 'https'
+app.config['SERVER_NAME'] = 'web-production-65363.up.railway.app'
+
 # CSRF protection completely disabled
 app.config['WTF_CSRF_ENABLED'] = False
 
