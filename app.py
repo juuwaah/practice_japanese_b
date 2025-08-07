@@ -78,9 +78,11 @@ database_url = os.getenv('DATABASE_URL')
 if database_url:
     # Use Railway PostgreSQL
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    print(f"DEBUG: Using PostgreSQL: {database_url[:50]}...")
 else:
     # Railway SQLite fallback - use writable directory
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/app.db'
+    print("DEBUG: Using SQLite: /tmp/app.db")
     
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
