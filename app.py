@@ -47,12 +47,9 @@ google_bp = make_google_blueprint(
     scope=["https://www.googleapis.com/auth/userinfo.email", 
            "https://www.googleapis.com/auth/userinfo.profile", 
            "openid"],
+    redirect_url="https://web-production-65363.up.railway.app/auth/google/authorized",
     storage=SQLAlchemyStorage(OAuthConsumerMixin, db.session, user=lambda: current_user)
 )
-
-# Force HTTPS for production
-if os.getenv('RAILWAY_ENVIRONMENT') or not app.debug:
-    google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
 app.register_blueprint(google_bp, url_prefix="/auth")
 
 # Database configuration - use absolute path
@@ -621,12 +618,9 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     base_url="https://www.patreon.com/api/oauth2/api/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
+    redirect_url="https://web-production-65363.up.railway.app/auth/patreon/authorized",
     scope=["identity"]
 )
-
-# Force HTTPS for production  
-if os.getenv('RAILWAY_ENVIRONMENT') or not app.debug:
-    patreon_blueprint.redirect_url = "https://web-production-65363.up.railway.app/auth/patreon/authorized"
 
 app.register_blueprint(patreon_blueprint, url_prefix="/auth")
 
