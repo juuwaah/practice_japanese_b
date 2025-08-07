@@ -79,10 +79,8 @@ if database_url:
     # Use Railway PostgreSQL
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-    # Local SQLite fallback - use temp directory
-    import tempfile
-    temp_dir = tempfile.gettempdir()
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(temp_dir, "app.db")}'
+    # Railway SQLite fallback - use writable directory
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/app.db'
     
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
