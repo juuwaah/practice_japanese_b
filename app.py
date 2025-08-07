@@ -657,7 +657,6 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     base_url="https://www.patreon.com/api/oauth2/v2/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
-    redirect_to="patreon_authorized",
     scope="identity"
 )
 
