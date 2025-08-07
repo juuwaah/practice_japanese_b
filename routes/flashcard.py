@@ -14,16 +14,23 @@ def patreon_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            flash('フラッシュカード機能を利用するにはPatreonログインが必要です。', 'warning')
+            flash('フラッシュカード機能を利用するにはログインが必要です。', 'warning')
             return redirect(url_for('login'))
         
-        # Patreonログインユーザーかチェック
+        # Google OAuth またはPatreonユーザーかチェック
+        is_google_user = (hasattr(current_user, 'auth_type') and current_user.auth_type == 'google') or \
+                        (hasattr(current_user, 'google_id') and current_user.google_id)
+        
+        # Googleユーザーの場合、is_patreonを自動的に有効にする
+        if is_google_user and not current_user.is_patreon:
+            from models import db
+            current_user.is_patreon = True
+            db.session.commit()
+            flash('Googleアカウントでフラッシュカード機能が有効になりました！', 'success')
+        
+        # Patreon権限をチェック
         if not current_user.is_patreon:
-            # 現在のログイン方法を確認
-            if hasattr(current_user, 'auth_provider') and current_user.auth_provider == 'google':
-                flash('フラッシュカード機能はPatreonメンバー限定です。一度ログアウトしてPatreonでログインし直してください。', 'warning')
-            else:
-                flash('フラッシュカード機能はPatreonメンバー限定です。Patreonでログインしてください。', 'warning')
+            flash('フラッシュカード機能は現在Googleログインまたはパトロンメンバー限定です。', 'warning')
             return redirect(url_for('login'))
         
         return f(*args, **kwargs)

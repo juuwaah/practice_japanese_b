@@ -129,6 +129,9 @@ def google_logged_in(blueprint, token):
     if oauth:
         # User already exists, log them in
         oauth.user.last_login = datetime.utcnow()
+        # Set Patreon status for existing Google users
+        if not hasattr(oauth.user, 'is_patreon') or oauth.user.is_patreon is None:
+            oauth.user.is_patreon = True  # Enable Flashcard for Google users
         login_user(oauth.user, remember=True)
         flash(f'Successfully signed in with Google!', 'success')
     else:
@@ -139,6 +142,7 @@ def google_logged_in(blueprint, token):
             user.auth_type = 'google'
             user.google_id = google_user_id
             user.last_login = datetime.utcnow()
+            user.is_patreon = True  # Enable Flashcard for Google users
             if not user.username:
                 user.username = name
         else:
@@ -149,6 +153,7 @@ def google_logged_in(blueprint, token):
                 auth_type='google',
                 google_id=google_user_id,
                 is_admin=(email == 'suhdudebac@gmail.com'),
+                is_patreon=True,  # Enable Flashcard for Google users
                 last_login=datetime.utcnow()
             )
             db.session.add(user)
@@ -166,7 +171,8 @@ def google_logged_in(blueprint, token):
         login_user(user, remember=True)
         flash(f'Successfully signed in with Google!', 'success')
 
-    return False  # Don't redirect automatically
+    # Return redirect to home instead of False
+    return redirect(url_for('home'))
 
 # Template global functions for translations
 @app.template_global()
@@ -677,33 +683,56 @@ except Exception as e:
 
 @app.route('/auth/patreon/authorized')
 def patreon_login_authorized():
-    resp = patreon_blueprint.session.get("identity")
-    print("Patreon API response:", resp.text)
-    if not resp.ok:
+    if not patreon_blueprint.session.token:
         flash("Patreon認証に失敗しました。", "error")
         return redirect(url_for("login"))
-    patreon_info = resp.json()
-    print("Patreon info:", patreon_info)
-    patreon_id = patreon_info["data"]["id"]
-    username = f"patreon_{patreon_id}"
-    # 既存ユーザー確認
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        user = User()
-        user.username = username
-        user.auth_provider = 'patreon'
-        user.is_patreon = True
-        # Patreonユーザーはパスワード不要
-        user.password_hash = ''
-        db.session.add(user)
-        db.session.commit()
-    else:
-        user.is_patreon = True
-        user.auth_provider = 'patreon'
-        db.session.commit()
-    login_user(user)
-    flash("Patreonでログインしました。", "success")
-    return redirect(url_for("home"))
+        
+    try:
+        resp = patreon_blueprint.session.get("https://www.patreon.com/api/oauth2/v2/identity")
+        print("Patreon API response:", resp.text)
+        
+        if not resp.ok:
+            flash("Patreon認証に失敗しました。", "error")
+            return redirect(url_for("login"))
+            
+        patreon_info = resp.json()
+        print("Patreon info:", patreon_info)
+        
+        patreon_id = patreon_info["data"]["id"]
+        attributes = patreon_info["data"]["attributes"]
+        email = attributes.get("email", "")
+        full_name = attributes.get("full_name", "")
+        username = f"patreon_{patreon_id}"
+        
+        # 既存ユーザー確認
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            user = User(
+                username=username,
+                email=email,
+                auth_type='patreon',
+                is_patreon=True,
+                last_login=datetime.utcnow()
+            )
+            db.session.add(user)
+            db.session.commit()
+            flash("Patreonアカウントを作成しました。", "success")
+        else:
+            user.is_patreon = True
+            user.auth_type = 'patreon'
+            user.last_login = datetime.utcnow()
+            if email and not user.email:
+                user.email = email
+            db.session.commit()
+            flash("Patreonでログインしました。", "success")
+            
+        login_user(user, remember=True)
+        return redirect(url_for("home"))
+        
+    except Exception as e:
+        print(f"Patreon login error: {e}")
+        flash("Patreon認証中にエラーが発生しました。", "error")
+        return redirect(url_for("login"))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
