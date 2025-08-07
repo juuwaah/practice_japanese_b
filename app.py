@@ -657,7 +657,7 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     base_url="https://www.patreon.com/api/oauth2/v2/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
-    redirect_to="patreon_login_authorized",
+    redirect_to="patreon_authorized",
     scope="identity"
 )
 
@@ -681,34 +681,34 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-@app.route('/patreon_login_authorized')
-def patreon_login_authorized():
-    print("Patreon authorized callback triggered")
+# Patreon OAuth callback using Flask-Dance pattern
+@oauth_authorized.connect_via(patreon_blueprint)
+def patreon_logged_in(blueprint, token):
+    print("Patreon OAuth callback triggered")
     
-    if not patreon_blueprint.session.token:
-        flash("Patreon認証に失敗しました。トークンがありません。", "error")
-        print("ERROR: No Patreon token found")
-        return redirect(url_for("login"))
-        
+    if not token:
+        flash('Patreon認証に失敗しました。', 'error')
+        return False
+
     try:
-        # Patreon API v2を使用
-        resp = patreon_blueprint.session.get("identity")
+        resp = blueprint.session.get("identity")
         print(f"Patreon API response status: {resp.status_code}")
         print(f"Patreon API response: {resp.text}")
         
         if not resp.ok:
-            flash(f"Patreon API呼び出しに失敗しました。ステータス: {resp.status_code}", "error")
-            return redirect(url_for("login"))
-            
+            msg = f"Patreon APIから情報を取得できませんでした。ステータス: {resp.status_code}"
+            flash(msg, category="error")
+            return False
+
         patreon_info = resp.json()
         print("Patreon info:", patreon_info)
         
         # Patreon API v2のレスポンス構造に対応
         if "data" not in patreon_info:
             flash("Patreon API レスポンスが無効です。", "error")
-            return redirect(url_for("login"))
+            return False
             
-        patreon_id = patreon_info["data"]["id"]
+        patreon_id = str(patreon_info["data"]["id"])
         attributes = patreon_info["data"]["attributes"]
         email = attributes.get("email", "")
         first_name = attributes.get("first_name", "")
@@ -716,12 +716,24 @@ def patreon_login_authorized():
         full_name = attributes.get("full_name", f"{first_name} {last_name}".strip())
         
         username = f"patreon_{patreon_id}"
-        
-        print(f"Creating/updating user: {username}, email: {email}")
-        
+        print(f"Creating/updating Patreon user: {username}, email: {email}")
+
         # 既存ユーザー確認
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(patreon_id=patreon_id).first()
         if not user:
+            user = User.query.filter_by(username=username).first()
+            
+        if user:
+            # 既存ユーザー更新
+            user.auth_type = 'patreon'
+            user.patreon_id = patreon_id
+            user.is_patreon = True
+            user.last_login = datetime.utcnow()
+            if email and not user.email:
+                user.email = email
+            if not user.username:
+                user.username = username
+        else:
             # 新規ユーザー作成
             user = User(
                 username=username,
@@ -732,30 +744,20 @@ def patreon_login_authorized():
                 last_login=datetime.utcnow()
             )
             db.session.add(user)
-            db.session.commit()
-            flash("Patreonアカウントを作成し、ログインしました！", "success")
-            print(f"Created new Patreon user: {username}")
-        else:
-            # 既存ユーザー更新
-            user.is_patreon = True
-            user.auth_type = 'patreon'
-            user.patreon_id = patreon_id
-            user.last_login = datetime.utcnow()
-            if email and not user.email:
-                user.email = email
-            db.session.commit()
-            flash("Patreonでログインしました！", "success")
-            print(f"Updated existing Patreon user: {username}")
-            
+
+        db.session.commit()
         login_user(user, remember=True)
-        return redirect(url_for("home"))
+        flash('Patreonでログインしました！', 'success')
+        
+        # Return redirect to home
+        return redirect(url_for('home'))
         
     except Exception as e:
         print(f"Patreon login error: {e}")
         import traceback
         traceback.print_exc()
-        flash(f"Patreon認証中にエラーが発生しました: {str(e)}", "error")
-        return redirect(url_for("login"))
+        flash(f'Patreon認証中にエラーが発生しました: {str(e)}', 'error')
+        return False
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
