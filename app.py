@@ -44,16 +44,24 @@ app.config['WTF_CSRF_ENABLED'] = False
 app.config['GOOGLE_OAUTH_CLIENT_ID'] = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
 app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
 
-# Create Google OAuth blueprint
+# Create Google OAuth blueprint with forced HTTPS
 google_bp = make_google_blueprint(
     client_id=os.getenv('GOOGLE_OAUTH_CLIENT_ID'),
     client_secret=os.getenv('GOOGLE_OAUTH_CLIENT_SECRET'),
     scope=["https://www.googleapis.com/auth/userinfo.email", 
            "https://www.googleapis.com/auth/userinfo.profile", 
            "openid"],
-    redirect_url="https://web-production-65363.up.railway.app/auth/google/authorized",
     storage=SQLAlchemyStorage(OAuthConsumerMixin, db.session, user=lambda: current_user)
 )
+
+# Override redirect URL after blueprint creation
+@google_bp.record
+def record_auth(setup_state):
+    setup_state.app.config['GOOGLE_OAUTH_CLIENT_ID'] = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
+    setup_state.app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+    
+# Force HTTPS redirect manually
+google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
 app.register_blueprint(google_bp, url_prefix="/auth")
 
 # Database configuration - use absolute path
