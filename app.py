@@ -657,7 +657,7 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     base_url="https://www.patreon.com/api/oauth2/v2/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
-    scope="identity"
+    scope="identity identity[email]"
 )
 
 app.register_blueprint(patreon_blueprint, url_prefix="/auth")
@@ -690,7 +690,8 @@ def patreon_logged_in(blueprint, token):
         return False
 
     try:
-        resp = blueprint.session.get("identity")
+        # Patreon API v2では、必要なフィールドを明示的に指定する必要がある
+        resp = blueprint.session.get("identity?fields%5Buser%5D=email,first_name,last_name,full_name")
         print(f"Patreon API response status: {resp.status_code}")
         print(f"Patreon API response: {resp.text}")
         
@@ -708,14 +709,22 @@ def patreon_logged_in(blueprint, token):
             return False
             
         patreon_id = str(patreon_info["data"]["id"])
-        attributes = patreon_info["data"]["attributes"]
+        attributes = patreon_info["data"].get("attributes", {})
         email = attributes.get("email", "")
         first_name = attributes.get("first_name", "")
         last_name = attributes.get("last_name", "")
         full_name = attributes.get("full_name", f"{first_name} {last_name}".strip())
         
+        # Patreonユーザー名の生成：メールアドレスがあればそれを使用、なければPatreon ID
+        if email:
+            display_name = email.split('@')[0]
+        elif full_name.strip():
+            display_name = full_name.strip()
+        else:
+            display_name = f"PatreonUser{patreon_id}"
+            
         username = f"patreon_{patreon_id}"
-        print(f"Creating/updating Patreon user: {username}, email: {email}")
+        print(f"Creating/updating Patreon user: {username}, email: {email}, display_name: {display_name}")
 
         # 既存ユーザー確認
         user = User.query.filter_by(patreon_id=patreon_id).first()
