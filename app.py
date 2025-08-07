@@ -73,9 +73,17 @@ print(f"DEBUG: Flask app config = {app.config.get('PREFERRED_URL_SCHEME')}")
 print(f"DEBUG: Flask app SERVER_NAME = {app.config.get('SERVER_NAME')}")
 app.register_blueprint(google_bp, url_prefix="/auth")
 
-# Database configuration - use absolute path
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "instance", "app.db")}')
+# Database configuration - Railway compatible
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    # Use Railway PostgreSQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Local SQLite fallback - use temp directory
+    import tempfile
+    temp_dir = tempfile.gettempdir()
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(temp_dir, "app.db")}'
+    
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
