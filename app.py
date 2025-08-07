@@ -654,11 +654,11 @@ patreon_blueprint = OAuth2ConsumerBlueprint(
     "patreon", __name__,
     client_id=os.getenv("PATREON_CLIENT_ID"),
     client_secret=os.getenv("PATREON_CLIENT_SECRET"),
-    base_url="https://www.patreon.com/api/oauth2/api/",
+    base_url="https://www.patreon.com/api/oauth2/v2/",
     token_url="https://www.patreon.com/api/oauth2/token",
     authorization_url="https://www.patreon.com/oauth2/authorize",
-    redirect_url="https://web-production-65363.up.railway.app/auth/patreon/authorized",
-    scope=["identity"]
+    redirect_to="patreon_login_authorized",
+    scope="identity"
 )
 
 app.register_blueprint(patreon_blueprint, url_prefix="/auth")
@@ -681,57 +681,80 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-@app.route('/auth/patreon/authorized')
+@app.route('/patreon_login_authorized')
 def patreon_login_authorized():
+    print("Patreon authorized callback triggered")
+    
     if not patreon_blueprint.session.token:
-        flash("Patreon認証に失敗しました。", "error")
+        flash("Patreon認証に失敗しました。トークンがありません。", "error")
+        print("ERROR: No Patreon token found")
         return redirect(url_for("login"))
         
     try:
-        resp = patreon_blueprint.session.get("https://www.patreon.com/api/oauth2/v2/identity")
-        print("Patreon API response:", resp.text)
+        # Patreon API v2を使用
+        resp = patreon_blueprint.session.get("identity")
+        print(f"Patreon API response status: {resp.status_code}")
+        print(f"Patreon API response: {resp.text}")
         
         if not resp.ok:
-            flash("Patreon認証に失敗しました。", "error")
+            flash(f"Patreon API呼び出しに失敗しました。ステータス: {resp.status_code}", "error")
             return redirect(url_for("login"))
             
         patreon_info = resp.json()
         print("Patreon info:", patreon_info)
         
+        # Patreon API v2のレスポンス構造に対応
+        if "data" not in patreon_info:
+            flash("Patreon API レスポンスが無効です。", "error")
+            return redirect(url_for("login"))
+            
         patreon_id = patreon_info["data"]["id"]
         attributes = patreon_info["data"]["attributes"]
         email = attributes.get("email", "")
-        full_name = attributes.get("full_name", "")
+        first_name = attributes.get("first_name", "")
+        last_name = attributes.get("last_name", "")
+        full_name = attributes.get("full_name", f"{first_name} {last_name}".strip())
+        
         username = f"patreon_{patreon_id}"
+        
+        print(f"Creating/updating user: {username}, email: {email}")
         
         # 既存ユーザー確認
         user = User.query.filter_by(username=username).first()
         if not user:
+            # 新規ユーザー作成
             user = User(
                 username=username,
                 email=email,
                 auth_type='patreon',
+                patreon_id=patreon_id,
                 is_patreon=True,
                 last_login=datetime.utcnow()
             )
             db.session.add(user)
             db.session.commit()
-            flash("Patreonアカウントを作成しました。", "success")
+            flash("Patreonアカウントを作成し、ログインしました！", "success")
+            print(f"Created new Patreon user: {username}")
         else:
+            # 既存ユーザー更新
             user.is_patreon = True
             user.auth_type = 'patreon'
+            user.patreon_id = patreon_id
             user.last_login = datetime.utcnow()
             if email and not user.email:
                 user.email = email
             db.session.commit()
-            flash("Patreonでログインしました。", "success")
+            flash("Patreonでログインしました！", "success")
+            print(f"Updated existing Patreon user: {username}")
             
         login_user(user, remember=True)
         return redirect(url_for("home"))
         
     except Exception as e:
         print(f"Patreon login error: {e}")
-        flash("Patreon認証中にエラーが発生しました。", "error")
+        import traceback
+        traceback.print_exc()
+        flash(f"Patreon認証中にエラーが発生しました: {str(e)}", "error")
         return redirect(url_for("login"))
 
 if __name__ == "__main__":
