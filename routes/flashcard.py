@@ -9,28 +9,20 @@ from functools import wraps
 
 flashcard_bp = Blueprint('flashcard', __name__, url_prefix='/flashcard')
 
-def patreon_required(f):
-    """Patreonログインが必要な機能用デコレーター"""
+def google_login_required(f):
+    """Googleログインが必要な機能用デコレーター"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            flash('フラッシュカード機能を利用するにはログインが必要です。', 'warning')
+            flash('フラッシュカード機能を利用するにはGoogleログインが必要です。', 'warning')
             return redirect(url_for('login'))
         
-        # Google OAuth またはPatreonユーザーかチェック
+        # Google OAuthユーザーかチェック
         is_google_user = (hasattr(current_user, 'auth_type') and current_user.auth_type == 'google') or \
                         (hasattr(current_user, 'google_id') and current_user.google_id)
         
-        # Googleユーザーの場合、is_patreonを自動的に有効にする
-        if is_google_user and not current_user.is_patreon:
-            from models import db
-            current_user.is_patreon = True
-            db.session.commit()
-            flash('Googleアカウントでフラッシュカード機能が有効になりました！', 'success')
-        
-        # Patreon権限をチェック
-        if not current_user.is_patreon:
-            flash('フラッシュカード機能は現在Googleログインまたはパトロンメンバー限定です。', 'warning')
+        if not is_google_user:
+            flash('フラッシュカード機能はGoogleログイン限定です。', 'warning')
             return redirect(url_for('login'))
         
         return f(*args, **kwargs)
@@ -97,7 +89,7 @@ def get_next_review_date(study_count):
         return datetime.utcnow() + timedelta(days=30)
 
 @flashcard_bp.route('/')
-@patreon_required
+@google_login_required
 def flashcard_index():
     """フラッシュカード設定画面"""
     # 初回アクセス時にデータを読み込み
@@ -112,7 +104,7 @@ def flashcard_index():
     return render_template("flashcard_setup.html", review_count=review_count)
 
 @flashcard_bp.route('/study', methods=['GET', 'POST'])
-@patreon_required
+@google_login_required
 def study():
     """フラッシュカード学習画面"""
     if request.method == 'GET':
@@ -243,7 +235,7 @@ def study():
                              total_count=study_info['total_count'])
 
 @flashcard_bp.route('/complete')
-@patreon_required
+@google_login_required
 def complete():
     """学習完了画面"""
     # 今回の学習セッションの結果を取得
@@ -349,7 +341,7 @@ def generate_forgetting_curve_data(user_id, jlpt_level):
     }
 
 @flashcard_bp.route('/api/flip')
-@patreon_required
+@google_login_required
 def flip_card():
     """カードをめくるAPI"""
     return jsonify({'success': True}) 

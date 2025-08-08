@@ -649,18 +649,7 @@ app.register_blueprint(akinator_bp)
 app.register_blueprint(flashcard_bp)
 app.register_blueprint(youtube_listening_bp)
 
-# --- Patreon OAuth2 Blueprintのセットアップ ---
-patreon_blueprint = OAuth2ConsumerBlueprint(
-    "patreon", __name__,
-    client_id=os.getenv("PATREON_CLIENT_ID"),
-    client_secret=os.getenv("PATREON_CLIENT_SECRET"),
-    base_url="https://www.patreon.com/api/oauth2/v2/",
-    token_url="https://www.patreon.com/api/oauth2/token",
-    authorization_url="https://www.patreon.com/oauth2/authorize",
-    scope="identity identity[email]"
-)
-
-app.register_blueprint(patreon_blueprint, url_prefix="/auth")
+# Patreon OAuth removed - using Google login only
 
 # Initialize database tables (works with both Flask dev server and gunicorn)
 try:
@@ -680,92 +669,7 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-# Patreon OAuth callback using Flask-Dance pattern
-@oauth_authorized.connect_via(patreon_blueprint)
-def patreon_logged_in(blueprint, token):
-    print("Patreon OAuth callback triggered")
-    
-    if not token:
-        flash('Patreon認証に失敗しました。', 'error')
-        return False
-
-    try:
-        # Patreon API v2では、必要なフィールドを明示的に指定する必要がある
-        resp = blueprint.session.get("identity?fields%5Buser%5D=email,first_name,last_name,full_name")
-        print(f"Patreon API response status: {resp.status_code}")
-        print(f"Patreon API response: {resp.text}")
-        
-        if not resp.ok:
-            msg = f"Patreon APIから情報を取得できませんでした。ステータス: {resp.status_code}"
-            flash(msg, category="error")
-            return False
-
-        patreon_info = resp.json()
-        print("Patreon info:", patreon_info)
-        
-        # Patreon API v2のレスポンス構造に対応
-        if "data" not in patreon_info:
-            flash("Patreon API レスポンスが無効です。", "error")
-            return False
-            
-        patreon_id = str(patreon_info["data"]["id"])
-        attributes = patreon_info["data"].get("attributes", {})
-        email = attributes.get("email", "")
-        first_name = attributes.get("first_name", "")
-        last_name = attributes.get("last_name", "")
-        full_name = attributes.get("full_name", f"{first_name} {last_name}".strip())
-        
-        # Patreonユーザー名の生成：メールアドレスがあればそれを使用、なければPatreon ID
-        if email:
-            display_name = email.split('@')[0]
-        elif full_name.strip():
-            display_name = full_name.strip()
-        else:
-            display_name = f"PatreonUser{patreon_id}"
-            
-        username = f"patreon_{patreon_id}"
-        print(f"Creating/updating Patreon user: {username}, email: {email}, display_name: {display_name}")
-
-        # 既存ユーザー確認
-        user = User.query.filter_by(patreon_id=patreon_id).first()
-        if not user:
-            user = User.query.filter_by(username=username).first()
-            
-        if user:
-            # 既存ユーザー更新
-            user.auth_type = 'patreon'
-            user.patreon_id = patreon_id
-            user.is_patreon = True
-            user.last_login = datetime.utcnow()
-            if email and not user.email:
-                user.email = email
-            if not user.username:
-                user.username = username
-        else:
-            # 新規ユーザー作成
-            user = User(
-                username=username,
-                email=email,
-                auth_type='patreon',
-                patreon_id=patreon_id,
-                is_patreon=True,
-                last_login=datetime.utcnow()
-            )
-            db.session.add(user)
-
-        db.session.commit()
-        login_user(user, remember=True)
-        flash('Patreonでログインしました！', 'success')
-        
-        # Return redirect to home
-        return redirect(url_for('home'))
-        
-    except Exception as e:
-        print(f"Patreon login error: {e}")
-        import traceback
-        traceback.print_exc()
-        flash(f'Patreon認証中にエラーが発生しました: {str(e)}', 'error')
-        return False
+# Patreon OAuth callback removed - using Google login only
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))

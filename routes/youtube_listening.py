@@ -142,7 +142,6 @@ def record_quiz_play(user_id, quiz_id):
         print(f"Error recording quiz play: {e}")
 
 @youtube_listening_bp.route('/')
-@login_required
 def listening_levels():
     """YouTubeリスニングクイズ一覧ページ（全レベル統合）"""
     quiz_data = get_quiz_data()
@@ -150,8 +149,8 @@ def listening_levels():
     # レベルフィルタ
     selected_level = request.args.get('level', 'all')
     
-    # プレイ回数を取得
-    user_play_counts = get_user_play_counts(current_user.id if current_user.is_authenticated else None)
+    # プレイ回数を取得（ログイン時のみ）
+    user_play_counts = get_user_play_counts(current_user.id if current_user and current_user.is_authenticated else None)
     
     # 同じIDのクイズデータをグループ化して総再生時間を計算
     quiz_groups = {}
@@ -237,14 +236,12 @@ def listening_levels():
 
 # 旧レベル別ページは統合されました - リダイレクト用
 @youtube_listening_bp.route('/<level>')
-@login_required  
 def listening_quiz_list(level):
     """レベル別ページから統合ページへリダイレクト"""
     return redirect(url_for('youtube_listening.listening_levels', level=level))
 
 @youtube_listening_bp.route('/quiz/<quiz_id>', methods=['GET', 'POST'])
 @youtube_listening_bp.route('/quiz/<quiz_id>/<int:quiz_num>', methods=['GET', 'POST'])
-@login_required
 def listening_quiz(quiz_id, quiz_num=None):
     """個別クイズページ"""
     quiz_data = get_quiz_data()
@@ -295,8 +292,9 @@ def listening_quiz(quiz_id, quiz_num=None):
         results = None
         show_answers = False
         if request.method == 'POST':
-            # プレイ回数を記録
-            record_quiz_play(current_user.id, quiz_id)
+            # プレイ回数を記録（ログイン時のみ）
+            if current_user and current_user.is_authenticated:
+                record_quiz_play(current_user.id, quiz_id)
             
             results = []
             total_correct = 0
@@ -375,8 +373,9 @@ def listening_quiz(quiz_id, quiz_num=None):
     result = None
     show_answer = False
     if request.method == 'POST':
-        # プレイ回数を記録
-        record_quiz_play(current_user.id, quiz_id)
+        # プレイ回数を記録（ログイン時のみ）
+        if current_user and current_user.is_authenticated:
+            record_quiz_play(current_user.id, quiz_id)
         
         user_answer = request.form.get('answer')
         correct_answer = str(quiz.get('correct', '1'))

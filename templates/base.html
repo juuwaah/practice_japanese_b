@@ -141,6 +141,42 @@
     </div>
   </div>
 
+  <!-- Donation Popup Modal -->
+  <div id="donation-modal" class="donation-modal" style="display: none;">
+    <div class="donation-window">
+      <div class="donation-title-bar">
+        <span>{{ _('support_development') }}</span>
+        <button id="donation-close" class="donation-close-btn">×</button>
+      </div>
+      <div class="donation-content">
+        <div style="padding: 16px; text-align: center;">
+          <h3 style="font-size: 12px; margin: 0 0 12px 0; font-weight: bold;">{{ _('support_message') }}</h3>
+          <p style="font-size: 9px; margin: 0 0 16px 0; color: #606060; line-height: 1.4;">
+            {{ _('support_description') }}
+          </p>
+          
+          <!-- Donation Buttons -->
+          <div class="donation-buttons">
+            <a href="https://buymeacoffee.com/japanesewithb" target="_blank" class="donation-btn bmc-btn">
+              <span style="font-size: 10px;">☕</span>
+              <span style="font-size: 9px;">Buy me a coffee</span>
+            </a>
+            
+            <a href="#" id="paypal-btn" class="donation-btn paypal-btn">
+              <span style="font-size: 10px;">💳</span>
+              <span style="font-size: 9px;">PayPal</span>
+            </a>
+          </div>
+          
+          <!-- Thank you note -->
+          <div style="margin-top: 16px; padding: 8px; background: #F0F8FF; border: 1px solid #4285F4; font-size: 8px; color: #2C5CC5;">
+            💙 {{ _('thank_you_message') }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Left Tool Palette -->
   <div class="tool-palette">
     <div class="tool-icon" id="language-tool" title="{{ _('language_selection') }}">🌐</div>
@@ -149,6 +185,7 @@
     <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
     {% endif %}
     <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+    <div class="tool-icon" id="donation-tool" title="{{ _('donation_support') }}">🤏</div>
   </div>
 
   <!-- Main Content Window -->
@@ -225,6 +262,12 @@
         // Special handling for font tool
         if (this.id === 'font-tool') {
           showFontMenu(this);
+          return;
+        }
+        
+        // Special handling for donation tool
+        if (this.id === 'donation-tool') {
+          document.getElementById('donation-modal').style.display = 'flex';
           return;
         }
         
@@ -329,6 +372,30 @@
         if (e.target === settingsModal) {
           closeSettingsModal();
         }
+      });
+      
+      // Donation modal functionality
+      const donationModal = document.getElementById('donation-modal');
+      const donationCloseBtn = document.getElementById('donation-close');
+      
+      // Close donation modal function
+      function closeDonationModal() {
+        donationModal.style.display = 'none';
+      }
+      
+      donationCloseBtn.addEventListener('click', closeDonationModal);
+      
+      // Close when clicking outside the window
+      donationModal.addEventListener('click', function(e) {
+        if (e.target === donationModal) {
+          closeDonationModal();
+        }
+      });
+      
+      // PayPal button placeholder (will be updated when PayPal info is provided)
+      document.getElementById('paypal-btn').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('PayPal donation link will be available soon!');
       });
     });
     
