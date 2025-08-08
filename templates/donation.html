@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('support_development') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('support_development') }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto; padding: 20px;">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="font-size: 14px; margin-bottom: 8px;">{{ _('support_development') }}</h1>
+    <p style="font-size: 10px; color: #606060; line-height: 1.4; margin: 0;">
+      {{ _('support_description') }}
+    </p>
+  </div>
+
+  <!-- Main Support Message -->
+  <div style="border: 2px solid #4285F4; padding: 16px; background: #F0F8FF; margin-bottom: 24px; text-align: center;">
+    <h2 style="font-size: 12px; margin: 0 0 12px 0; color: #4285F4;">{{ _('support_message') }}</h2>
+    <p style="font-size: 9px; margin: 0; color: #2C5CC5; line-height: 1.4;">
+      {{ _('support_description') }}
+    </p>
+  </div>
+
+  <!-- Donation Options -->
+  <div style="display: grid; gap: 16px; margin-bottom: 24px;">
+    <!-- Buy Me a Coffee -->
+    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 20px; margin-right: 8px;">☕</span>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">Buy Me a Coffee</h3>
+      </div>
+      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
+        Support development with a one-time donation through Buy Me a Coffee.
+      </p>
+      <a href="https://buymeacoffee.com/japanesewithb" target="_blank" 
+         style="display: inline-block; padding: 8px 16px; background: #FFDD00; color: #000; 
+                text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
+                font-weight: bold; cursor: pointer;">
+        ☕ Visit Buy Me a Coffee
+      </a>
+    </div>
+
+    <!-- PayPal -->
+    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 20px; margin-right: 8px;">💳</span>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">PayPal</h3>
+      </div>
+      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
+        Make a secure donation using PayPal.
+      </p>
+      <button onclick="alert('PayPal donation link will be available soon!')" 
+              style="display: inline-block; padding: 8px 16px; background: #0070BA; color: #FFFFFF; 
+                     border: 2px outset #C0C0C0; font-size: 10px; font-weight: bold; cursor: pointer;">
+        💳 Donate with PayPal
+      </button>
+    </div>
+
+    <!-- Patreon -->
+    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 20px; margin-right: 8px;">🎯</span>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">Patreon</h3>
+      </div>
+      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
+        Support ongoing development with monthly contributions and get access to exclusive content.
+      </p>
+      <a href="https://www.patreon.com/japanesewithb" target="_blank" 
+         style="display: inline-block; padding: 8px 16px; background: #F96854; color: #FFFFFF; 
+                text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
+                font-weight: bold; cursor: pointer;">
+        🎯 Support on Patreon
+      </a>
+    </div>
+  </div>
+
+  <!-- Usage Information -->
+  <div style="border: 2px inset #C0C0C0; padding: 12px; background: #FFFFFF; margin-bottom: 16px;">
+    <h3 style="font-size: 10px; margin: 0 0 8px 0; font-weight: bold;">💡 How Your Support Helps</h3>
+    <ul style="font-size: 9px; margin: 0; padding-left: 16px; color: #404040; line-height: 1.4;">
+      <li>Keep the app free for all users</li>
+      <li>Server hosting and maintenance costs</li>
+      <li>AI API costs for quiz generation</li>
+      <li>Development of new features</li>
+      <li>Content creation and updates</li>
+    </ul>
+  </div>
+
+  <!-- Thank You Message -->
+  <div style="text-align: center; padding: 12px; background: #F0F8FF; border: 1px solid #4285F4;">
+    <p style="font-size: 8px; margin: 0; color: #2C5CC5;">
+      💙 {{ _('thank_you_message') }}
+    </p>
+  </div>
+
+  <!-- Back to App -->
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{{ url_for('home') }}" 
+       style="font-size: 9px; text-decoration: underline; color: #000;">
+      ← Back to App
+    </a>
+  </div>
+</div>
+{% endblock %}

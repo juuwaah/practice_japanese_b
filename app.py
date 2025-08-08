@@ -437,6 +437,10 @@ def logout():
 def about():
     return render_template(get_template("about"))
 
+@app.route("/donation")
+def donation():
+    return render_template(get_template("donation"))
+
 @app.route("/sitemap_data")
 def sitemap_data():
     """サイトマップ用のデータ取得"""

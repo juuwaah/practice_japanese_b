@@ -50,10 +50,17 @@
       <div class="menu-content">
         <a href="{{ url_for('about') }}">{{ _('about') }}</a>
         <a href="#" id="settings-menu-link">{{ _('settings') }}</a>
-        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('support') }}</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
         <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
         {% endif %}
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('support_menu') }}</span>
+      <div class="menu-content">
+        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('patreon_support') }}</a>
+        <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
       </div>
     </div>
     
@@ -267,7 +274,7 @@
         
         // Special handling for donation tool
         if (this.id === 'donation-tool') {
-          document.getElementById('donation-modal').style.display = 'flex';
+          window.location.href = '/donation';
           return;
         }
         
