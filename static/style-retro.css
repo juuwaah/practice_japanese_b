@@ -339,7 +339,7 @@ body {
 .external-links-section {
   position: fixed;
   left: 8px;
-  top: calc(50vh + 8px);
+  top: 300px; /* Fixed position for now - will adjust based on actual tool palette height */
   width: 48px;
   z-index: 10000;
   display: flex;
@@ -936,6 +936,18 @@ body {
     z-index: 9999;
     transform-origin: top left;
   }
+  
+  .external-links-section {
+    left: 4px;
+    width: 44px;
+    top: calc(100vh - 45px);
+  }
+  
+  .external-link-btn {
+    width: 44px;
+    height: 44px;
+  }
+}
   
   .main-content-wrapper {
     margin-left: 56px;
