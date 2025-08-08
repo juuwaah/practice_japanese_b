@@ -18,6 +18,7 @@ def get_channel_info_from_api(channel_id):
     """YouTube Data APIを使ってチャンネル情報を取得"""
     api_key = os.getenv('YOUTUBE_API_KEY')
     if not api_key:
+        print(f"DEBUG: YOUTUBE_API_KEY not found for channel {channel_id}")
         return None, None
     
     try:
@@ -32,6 +33,7 @@ def get_channel_info_from_api(channel_id):
         response.raise_for_status()
         
         data = response.json()
+        print(f"DEBUG: YouTube API response for {channel_id}: {data}")
         
         if 'items' in data and len(data['items']) > 0:
             channel_info = data['items'][0]['snippet']
@@ -48,15 +50,19 @@ def get_channel_info_from_api(channel_id):
             else:
                 channel_icon = "https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
             
+            print(f"DEBUG: Successfully got channel info - Name: {channel_name}, Icon: {channel_icon}")
             return channel_name, channel_icon
         else:
+            print(f"DEBUG: No channel data found for {channel_id}")
             return None, None
             
     except Exception as e:
+        print(f"DEBUG: YouTube API error for {channel_id}: {e}")
         return None, None
 
 def extract_channel_info(channel_data):
     """YouTubeチャンネル情報からチャンネル名とアイコンを取得"""
+    print(f"DEBUG: extract_channel_info called with: {channel_data}")
     if not channel_data:
         return None, None
     
@@ -179,6 +185,7 @@ def listening_levels():
         
         # チャンネル情報を取得
         channel_data = representative_quiz.get('channel_link')
+        print(f"DEBUG: Processing quiz {quiz_id} with channel_data: {channel_data}")
         channel_name, channel_icon = extract_channel_info(channel_data)
         
         representative_quiz['total_duration'] = total_duration
