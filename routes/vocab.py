@@ -557,6 +557,7 @@ def vocab_index():
         elif request.form.get("action") in ["submit", "answer"]:
             # Get quiz from session or reconstruct from form data
             quiz = session.get('current_quiz')
+            print(f"Retrieved quiz from session: {quiz}")  # Debug log
             if not quiz:
                 # Fallback: reconstruct from form data (modern template)
                 options_json = request.form.get("options", "[]")
@@ -573,7 +574,11 @@ def vocab_index():
                     "meaning": request.form.get("meaning", ""),
                     "sentence": request.form.get("sentence", "")
                 }
+                print(f"Reconstructed quiz from form data: {quiz}")  # Debug log
+            
             selected_option = request.form.get("user_answer") or request.form.get("answer")
+            print(f"User selected: {selected_option}, Correct answer: {quiz['answer']}")  # Debug log
+            
             if selected_option == quiz["answer"]:
                 result = "Correct!"
             else:
@@ -583,16 +588,20 @@ def vocab_index():
                     quiz["word"], quiz["kanji"], quiz["meaning"], level, quiz["question"], quiz["options"]
                 )
     else:
-        # GETリクエスト時は必ずクイズを生成
-        try:
-            quiz = generate_vocab_quiz(level)
-            # Store quiz in session for retro template compatibility
-            session['current_quiz'] = quiz
-            print(f"GET request - Generated quiz: {quiz}")  # Debug log
-        except Exception as e:
-            print(f"GET request - Error generating quiz: {e}")  # Debug log
-            quiz = None
-            session['current_quiz'] = None
+        # GETリクエスト時は既存のクイズがあればそれを使用、なければ生成
+        quiz = session.get('current_quiz')
+        if not quiz:
+            try:
+                quiz = generate_vocab_quiz(level)
+                # Store quiz in session for retro template compatibility
+                session['current_quiz'] = quiz
+                print(f"GET request - Generated new quiz: {quiz}")  # Debug log
+            except Exception as e:
+                print(f"GET request - Error generating quiz: {e}")  # Debug log
+                quiz = None
+                session['current_quiz'] = None
+        else:
+            print(f"GET request - Using existing quiz from session")  # Debug log
         
     if not quiz or not isinstance(quiz, dict):
         quiz = {

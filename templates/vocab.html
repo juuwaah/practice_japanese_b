@@ -57,22 +57,27 @@
       {{ _('choose_correct_word') }}:
     </div>
     
-    <div style="display: flex; flex-direction: column; gap: 4px;">
-      {% for option in options %}
-        <form method="post" style="margin: 0;">
-          <input type="hidden" name="level" value="{{ level }}">
-          <input type="hidden" name="question" value="{{ question }}">
-          <input type="hidden" name="answer" value="{{ answer }}">
-          <input type="hidden" name="options" value='{{ options|tojson }}'>
-          <input type="hidden" name="user_answer" value="{{ option }}">
-          <button type="submit" name="action" value="submit" 
+    <form method="post" style="margin: 0;">
+      <input type="hidden" name="level" value="{{ level }}">
+      <input type="hidden" name="question" value="{{ question }}">
+      <input type="hidden" name="answer" value="{{ answer }}">
+      <input type="hidden" name="options" value='{{ options|tojson }}'>
+      <input type="hidden" name="action" value="submit">
+      {% if question_data %}
+        <input type="hidden" name="kanji" value="{{ question_data.kanji }}">
+        <input type="hidden" name="word" value="{{ question_data.word }}">
+      {% endif %}
+      
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        {% for option in options %}
+          <button type="submit" name="user_answer" value="{{ option }}" 
                   style="width: 100%; text-align: left; padding: 4px 8px; font-size: 9px; 
                          background: #F0F0F0; border: 1px solid #000;">
             {{ option }}
           </button>
-        </form>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    </form>
   </div>
 {% endif %}
 
