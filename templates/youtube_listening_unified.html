@@ -93,7 +93,13 @@
                     <td class="col-duration">{{ '%d:%02d'|format(quiz.duration//60, quiz.duration%60) }}</td>
                     <td class="col-channel">
                         {% if quiz.channel_name %}
-                            {{ quiz.channel_name }}
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                {% if quiz.channel_icon %}
+                                <img src="{{ quiz.channel_icon }}" alt="Channel Icon" 
+                                     style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid #808080;">
+                                {% endif %}
+                                <span>{{ quiz.channel_name }}</span>
+                            </div>
                         {% else %}
                             -
                         {% endif %}

@@ -116,9 +116,66 @@
                     {% endif %}
                 </div>
             </div>
+            
+            <!-- チャンネル情報 -->
+            {% if quiz.youtube_channel_page %}
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <h6 class="card-subtitle mb-2 text-muted">このビデオの出典</h6>
+                    <a href="{{ quiz.youtube_channel_page }}" target="_blank" rel="noopener noreferrer" 
+                       class="btn btn-outline-danger" 
+                       style="font-size: 1rem; padding: 0.75rem 1.5rem; border-radius: 0; font-weight: 500; text-decoration: none;">
+                        {% if quiz.channel_icon %}
+                        <img src="{{ quiz.channel_icon }}" alt="Channel Icon" 
+                             class="retro-channel-icon"
+                             style="width: 24px; height: 24px; margin-right: 0.5rem; vertical-align: middle;">
+                        {% endif %}
+                        {{ quiz.channel_name or 'YouTubeチャンネル' }}
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+/* 80年代ゲーム風レトロアイコン枠線 */
+.retro-channel-icon {
+    position: relative;
+    border: 2px solid #00ff41;
+    box-shadow: 
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #808080,
+        2px 2px 0 #404040,
+        3px 3px 0 #202020;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+    padding: 1px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    border-radius: 50%;
+}
+
+.retro-channel-icon:hover {
+    border-color: #ff0080;
+    box-shadow: 
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #808080,
+        2px 2px 0 #800040,
+        3px 3px 0 #400020,
+        0 0 8px #ff0080;
+    animation: retro-glow 0.5s ease-in-out;
+}
+
+@keyframes retro-glow {
+    0% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #404040, 3px 3px 0 #202020; }
+    50% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 12px #ff0080; }
+    100% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 8px #ff0080; }
+}
+</style>
 
 <script>
 function jumpToTime(seconds) {
