@@ -230,10 +230,13 @@ def get_today_quiz():
                 if os.path.exists(CACHE_FILE):
                     os.remove(CACHE_FILE)
     
-    # Generate new quiz with true random selection
+    # Generate new quiz with date-based deterministic selection
     from onomatopoeia_data import get_random_onomatopoeia
     
-    # Step 1: ランダムにオノマトペを選択
+    # Step 1: 日付ベースでオノマトペを選択（同じ日は同じオノマトペ）
+    import hashlib
+    date_hash = int(hashlib.md5(today_str.encode()).hexdigest(), 16)
+    random.seed(date_hash)  # 日付ベースのシード設定
     selected_onomatope = get_random_onomatopoeia()
     onomatope_word = selected_onomatope["word"]
     onomatope_meaning = selected_onomatope["meaning"]

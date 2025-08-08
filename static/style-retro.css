@@ -339,7 +339,7 @@ body {
 .external-links-section {
   position: fixed;
   left: 8px;
-  top: 200px; /* Position directly below left tool palette */
+  top: 150px; /* Position directly below left tool palette */
   width: 48px;
   z-index: 10000;
   display: flex;
@@ -399,17 +399,27 @@ body {
   color: #000000;
 }
 
-.btn-text {
-  font-size: 6px;
-  font-weight: bold;
-  margin-bottom: 1px;
+.external-link-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
-.btn-subtitle {
-  font-size: 4px;
+.btn-text {
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.btn-description {
+  font-size: 6px;
   font-weight: normal;
-  line-height: 1.1;
-  opacity: 0.8;
+  line-height: 1.2;
+  margin-top: 2px;
+  text-align: center;
+  max-width: 60px;
+  word-wrap: break-word;
+  color: #404040;
 }
 
 .tool-icon {
@@ -940,7 +950,7 @@ body {
   .external-links-section {
     left: 4px;
     width: 44px;
-    top: 180px;
+    top: 130px;
   }
   
   .external-link-btn {
