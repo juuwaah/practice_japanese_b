@@ -529,17 +529,15 @@ def feedback():
         if not current_user.is_authenticated:
             return jsonify({'success': False, 'error': 'フィードバック、感想を送るにはログインしてください'})
         
-        name = request.form.get('name', '').strip()
-        email = request.form.get('email', '').strip()
         message = request.form.get('message', '').strip()
         
-        if not name or not email or not message:
-            return jsonify({'success': False, 'error': '全ての項目を入力してください'})
+        if not message:
+            return jsonify({'success': False, 'error': 'メッセージを入力してください'})
         
-        # データベースに保存（ログインユーザーのみ）
+        # データベースに保存（ログインユーザーのみ、名前とメールはユーザー情報から取得）
         feedback_entry = Feedback(
-            name=name,
-            email=email,
+            name=current_user.username or current_user.email.split('@')[0],
+            email=current_user.email,
             message=message,
             user_id=current_user.id,
             user_agent=request.headers.get('User-Agent', ''),

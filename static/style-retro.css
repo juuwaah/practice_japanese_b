@@ -331,8 +331,85 @@ body {
   z-index: 10000;
   /* Prevent movement during zoom */
   transform-origin: top left;
-  max-height: calc(100vh - 60px);
+  max-height: calc(50vh - 30px);
   overflow-y: auto;
+}
+
+/* External Links Section Below Tool Palette */
+.external-links-section {
+  position: fixed;
+  left: 8px;
+  top: calc(50vh + 40px);
+  width: 48px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.external-link-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px outset #C0C0C0;
+  box-shadow: 1px 1px 0px #808080;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 7px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  padding: 2px;
+  transition: all 0.1s ease;
+}
+
+.external-link-btn:hover {
+  border: 2px inset #C0C0C0;
+  transform: translate(1px, 1px);
+}
+
+.external-link-btn:active {
+  border: 2px inset #C0C0C0;
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Preply Button - Pink */
+.preply-btn {
+  background-color: #FF7BAC;
+  color: #FFFFFF;
+}
+
+.preply-btn:hover {
+  background-color: #FF69A3;
+  color: #FFFFFF;
+}
+
+/* Patreon Button - Gray */
+.patreon-btn {
+  background-color: #F0F0F0;
+  color: #000000;
+}
+
+.patreon-btn:hover {
+  background-color: #E0E0E0;
+  color: #000000;
+}
+
+.btn-text {
+  font-size: 6px;
+  font-weight: bold;
+  margin-bottom: 1px;
+}
+
+.btn-subtitle {
+  font-size: 4px;
+  font-weight: normal;
+  line-height: 1.1;
+  opacity: 0.8;
 }
 
 .tool-icon {

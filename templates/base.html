@@ -76,16 +76,8 @@
       <div class="feedback-content">
         <form id="feedback-form" method="POST" action="/feedback">
           <div class="feedback-field">
-            <label>{{ _('name') }}:</label>
-            <input type="text" name="name" id="feedback-name" required>
-          </div>
-          <div class="feedback-field">
-            <label>{{ _('email') }}:</label>
-            <input type="email" name="email" id="feedback-email" required>
-          </div>
-          <div class="feedback-field">
             <label>{{ _('message') }}:</label>
-            <textarea name="message" id="feedback-message" rows="6" required placeholder="{{ _('feedback_placeholder') }}"></textarea>
+            <textarea name="message" id="feedback-message" rows="8" required placeholder="{{ _('feedback_placeholder') }}"></textarea>
           </div>
           <div class="feedback-buttons">
             <button type="submit" class="feedback-btn-submit">{{ _('send') }}</button>
@@ -194,6 +186,21 @@
     {% endif %}
     <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
     <div class="tool-icon" id="donation-tool" title="{{ _('donation_support') }}">🤏</div>
+  </div>
+
+  <!-- External Links Section Below Tool Palette -->
+  <div class="external-links-section">
+    <!-- Preply Button -->
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="external-link-btn preply-btn">
+      <div class="btn-text">Preply</div>
+      <div class="btn-subtitle">Get 30% off coupon for the trial lesson!</div>
+    </a>
+    
+    <!-- Patreon Button -->
+    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
+      <div class="btn-text">Patreon</div>
+      <div class="btn-subtitle">Support ongoing development</div>
+    </a>
   </div>
 
   <!-- Main Content Window -->
