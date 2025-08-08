@@ -506,8 +506,8 @@ def set_language():
 def set_font():
     """フォント設定変更"""
     try:
-        font_family = request.json.get('font_family', 'dotgothic')
-        if font_family not in ['dotgothic', 'klee']:
+        font_family = request.json.get('font_family', 'notosans')
+        if font_family not in ['notosans', 'dotgothic', 'klee']:
             return jsonify({'success': False, 'error': 'Invalid font family'})
         
         if current_user.is_authenticated:

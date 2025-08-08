@@ -134,6 +134,7 @@
           <div class="settings-group" style="margin-top: 16px;">
             <h3 style="font-size: 11px; margin: 0 0 6px 0; font-weight: bold;">{{ _('font') }}</h3>
             <div class="settings-options">
+              <button class="settings-btn" onclick="changeFont('notosans')">Noto Sans JP (Modern)</button>
               <button class="settings-btn" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</button>
               <button class="settings-btn" onclick="changeFont('klee')">Klee One (Textbook)</button>
             </div>
@@ -544,6 +545,7 @@
       const menu = document.createElement('div');
       menu.className = 'font-menu';
       menu.innerHTML = `
+        <div class="font-option" onclick="changeFont('notosans')">Noto Sans JP (Modern)</div>
         <div class="font-option" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</div>
         <div class="font-option" onclick="changeFont('klee')">Klee One (Textbook)</div>
       `;

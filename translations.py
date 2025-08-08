@@ -29,6 +29,7 @@ TRANSLATIONS = {
         'select_language': 'Select Language',
         'font_family': 'Font',
         'select_font': 'Select Font',
+        'font_notosans': 'Noto Sans JP (Modern)',
         'font_dotgothic': 'DotGothic16 (Pixel)',
         'font_klee': 'Klee One (Textbook)',
         
@@ -296,6 +297,7 @@ TRANSLATIONS = {
         'select_language': '言語を選択',
         'font_family': 'フォント',
         'select_font': 'フォント選択',
+        'font_notosans': 'Noto Sans JP (モダン)',
         'font_dotgothic': 'DotGothic16 (ピクセル)',
         'font_klee': 'Klee One (教科書体)',
         
@@ -559,4 +561,4 @@ def get_user_font():
         return current_user.font_family
     elif 'font_family' in session:
         return session['font_family']
-    return 'dotgothic'
+    return 'notosans'
