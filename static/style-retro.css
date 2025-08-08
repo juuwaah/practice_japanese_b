@@ -339,12 +339,12 @@ body {
 .external-links-section {
   position: fixed;
   left: 8px;
-  top: calc(50vh - 25px);
+  top: calc(50vh + 16px);
   width: 48px;
   z-index: 10000;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .external-link-btn {
