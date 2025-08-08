@@ -18,6 +18,7 @@ TRANSLATIONS = {
         'flashcards': 'Flashcards',
         'you_are_akinator': 'You are the akinator',
         'ai_is_akinator': 'AI is the akinator',
+        'youtube_listening': 'YouTube Listening',
         'support': 'Support',
         'admin_dashboard': 'Admin Dashboard',
         
@@ -144,7 +145,7 @@ TRANSLATIONS = {
         
         # About page additional translations
         'app_description_full': 'This application is designed to help learners practice Japanese vocabulary and grammar, especially for the JLPT (Japanese Language Proficiency Test) levels N5–N1.<br><br>Features include vocabulary quizzes, grammar translation practice, flashcards, and interactive games powered by OpenAI API.',
-        'developer_info': 'Created by B, a university student and Japanese teacher on Preply.<br><br>Want to learn Japanese on Preply?<br>',
+        'developer_info': 'Created by B, an university student and Japanese teacher on Preply.<br><br>Want to learn Japanese on Preply?<br>',
         'get_30_percent_discount': 'Get 30% Discount',
         'liked_this_app': 'Liked this app?<br>Support the developer on Patreon to get access to more content like listening quizzes, more difficult grammar expressions, JLPT level content, and other interesting content related to Japanese.',
         'support_on_patreon': '🎯 Support on Patreon',
@@ -286,6 +287,7 @@ TRANSLATIONS = {
         'flashcards': 'フラッシュカード',
         'you_are_akinator': 'あなたがアキネーター',
         'ai_is_akinator': 'AIがアキネーター',
+        'youtube_listening': 'YouTubeリスニング',
         'support': '支援',
         'admin_dashboard': '管理者ダッシュボード',
         
