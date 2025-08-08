@@ -339,7 +339,7 @@ body {
 .external-links-section {
   position: fixed;
   left: 8px;
-  top: 300px; /* Fixed position for now - will adjust based on actual tool palette height */
+  top: 200px; /* Position directly below left tool palette */
   width: 48px;
   z-index: 10000;
   display: flex;
@@ -940,7 +940,7 @@ body {
   .external-links-section {
     left: 4px;
     width: 44px;
-    top: calc(100vh - 45px);
+    top: 180px;
   }
   
   .external-link-btn {
