@@ -339,7 +339,7 @@ body {
 .external-links-section {
   position: fixed;
   left: 8px;
-  top: calc(50vh + 16px);
+  top: calc(50vh + 8px);
   width: 48px;
   z-index: 10000;
   display: flex;
