@@ -12,7 +12,6 @@
       <span class="menu-item">{{ _('file') }}</span>
       <div class="menu-content">
         <a href="{{ url_for('home') }}">{{ _('home') }}</a>
-        <a href="{{ url_for('about') }}">{{ _('about') }}</a>
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('logout') }}">{{ _('logout') }}</a>
         {% else %}
@@ -41,7 +40,7 @@
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('audio') }}</span>
       <div class="menu-content">
-        <a href="{{ url_for('youtube_listening.listening_levels') }}">YouTube リスニング</a>
+        <a href="{{ url_for('youtube_listening.listening_levels') }}">{{ _('youtube_listening') }}</a>
       </div>
     </div>
     
