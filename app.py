@@ -250,8 +250,10 @@ def get_today_quiz():
 正解の英語意味: {onomatope_meaning}
 カテゴリ: {onomatope_category}
 
+【重要】正解の英語意味は必ず「{onomatope_meaning}」を使用してください。変更しないでください。
+
 以下を作成してください：
-1. 間違い選択肢（英語の意味）を2つ作る（正解と紛らわしく、同じカテゴリの他のオノマトペの意味など）
+1. 間違い選択肢（英語の意味）を2つ作る（正解「{onomatope_meaning}」と紛らわしく、同じカテゴリの他のオノマトペの意味など）
 2. このオノマトペ「{onomatope_word}」を使った自然な日本語の例文を2つ作る
 3. 各例文に対応する自然な英語訳を作る
 
@@ -298,6 +300,11 @@ def get_today_quiz():
                         f"I felt {onomatope_meaning}."
                     ]
                 }
+            
+            # 重要：AIが正解を変更していないかチェック
+            if quiz.get("correct_meaning_en") != onomatope_meaning:
+                print(f"AI changed correct answer from '{onomatope_meaning}' to '{quiz.get('correct_meaning_en')}' - fixing it")
+                quiz["correct_meaning_en"] = onomatope_meaning
         else:
             # fallback: use selected onomatope with default examples
             quiz = {
@@ -335,6 +342,12 @@ def get_today_quiz():
                 f"I felt {onomatope_meaning}."
             ]
         }
+    
+    # 最終チェック：正解が確実にデータベースの値と一致するように
+    if quiz.get("correct_meaning_en") != onomatope_meaning:
+        print(f"Final check: correcting answer from '{quiz.get('correct_meaning_en')}' to '{onomatope_meaning}'")
+        quiz["correct_meaning_en"] = onomatope_meaning
+    
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump({"date": today_str, "quiz": quiz}, f, ensure_ascii=False)
