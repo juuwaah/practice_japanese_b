@@ -24,6 +24,8 @@ VOCAB_XLSX = os.path.join(os.path.dirname(__file__), '../database/JLPT vocabular
 
 # 利用可能なJLPTレベル
 JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1']
+# AIがアキネーターの場合は質問が難しすぎるため、N5とN4を除外
+AI_AKINATOR_LEVELS = ['N3', 'N2', 'N1']
 
 # 一般的な漢字読み辞書（主要なJLPT語彙）- 漢字とひらがなの対応
 KANJI_READINGS = {
@@ -283,10 +285,33 @@ def akinator_index():
         session['akinator_meaning'] = meaning
         return redirect(url_for('akinator.akinator_game'))
     
+    # roleパラメータがあるがlevelパラメータがない場合、適切なデフォルトレベルを設定して直接ゲームを開始
+    if role_param in ['user', 'gpt'] and not level_param:
+        # ユーザーがアキネーター: N5からN1まで利用可能（デフォルトN5）
+        # AIがアキネーター: N3からN1のみ利用可能（デフォルトN3）
+        if role_param == 'user':
+            default_level = 'N5'
+        else:  # role_param == 'gpt'
+            default_level = 'N3'
+        
+        session['akinator_role'] = role_param
+        session['akinator_level'] = default_level
+        session['akinator_gameover'] = False
+        session['akinator_history'] = []
+        # 語彙を選択
+        word, meaning = select_random_noun(default_level)
+        session['akinator_word'] = word
+        session['akinator_meaning'] = meaning
+        return redirect(url_for('akinator.akinator_game'))
+    
     if request.method == 'POST':
         role = request.form.get('role')
         level = request.form.get('level')
-        if role in ['user', 'gpt'] and level in JLPT_LEVELS:
+        
+        # ロールに応じてレベルの有効性をチェック
+        valid_levels = AI_AKINATOR_LEVELS if role == 'gpt' else JLPT_LEVELS
+        
+        if role in ['user', 'gpt'] and level in valid_levels:
             session['akinator_role'] = role
             session['akinator_level'] = level
             session['akinator_gameover'] = False
@@ -299,10 +324,17 @@ def akinator_index():
     
     # デフォルト値として前回の設定を使用
     default_role = session.get('akinator_role', 'gpt')
-    default_level = session.get('akinator_level', 'N5')
+    # デフォルトレベルをロールに応じて設定
+    if default_role == 'gpt':
+        default_level = session.get('akinator_level', 'N3') if session.get('akinator_level') in AI_AKINATOR_LEVELS else 'N3'
+    else:
+        default_level = session.get('akinator_level', 'N5')
+    
+    # デフォルトロールに応じて利用可能なレベルを設定
+    available_levels = AI_AKINATOR_LEVELS if default_role == 'gpt' else JLPT_LEVELS
     
     return render_template("akinator_select.html", 
-                         levels=JLPT_LEVELS, 
+                         levels=available_levels, 
                          default_role=default_role, 
                          default_level=default_level)
 
