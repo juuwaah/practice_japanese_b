@@ -8,6 +8,10 @@ from google_sheets_helper import load_onomatopoeia_data_from_sheets
 ONOMATOPOEIA_SHEET_ID = os.getenv('ONOMATOPOEIA_SHEET_ID', '')
 ONOMATOPOEIA_SHEET_NAME = os.getenv('ONOMATOPOEIA_SHEET_NAME', 'Onomatopoeia Database')
 
+# キャッシュ用変数
+_onomatopoeia_cache = None
+_cache_timestamp = None
+
 # フォールバック用のローカルデータ
 ONOMATOPOEIA_LIST_FALLBACK = [
     # 擬音語 - 音の真似（30個）
@@ -117,16 +121,36 @@ ONOMATOPOEIA_LIST_FALLBACK = [
 ]
 
 def get_onomatopoeia_list():
-    """オノマトペリストを取得（Google Sheets優先、フォールバック対応）"""
+    """オノマトペリストを取得（Google Sheets優先、キャッシュ対応）"""
+    import time
+    global _onomatopoeia_cache, _cache_timestamp
+    
+    # キャッシュの有効期限（5分）
+    CACHE_DURATION = 300
+    current_time = time.time()
+    
+    # キャッシュが有効な場合はそれを返す
+    if (_onomatopoeia_cache is not None and 
+        _cache_timestamp is not None and 
+        (current_time - _cache_timestamp) < CACHE_DURATION):
+        return _onomatopoeia_cache
+    
     if ONOMATOPOEIA_SHEET_ID:
         # Google Sheetsから読み込み
         sheets_data = load_onomatopoeia_data_from_sheets(ONOMATOPOEIA_SHEET_ID, ONOMATOPOEIA_SHEET_NAME)
         if sheets_data:
+            # キャッシュに保存
+            _onomatopoeia_cache = sheets_data
+            _cache_timestamp = current_time
             return sheets_data
     
     # フォールバック：ローカルデータを使用
     print("Google Sheetsから読み込めないため、ローカルデータを使用します")
-    return ONOMATOPOEIA_LIST_FALLBACK
+    fallback_data = ONOMATOPOEIA_LIST_FALLBACK
+    # フォールバックデータもキャッシュ
+    _onomatopoeia_cache = fallback_data
+    _cache_timestamp = current_time
+    return fallback_data
 
 def get_random_onomatopoeia():
     """ランダムにオノマトペを1つ選択"""
