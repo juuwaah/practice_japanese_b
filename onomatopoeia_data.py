@@ -125,8 +125,8 @@ def get_onomatopoeia_list():
     import time
     global _onomatopoeia_cache, _cache_timestamp
     
-    # キャッシュの有効期限（5分）
-    CACHE_DURATION = 300
+    # キャッシュの有効期限（30秒）
+    CACHE_DURATION = 30
     current_time = time.time()
     
     # キャッシュが有効な場合はそれを返す
@@ -166,3 +166,10 @@ def get_onomatopoeia_by_category(category):
 def get_all_categories():
     """全カテゴリのリストを取得"""
     return ["擬音語", "擬態語", "擬情語"]
+
+def clear_onomatopoeia_cache():
+    """オノマトペキャッシュをクリア（管理者用）"""
+    global _onomatopoeia_cache, _cache_timestamp
+    _onomatopoeia_cache = None
+    _cache_timestamp = None
+    print("オノマトペキャッシュをクリアしました")
