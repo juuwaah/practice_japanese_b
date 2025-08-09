@@ -15,7 +15,7 @@
                    class="filter-btn {% if selected_level == 'all' %}active{% endif %}">
                     All ({{ level_counts.values() | sum }})
                 </a>
-                {% for level in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+                {% for level in ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'] %}
                     {% if level in level_counts %}
                     <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order, lang='en') }}" 
                        class="filter-btn {% if selected_level == level %}active{% endif %}">
@@ -26,6 +26,13 @@
             </div>
         </div>
     </div>
+    
+    <!-- N0 Level Explanation -->
+    {% if 'N0' in level_counts %}
+    <div style="margin: 12px 0; padding: 8px; background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 4px; font-size: 9px; color: #856404;">
+        <strong>Note:</strong> N0 is an unofficial level that represents difficulty higher than N1.
+    </div>
+    {% endif %}
     
     <!-- Retro Table Quiz List -->
     {% if quizzes %}

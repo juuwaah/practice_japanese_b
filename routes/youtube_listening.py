@@ -209,7 +209,7 @@ def listening_levels():
     elif sort_by == 'title':
         filtered_quizzes.sort(key=lambda q: q.get('title', ''), reverse=reverse)
     elif sort_by == 'level':
-        level_order = {'N5': 1, 'N4': 2, 'N3': 3, 'N2': 4, 'N1': 5}
+        level_order = {'N5': 1, 'N4': 2, 'N3': 3, 'N2': 4, 'N1': 5, 'N0': 6}
         filtered_quizzes.sort(key=lambda q: level_order.get(q.get('level', 'N5'), 1), reverse=reverse)
     elif sort_by == 'channel':
         filtered_quizzes.sort(key=lambda q: q.get('channel_name', '') or '', reverse=reverse)
