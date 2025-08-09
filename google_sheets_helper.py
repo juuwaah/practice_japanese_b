@@ -153,3 +153,35 @@ def get_fallback_listening_data():
     ]
     
     return fallback_data
+
+def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
+    """Google Sheetsからオノマトペデータを読み込み"""
+    try:
+        gc = get_google_sheets_client()
+        if gc is None:
+            print(f"Google Sheets認証に失敗しました。オノマトペデータ({sheet_name})の読み込みをスキップします。")
+            return None
+            
+        # スプレッドシートを開く
+        sheet = gc.open_by_key(sheet_id)
+        worksheet = sheet.worksheet(sheet_name)
+        
+        # データを取得（ヘッダー付き）
+        records = worksheet.get_all_records()
+        
+        # オノマトペリストに変換
+        onomatopoeia_list = []
+        for record in records:
+            if record.get('word') and record.get('meaning'):  # 必須フィールドをチェック
+                onomatopoeia_list.append({
+                    'word': str(record.get('word', '')).strip(),
+                    'meaning': str(record.get('meaning', '')).strip(),
+                    'category': str(record.get('category', '擬音語')).strip()
+                })
+        
+        print(f"オノマトペデータ読み込み成功: {len(onomatopoeia_list)}個")
+        return onomatopoeia_list
+        
+    except Exception as e:
+        print(f"オノマトペデータ読み込みエラー: {e}")
+        return None

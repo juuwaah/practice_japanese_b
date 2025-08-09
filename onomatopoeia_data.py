@@ -1,7 +1,15 @@
 # onomatopoeia_data.py
-# 日本語オノマトペデータベース（100個）
+# 日本語オノマトペデータベース
 
-ONOMATOPOEIA_LIST = [
+import os
+from google_sheets_helper import load_onomatopoeia_data_from_sheets
+
+# Google Sheets設定
+ONOMATOPOEIA_SHEET_ID = os.getenv('ONOMATOPOEIA_SHEET_ID', '')
+ONOMATOPOEIA_SHEET_NAME = os.getenv('ONOMATOPOEIA_SHEET_NAME', 'Onomatopoeia Database')
+
+# フォールバック用のローカルデータ
+ONOMATOPOEIA_LIST_FALLBACK = [
     # 擬音語 - 音の真似（30個）
     {"word": "ゴロゴロ", "meaning": "rumbling, rolling", "category": "擬音語"},
     {"word": "パチパチ", "meaning": "crackling, clapping", "category": "擬音語"},
@@ -108,14 +116,28 @@ ONOMATOPOEIA_LIST = [
     {"word": "にっこり", "meaning": "smiling warmly", "category": "擬情語"}
 ]
 
+def get_onomatopoeia_list():
+    """オノマトペリストを取得（Google Sheets優先、フォールバック対応）"""
+    if ONOMATOPOEIA_SHEET_ID:
+        # Google Sheetsから読み込み
+        sheets_data = load_onomatopoeia_data_from_sheets(ONOMATOPOEIA_SHEET_ID, ONOMATOPOEIA_SHEET_NAME)
+        if sheets_data:
+            return sheets_data
+    
+    # フォールバック：ローカルデータを使用
+    print("Google Sheetsから読み込めないため、ローカルデータを使用します")
+    return ONOMATOPOEIA_LIST_FALLBACK
+
 def get_random_onomatopoeia():
     """ランダムにオノマトペを1つ選択"""
     import random
-    return random.choice(ONOMATOPOEIA_LIST)
+    onomatopoeia_list = get_onomatopoeia_list()
+    return random.choice(onomatopoeia_list)
 
 def get_onomatopoeia_by_category(category):
     """指定されたカテゴリのオノマトペリストを取得"""
-    return [item for item in ONOMATOPOEIA_LIST if item["category"] == category]
+    onomatopoeia_list = get_onomatopoeia_list()
+    return [item for item in onomatopoeia_list if item["category"] == category]
 
 def get_all_categories():
     """全カテゴリのリストを取得"""
