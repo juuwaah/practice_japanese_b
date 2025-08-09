@@ -583,6 +583,11 @@ li {
   margin-bottom: 2px;
 }
 
+/* Override for About page API list */
+.privacy-terms li {
+  font-size: 8px !important;
+}
+
 /* Quiz specific styles */
 .quiz-option-btn {
   background-color: #F0F0F0;
