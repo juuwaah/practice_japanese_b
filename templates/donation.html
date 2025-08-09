@@ -20,16 +20,16 @@
     <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
       <div style="display: flex; align-items: center; margin-bottom: 12px;">
         <span style="font-size: 20px; margin-right: 8px;">☕</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">Buy Me a Coffee</h3>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('buy_me_coffee') }}</h3>
       </div>
       <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
-        Support development with a one-time donation through Buy Me a Coffee.
+        {{ _('buy_me_coffee_desc') }}
       </p>
       <a href="https://buymeacoffee.com/japanesewithb" target="_blank" 
          style="display: inline-block; padding: 8px 16px; background: #FFDD00; color: #000; 
                 text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
                 font-weight: bold; cursor: pointer;">
-        ☕ Visit Buy Me a Coffee
+        {{ _('visit_buy_me_coffee') }}
       </a>
     </div>
 
@@ -37,15 +37,15 @@
     <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
       <div style="display: flex; align-items: center; margin-bottom: 12px;">
         <span style="font-size: 20px; margin-right: 8px;">💳</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">PayPal</h3>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('paypal') }}</h3>
       </div>
       <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
-        Make a secure donation using PayPal.
+        {{ _('paypal_desc') }}
       </p>
       <a href="https://www.paypal.com/ncp/payment/PCB595CBVLF7J" target="_blank"
          style="display: inline-block; padding: 8px 16px; background: #0070BA; color: #FFFFFF; 
                 text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; font-weight: bold; cursor: pointer;">
-        💳 Donate with PayPal
+        {{ _('donate_with_paypal') }}
       </a>
     </div>
 
@@ -53,33 +53,29 @@
     <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
       <div style="display: flex; align-items: center; margin-bottom: 12px;">
         <span style="font-size: 20px; margin-right: 8px;">🎯</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">Patreon</h3>
+        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('patreon_support') }}</h3>
       </div>
-      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
-        Support ongoing development and get access to exclusive content including:
-        • JLPT level-specific practice worksheets
-        • Deep Japanese language discussions, idioms, youth slang, and internet terms
-        • Irregular (low-frequency) podcasts
-        • Japanese cultural introductions
+      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3; white-space: pre-line;">
+        {{ _('patreon_desc') }}
       </p>
       <a href="https://www.patreon.com/japanesewithb" target="_blank" 
          style="display: inline-block; padding: 8px 16px; background: #F96854; color: #FFFFFF; 
                 text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
                 font-weight: bold; cursor: pointer;">
-        🎯 Support on Patreon
+        {{ _('support_on_patreon') }}
       </a>
     </div>
   </div>
 
   <!-- Usage Information -->
   <div style="border: 2px inset #C0C0C0; padding: 12px; background: #FFFFFF; margin-bottom: 16px;">
-    <h3 style="font-size: 10px; margin: 0 0 8px 0; font-weight: bold;">💡 How Your Support Helps</h3>
-    <ul style="font-size: 9px; margin: 0; padding-left: 16px; color: #404040; line-height: 1.4;">
-      <li>Keep the app free for all users</li>
-      <li>Server hosting and maintenance costs</li>
-      <li>AI API costs for quiz generation</li>
-      <li>Development of new features</li>
-      <li>Content creation and updates</li>
+    <h3 style="font-size: 8px; margin: 0 0 8px 0; font-weight: bold;">{{ _('how_support_helps') }}</h3>
+    <ul style="font-size: 8px; margin: 0; padding-left: 16px; color: #404040; line-height: 1.4;">
+      <li>{{ _('help_keep_free') }}</li>
+      <li>{{ _('help_server_costs') }}</li>
+      <li>{{ _('help_ai_costs') }}</li>
+      <li>{{ _('help_new_features') }}</li>
+      <li>{{ _('help_content_updates') }}</li>
     </ul>
   </div>
 
@@ -94,7 +90,7 @@
   <div style="text-align: center; margin-top: 20px;">
     <a href="{{ url_for('home') }}" 
        style="font-size: 9px; text-decoration: underline; color: #000;">
-      ← Back to App
+      {{ _('back_to_app') }}
     </a>
   </div>
 </div>
