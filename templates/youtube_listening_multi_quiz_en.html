@@ -20,8 +20,7 @@
             </div>
             <div class="mt-2">
                 <div id="video-info" class="alert alert-info small">
-                    <strong>📺 Playback Range:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span><br>
-                    <small>※ Only this range will be played. Clicking other parts of the seek bar will not play outside this range.</small>
+                    <strong>📺 Playback Range:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span>
                 </div>
             </div>
         </div>

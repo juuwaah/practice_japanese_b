@@ -23,23 +23,25 @@
       /* Create mobile layout container */
       body {
         display: flex !important;
-        flex-direction: column !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        min-height: 100vh !important;
       }
       
-      /* Mobile navigation sidebar - left 30% of screen */
+      /* Mobile navigation sidebar - left 25% of screen */
       .menu-bar {
         position: static !important;
-        width: 30% !important;
-        min-width: 200px !important;
-        max-width: 300px !important;
-        float: left !important;
+        width: 25% !important;
+        min-width: 150px !important;
+        max-width: 200px !important;
         display: flex !important;
         flex-direction: column !important;
         background: #C0C0C0 !important;
         border: 2px solid #808080 !important;
-        padding: 8px !important;
-        margin: 8px 0 16px 8px !important;
+        padding: 6px !important;
+        margin: 8px 4px 8px 8px !important;
         box-sizing: border-box !important;
+        flex-shrink: 0 !important;
       }
       
       /* Stack menu items vertically */
@@ -101,22 +103,21 @@
         border-bottom: none !important;
       }
       
-      /* External links section - also in left sidebar area */
+      /* External links section - below menu bar in same column */
       .external-links-section {
         position: static !important;
-        width: 30% !important;
-        min-width: 200px !important;
-        max-width: 300px !important;
-        float: left !important;
+        width: 25% !important;
+        min-width: 150px !important;
+        max-width: 200px !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
-        padding: 8px !important;
+        padding: 6px !important;
         background: #F8F8F8 !important;
         border: 1px solid #C0C0C0 !important;
-        margin: 0 0 16px 8px !important;
+        margin: 0 4px 8px 8px !important;
         box-sizing: border-box !important;
-        clear: left !important;
+        flex-shrink: 0 !important;
       }
       
       /* External link containers */
@@ -144,12 +145,23 @@
         line-height: 1.1 !important;
       }
       
+      /* Container for menu and external links */
+      .mobile-sidebar {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 25% !important;
+        min-width: 150px !important;
+        max-width: 200px !important;
+        flex-shrink: 0 !important;
+      }
+      
       /* Main content area - use remaining space */
       .main-content {
-        margin-left: 32% !important;
+        flex: 1 !important;
         padding: 8px !important;
-        width: auto !important;
+        margin: 8px !important;
         box-sizing: border-box !important;
+        min-width: 0 !important;
       }
       
       /* Hide tool palette on mobile as it's not touch-friendly */
@@ -161,24 +173,26 @@
     /* Very small screens - more compact */
     @media (max-width: 480px) {
       .menu-bar,
-      .external-links-section {
-        min-width: 150px !important;
-        margin-left: 4px !important;
+      .external-links-section,
+      .mobile-sidebar {
+        width: 30% !important;
+        min-width: 120px !important;
+        max-width: 150px !important;
       }
       
       .menu-item {
-        padding: 4px 6px !important;
-        font-size: 11px !important;
+        padding: 4px 4px !important;
+        font-size: 10px !important;
       }
       
       .menu-content a {
-        padding: 4px 6px !important;
-        font-size: 9px !important;
+        padding: 4px 4px !important;
+        font-size: 8px !important;
       }
       
       .external-link-btn {
-        padding: 6px 4px !important;
-        font-size: 10px !important;
+        padding: 4px 2px !important;
+        font-size: 9px !important;
       }
       
       .btn-description {
@@ -186,8 +200,8 @@
       }
       
       .main-content {
-        margin-left: 35% !important;
         padding: 4px !important;
+        margin: 4px !important;
       }
     }
     </style>
