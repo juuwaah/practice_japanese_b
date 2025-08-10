@@ -209,6 +209,10 @@
     </style> -->
 </head>
 <body class="font-{{ get_current_font() }}">
+  <!-- Mobile container wrapper -->
+  <div class="mobile-container">
+    <!-- Left sidebar for mobile -->
+    <div class="left-sidebar">
   <!-- Top Menu Bar (like Adobe Illustrator 1987) -->
   <div class="menu-bar">
     <div class="menu-dropdown">
@@ -408,6 +412,10 @@
       <div class="btn-description">Support ongoing development</div>
     </div>
   </div>
+    </div> <!-- Close left-sidebar -->
+    
+    <!-- Main content wrapper -->
+    <div class="content-wrapper">
 
   <!-- Main Content Window -->
   <div class="main-content-wrapper">
@@ -445,6 +453,8 @@
   <div class="footer-copyright">
     {{ _('copyright') }}
   </div>
+    </div> <!-- Close content-wrapper -->
+  </div> <!-- Close mobile-container -->
 
   {% block scripts %}{% endblock %}
 
