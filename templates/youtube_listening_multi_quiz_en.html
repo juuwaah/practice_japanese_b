@@ -13,7 +13,7 @@
     <!-- YouTube Video -->
     <div class="row mb-4">
         <div class="col-lg-12">
-            <div class="embed-responsive embed-responsive-16by9" style="max-width: 800px; margin: 0 auto;">
+            <div class="embed-responsive embed-responsive-16by9 youtube-video-container" style="max-width: 800px; margin: 0 auto;">
                 <iframe id="main-video" class="embed-responsive-item" 
                         src="https://www.youtube.com/embed/{{ base_quiz.video_id }}?start={{ base_quiz.start }}&end={{ base_quiz.end }}&autoplay=0&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
                         allow="autoplay"></iframe>
@@ -41,7 +41,7 @@
                         </div>
                         {% if quiz.start and quiz.end and (quiz.start != base_quiz.start or quiz.end != base_quiz.end) %}
                         <div class="mb-3">
-                            <div class="embed-responsive embed-responsive-16by9" style="max-width: 300px;">
+                            <div class="embed-responsive embed-responsive-16by9 youtube-sub-video-container" style="max-width: 300px;">
                                 <iframe class="embed-responsive-item" 
                                         src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=0&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
                                         allow="autoplay"></iframe>
@@ -264,4 +264,46 @@ function jumpToTime(seconds) {
     iframe.src = newSrc;
 }
 </script>
+
+<style>
+/* Mobile responsive styles for YouTube videos */
+@media (max-width: 768px) {
+    .youtube-video-container {
+        max-width: 100% !important;
+        margin: 0 4px !important;
+    }
+    
+    .youtube-sub-video-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    
+    .col-lg-12 {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 4px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .youtube-video-container,
+    .youtube-sub-video-container {
+        margin: 0 !important;
+    }
+    
+    .container {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+    
+    .col-lg-12 {
+        padding: 0 !important;
+    }
+}
+</style>
 {% endblock %}
