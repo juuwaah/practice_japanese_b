@@ -112,6 +112,42 @@ class QuizPlayCount(db.Model):
     def __repr__(self):
         return f'<QuizPlayCount {self.user_id}:{self.quiz_id} ({self.play_count})>'
 
+class GrammarQuizLog(db.Model):
+    __tablename__ = 'grammar_quiz_log'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    original_sentence = db.Column(db.Text, nullable=False)  # 生成された元の文
+    user_translation = db.Column(db.Text, nullable=False)   # ユーザーの翻訳
+    jlpt_level = db.Column(db.String(10), nullable=False)   # N5, N4, N3, N2, N1
+    direction = db.Column(db.String(10), nullable=False)    # ja_to_en または en_to_ja
+    score = db.Column(db.Float, nullable=True)              # 採点結果（0-100）
+    feedback = db.Column(db.Text, nullable=True)            # AIからのフィードバック
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # リレーションシップ
+    user = db.relationship('User', backref='grammar_quiz_logs')
+    
+    def __repr__(self):
+        return f'<GrammarQuizLog {self.user_id}:{self.jlpt_level} ({self.score})>'
+
+class FlashcardLog(db.Model):
+    __tablename__ = 'flashcard_log'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    word_id = db.Column(db.Integer, db.ForeignKey('vocab_master.id'), nullable=False)
+    jlpt_level = db.Column(db.String(10), nullable=False)
+    result = db.Column(db.String(20), nullable=False)       # 'learned' or 'not_learned'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # リレーションシップ
+    user = db.relationship('User', backref='flashcard_logs')
+    vocab = db.relationship('VocabMaster', backref='flashcard_logs')
+    
+    def __repr__(self):
+        return f'<FlashcardLog {self.user_id}:{self.word_id} ({self.result})>'
+
 class OAuth(OAuthConsumerMixin, db.Model):
     __tablename__ = 'oauth'
     

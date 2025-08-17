@@ -7,7 +7,7 @@ from routes.vocab import vocab_bp
 from routes.akinator import akinator_bp
 from routes.flashcard import flashcard_bp
 from routes.youtube_listening import youtube_listening_bp
-from models import db, User, Feedback, OAuth
+from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
 import datetime as dt
@@ -643,7 +643,27 @@ def admin_users():
     
     return render_template('admin_users.html', users_list=users_list)
 
-
+@app.route('/admin/user/<int:user_id>')
+@login_required
+def admin_user_detail(user_id):
+    """個別ユーザーの詳細とログ表示"""
+    if not current_user.is_admin:
+        flash('アクセス権限がありません', 'error')
+        return redirect(url_for('home'))
+    
+    # ユーザー情報を取得
+    user = User.query.get_or_404(user_id)
+    
+    # 文法クイズログを取得
+    grammar_logs = GrammarQuizLog.query.filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
+    
+    # フラッシュカードログを取得
+    flashcard_logs = FlashcardLog.query.filter_by(user_id=user_id).order_by(FlashcardLog.created_at.desc()).limit(50).all()
+    
+    return render_template('admin_user_detail.html', 
+                         user=user, 
+                         grammar_logs=grammar_logs, 
+                         flashcard_logs=flashcard_logs)
 
 # GCSバケット名（環境変数から取得、なければ直接指定）
 BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', 'your-bucket-name')

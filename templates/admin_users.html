@@ -35,7 +35,10 @@
         <tr>
           <td style="border: 1px solid #888; padding: 4px; text-align: center;">{{ user.id }}</td>
           <td style="border: 1px solid #888; padding: 4px; font-weight: bold;">
-            {{ user.username }}
+            <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" 
+               style="color: #0066CC; text-decoration: underline;">
+              {{ user.username or user.email.split('@')[0] }}
+            </a>
             {% if user.is_admin %}
               <span style="color: #FF0000; font-size: 7px;">[ADMIN]</span>
             {% endif %}

@@ -239,30 +239,39 @@ def normalize_text(text):
     
     return text.lower()
 
-def is_correct_answer(user_guess, correct_word):
+def is_correct_answer(user_guess, correct_word, correct_kanji=None):
     """
     ユーザーの推測が正解かどうかを判定（文字種と漢字読みを考慮）
     """
-    if not user_guess or not correct_word:
+    if not user_guess:
         return False
     
-    # 文字種を統一して比較
-    normalized_guess = normalize_text(user_guess)
-    normalized_correct = normalize_text(correct_word)
+    # WordとKanjiの両方をチェック
+    words_to_check = [correct_word]
+    if correct_kanji and correct_kanji.strip():
+        words_to_check.append(correct_kanji)
     
-    # 完全一致
-    if normalized_guess == normalized_correct:
-        return True
-    
-    # 部分一致（正解が含まれている場合）
-    if normalized_correct in normalized_guess or normalized_guess in normalized_correct:
-        return True
-    
-    # 漢字読み辞書でチェック
-    if user_guess in KANJI_READINGS and KANJI_READINGS[user_guess] == correct_word:
-        return True
-    if correct_word in KANJI_READINGS and KANJI_READINGS[correct_word] == user_guess:
-        return True
+    for word in words_to_check:
+        if not word:
+            continue
+            
+        # 文字種を統一して比較
+        normalized_guess = normalize_text(user_guess)
+        normalized_correct = normalize_text(word)
+        
+        # 完全一致
+        if normalized_guess == normalized_correct:
+            return True
+        
+        # 部分一致（正解が含まれている場合）
+        if normalized_correct in normalized_guess or normalized_guess in normalized_correct:
+            return True
+        
+        # 漢字読み辞書でチェック
+        if user_guess in KANJI_READINGS and KANJI_READINGS[user_guess] == word:
+            return True
+        if word in KANJI_READINGS and KANJI_READINGS[word] == user_guess:
+            return True
     
     return False
 
@@ -280,9 +289,10 @@ def akinator_index():
         session['akinator_gameover'] = False
         session['akinator_history'] = []
         # 語彙を選択
-        word, meaning = select_random_noun(level_param)
+        word, meaning, kanji = select_random_noun(level_param)
         session['akinator_word'] = word
         session['akinator_meaning'] = meaning
+        session['akinator_kanji'] = kanji
         return redirect(url_for('akinator.akinator_game'))
     
     # roleパラメータがあるがlevelパラメータがない場合、適切なデフォルトレベルを設定して直接ゲームを開始
@@ -299,9 +309,10 @@ def akinator_index():
         session['akinator_gameover'] = False
         session['akinator_history'] = []
         # 語彙を選択
-        word, meaning = select_random_noun(default_level)
+        word, meaning, kanji = select_random_noun(default_level)
         session['akinator_word'] = word
         session['akinator_meaning'] = meaning
+        session['akinator_kanji'] = kanji
         return redirect(url_for('akinator.akinator_game'))
     
     if request.method == 'POST':
@@ -317,9 +328,10 @@ def akinator_index():
             session['akinator_gameover'] = False
             session['akinator_history'] = []
             # 語彙を選択
-            word, meaning = select_random_noun(level)
+            word, meaning, kanji = select_random_noun(level)
             session['akinator_word'] = word
             session['akinator_meaning'] = meaning
+            session['akinator_kanji'] = kanji
             return redirect(url_for('akinator.akinator_game'))
     
     # デフォルト値として前回の設定を使用
@@ -350,9 +362,10 @@ def akinator_restart():
         session['akinator_history'] = []
         
         # 新しい語彙を選択
-        word, meaning = select_random_noun(level)
+        word, meaning, kanji = select_random_noun(level)
         session['akinator_word'] = word
         session['akinator_meaning'] = meaning
+        session['akinator_kanji'] = kanji
         
         return redirect(url_for('akinator.akinator_game'))
     else:
@@ -539,9 +552,10 @@ def akinator_game():
         if user_guess:
             word = session.get('akinator_word')
             meaning = session.get('akinator_meaning')
+            kanji = session.get('akinator_kanji')
             
             # ユーザーの推測をチェック
-            if is_correct_answer(user_guess, word):
+            if is_correct_answer(user_guess, word, kanji):
                 history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
                 history.append({'role': 'gpt', 'text': 'せいかい！おめでとう！ ( ◜◡◝ )'})
                 session['akinator_gameover'] = True
@@ -807,11 +821,12 @@ def select_random_noun(level):
     if 'Aki' in df.columns:
         df = df[df['Aki'].fillna(0).astype(int) == 1]
     if df.empty:
-        return "（名詞なし）", "No noun found"
+        return "（名詞なし）", "No noun found", ""
     row = df.sample(1).iloc[0]
     word = str(row['Word'])
     meaning = str(row['Meaning'])
-    return word, meaning
+    kanji = str(row['Kanji']) if 'Kanji' in row and pd.notna(row['Kanji']) else ""
+    return word, meaning, kanji
 
 # ChatGPT用プロンプト生成
 
