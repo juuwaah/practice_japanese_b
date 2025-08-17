@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, session
+from flask_login import current_user
 import openai
 import os
 import re
@@ -7,6 +8,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import random
 from google_sheets_helper import load_grammar_data_from_sheets
+from models import db, GrammarQuizLog
 # from utils.furigana import text_to_ruby_html  # 削除
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
@@ -77,6 +79,29 @@ def grammar_index():
                 model_answer = result.get("model_answer", [])
                 feedback = result.get("feedback", "")
                 casual_answer = result.get("casual_answer", "")
+                
+                # ログイン済みユーザーの場合、ログを保存
+                if current_user.is_authenticated:
+                    try:
+                        # スコアを計算（grammarとmeaningの平均を0-100スケールに変換）
+                        score = ((grammar + meaning) / 6.0) * 100 if grammar and meaning else None
+                        
+                        # ログを保存
+                        log = GrammarQuizLog(
+                            user_id=current_user.id,
+                            original_sentence=original,
+                            user_translation=translation,
+                            jlpt_level=level,
+                            direction='en_to_ja' if direction == 'en-ja' else 'ja_to_en',
+                            score=score,
+                            feedback=feedback if feedback else None
+                        )
+                        db.session.add(log)
+                        db.session.commit()
+                    except Exception as e:
+                        # ログ保存エラーは無視（メイン機能に影響させない）
+                        print(f"Grammar quiz log save error: {e}")
+                        db.session.rollback()
         except Exception as e:
             message = f"Error: {str(e)}"
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import login_required, current_user
-from models import db, VocabMaster, FlashcardProgress
+from models import db, VocabMaster, FlashcardProgress, FlashcardLog
 import pandas as pd
 import os
 from datetime import datetime, timedelta
@@ -199,6 +199,22 @@ def study():
                 progress.next_review = get_next_review_date(progress.study_count)
         
         progress.updated_at = datetime.utcnow()
+        
+        # フラッシュカードログを保存
+        try:
+            vocab = db.session.get(VocabMaster, word_id)
+            if vocab:
+                log = FlashcardLog(
+                    user_id=current_user.id,
+                    word_id=word_id,
+                    jlpt_level=vocab.jlpt_level,
+                    result='learned' if action == 'learned' else 'not_learned'
+                )
+                db.session.add(log)
+        except Exception as e:
+            # ログ保存エラーは無視（メイン機能に影響させない）
+            print(f"Flashcard log save error: {e}")
+        
         db.session.commit()
         
         # 次のカードに進む
