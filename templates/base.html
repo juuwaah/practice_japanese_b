@@ -563,8 +563,14 @@
         
         // Special handling for mobile sitemap tool
         if (this.id === 'mobile-sitemap-tool') {
+          console.log('🔍 Mobile sitemap button clicked');
           e.stopPropagation();
-          loadSitemap();
+          try {
+            loadSitemap();
+            console.log('✅ loadSitemap() called successfully');
+          } catch (error) {
+            console.error('❌ Error calling loadSitemap():', error);
+          }
           return;
         }
         
@@ -892,13 +898,23 @@
     
     // Load sitemap data
     function loadSitemap() {
+      console.log('🔍 loadSitemap() function started');
       const modal = document.getElementById('sitemap-modal');
       const loading = document.getElementById('sitemap-loading');
       const dataDiv = document.getElementById('sitemap-data');
       
+      console.log('🔍 Elements found:', { modal, loading, dataDiv });
+      
+      if (!modal) {
+        console.error('❌ Sitemap modal not found');
+        return;
+      }
+      
       modal.style.display = 'flex';
-      loading.style.display = 'block';
-      dataDiv.style.display = 'none';
+      if (loading) loading.style.display = 'block';
+      if (dataDiv) dataDiv.style.display = 'none';
+      
+      console.log('🔍 Modal displayed, fetching data...');
       
       fetch('/sitemap_data')
         .then(response => response.json())
