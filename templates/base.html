@@ -234,7 +234,7 @@
         <a href="{{ url_for('vocab.vocab_index') }}">{{ _('vocabulary') }}</a>
         <a href="{{ url_for('flashcard.flashcard_index') }}">{{ _('flashcards') }}</a>
         <div class="menu-dropdown" style="position: relative;">
-          <span style="display: block; padding: 3px 4px; font-size: 7px; border-bottom: 1px dotted #C0C0C0; text-decoration: none; color: #000; word-wrap: break-word; white-space: normal; cursor: pointer;">{{ _('akinator') }}</span>
+          <a href="#" style="display: block; padding: 2px 8px; color: #000000; text-decoration: none; font-size: 9px; border-bottom: 1px dotted #C0C0C0;">{{ _('akinator') }}</a>
           <div class="menu-content" style="position: absolute; left: 100%; top: 0; margin-left: 2px; display: none;">
             <a href="{{ url_for('akinator.akinator_index') }}?role=user">{{ _('you_are_akinator') }}</a>
             <a href="{{ url_for('akinator.akinator_index') }}?role=gpt">{{ _('ai_is_akinator') }}</a>
@@ -866,6 +866,17 @@
         });
       });
     });
+    
+    // Prevent Akinator parent link from navigating
+    document.addEventListener('DOMContentLoaded', function() {
+      const akinatorLink = document.querySelector('.menu-content .menu-dropdown > a[href="#"]');
+      if (akinatorLink) {
+        akinatorLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          return false;
+        });
+      }
+    });
   </script>
 
   <style>
@@ -881,6 +892,16 @@
       top: 0;
       margin-left: 2px;
       z-index: 12002;
+    }
+    
+    /* Prevent Akinator parent link from navigating */
+    .menu-content .menu-dropdown > a[href="#"] {
+      cursor: pointer;
+    }
+    
+    .menu-content .menu-dropdown > a[href="#"]:hover {
+      background-color: #000000;
+      color: #FFFFFF;
     }
   </style>
 </body>
