@@ -736,20 +736,20 @@ li {
   display: none !important;
 }
 
-/* Override to show on mobile screens - simplified media query */
+/* Show mobile toolbars only on mobile screens */
 @media (max-width: 768px) {
   .mobile-bottom-toolbar,
   .mobile-top-menu {
     display: flex !important;
   }
   
-  /* Force visibility debugging */
+  /* Mobile bottom toolbar styling */
   .mobile-bottom-toolbar {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    z-index: 99999 !important;
-    background-color: #FF0000 !important; /* Red background for debugging */
+    z-index: 10001 !important;
+    background-color: #C0C0C0 !important; /* Normal gray background */
     position: fixed !important;
     bottom: 30px !important;
     left: 0 !important;
@@ -759,6 +759,7 @@ li {
     justify-content: space-around !important;
     align-items: center !important;
     padding: 4px 8px !important;
+    box-shadow: 0 -1px 2px rgba(0,0,0,0.2) !important;
   }
   
   .mobile-top-menu {
@@ -771,6 +772,10 @@ li {
     background: #C0C0C0 !important;
     border-bottom: 2px solid #808080 !important;
     z-index: 10002 !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
   }
 }
 

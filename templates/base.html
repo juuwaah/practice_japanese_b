@@ -654,12 +654,10 @@
       const bottomToolbar = document.querySelector('.mobile-bottom-toolbar');
       const topMenu = document.querySelector('.mobile-top-menu');
       
-      console.log('Screen width:', screenWidth);
-      console.log('Is narrow screen (<=768):', isNarrowScreen);
-      console.log('Is mobile UA:', isMobileUA);
-      console.log('Is mobile (final):', isMobile);
-      console.log('Bottom toolbar element:', bottomToolbar);
-      console.log('Top menu element:', topMenu);
+      // Less verbose logging for production
+      if (isNarrowScreen) {
+        console.log('📱 Mobile detected - width:', screenWidth);
+      }
       
       // Always show on narrow screens for debugging
       if (isNarrowScreen) {
@@ -669,7 +667,7 @@
             bottomToolbar.style.visibility = 'visible';
             bottomToolbar.style.opacity = '1';
             bottomToolbar.style.zIndex = '99999';
-            bottomToolbar.style.backgroundColor = '#FF0000'; // Red for debugging
+            bottomToolbar.style.backgroundColor = '#C0C0C0'; // Normal gray
             bottomToolbar.style.position = 'fixed';
             bottomToolbar.style.bottom = '30px';
             bottomToolbar.style.left = '0';
@@ -680,7 +678,7 @@
             bottomToolbar.style.alignItems = 'center';
             bottomToolbar.style.padding = '4px 8px';
             bottomToolbar.style.boxSizing = 'border-box';
-            console.log('✅ Mobile bottom toolbar forced visible');
+            console.log('✅ Mobile toolbar ready');
           } catch (e) {
             console.error('❌ Error styling bottom toolbar:', e);
           }
@@ -698,7 +696,7 @@
             topMenu.style.height = '50px';
             topMenu.style.backgroundColor = '#C0C0C0';
             topMenu.style.zIndex = '10002';
-            console.log('✅ Mobile top menu forced visible');
+            console.log('✅ Mobile top menu ready');
           } catch (e) {
             console.error('❌ Error styling top menu:', e);
           }
