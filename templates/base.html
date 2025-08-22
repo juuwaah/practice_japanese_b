@@ -641,6 +641,25 @@
       dropdown.className = 'mobile-dropdown-menu';
       dropdown.innerHTML = sourceMenu.innerHTML;
       
+      // Re-attach event listeners for copied elements
+      const copiedSettingsLink = dropdown.querySelector('#settings-menu-link');
+      if (copiedSettingsLink) {
+        console.log('🔄 Re-attaching settings link listener to mobile dropdown');
+        copiedSettingsLink.addEventListener('click', function(e) {
+          console.log('🖱️ Mobile settings menu link clicked!');
+          e.preventDefault();
+          // Close the mobile dropdown first
+          dropdown.remove();
+          // Open settings modal directly
+          const settingsModal = document.getElementById('settings-modal');
+          if (settingsModal) {
+            console.log('⚙️ Opening settings modal from mobile dropdown');
+            settingsModal.classList.add('modal-show');
+            console.log('⚙️ Settings modal class added from mobile');
+          }
+        });
+      }
+      
       dropdown.style.position = 'fixed';
       dropdown.style.top = '60px'; // Below top menu
       dropdown.style.left = '50%';
@@ -857,10 +876,18 @@
         }
       });
 
-      // Settings modal functionality
+      // Settings modal functionality  
       const settingsModal = document.getElementById('settings-modal');
       const settingsCloseBtn = document.getElementById('settings-close');
       const settingsMenuLink = document.getElementById('settings-menu-link');
+      
+      // Debug: Check if elements exist
+      console.log('🔍 Settings debug:', {
+        settingsModal: !!settingsModal,
+        settingsCloseBtn: !!settingsCloseBtn, 
+        settingsMenuLink: !!settingsMenuLink,
+        settingsMenuLinkElement: settingsMenuLink
+      });
       
       // Open settings modal function  
       function openSettingsModal() {
@@ -875,10 +902,17 @@
         console.log('⚙️ Settings modal closed');
       }
       
-      settingsMenuLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        openSettingsModal();
-      });
+      // Add event listener only if element exists
+      if (settingsMenuLink) {
+        console.log('✅ Adding click listener to settings menu link');
+        settingsMenuLink.addEventListener('click', function(e) {
+          console.log('🖱️ Settings menu link clicked!');
+          e.preventDefault();
+          openSettingsModal();
+        });
+      } else {
+        console.error('❌ Settings menu link not found!');
+      }
       
       settingsCloseBtn.addEventListener('click', closeSettingsModal);
       
