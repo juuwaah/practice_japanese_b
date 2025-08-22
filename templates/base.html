@@ -406,6 +406,26 @@
       <div class="btn-description">Support ongoing development</div>
     </div>
   </div>
+
+  <!-- Mobile Bottom Toolbar (only visible on mobile) -->
+  <div class="mobile-bottom-toolbar">
+    <!-- Language Tool -->
+    <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
+    <!-- Font Tool -->
+    <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
+    <!-- Feedback Tool -->
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
+    {% endif %}
+    <!-- Sitemap Tool -->
+    <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+    <!-- Donation Tool -->
+    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
+    <!-- Preply Button -->
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn" title="Preply">P</a>
+    <!-- Patreon Button -->
+    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn" title="Patreon">♥</a>
+  </div>
     </div> <!-- Close left-sidebar -->
     
     <!-- Main content wrapper -->
@@ -453,7 +473,7 @@
   {% block scripts %}{% endblock %}
 
   <script>
-    // Simple tool palette interaction
+    // Simple tool palette interaction (desktop)
     document.querySelectorAll('.tool-icon').forEach(tool => {
       tool.addEventListener('click', function() {
         // Special handling for feedback tool
@@ -502,7 +522,57 @@
     });
     
     // Set selection tool as default active
-    document.querySelector('.tool-icon').classList.add('active');
+    if (document.querySelector('.tool-icon')) {
+      document.querySelector('.tool-icon').classList.add('active');
+    }
+
+    // Mobile tool palette interaction
+    document.querySelectorAll('.mobile-tool-btn').forEach(tool => {
+      tool.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Special handling for mobile feedback tool
+        if (this.id === 'mobile-feedback-tool') {
+          const loginLink = document.querySelector('a[href*="login"]');
+          const logoutLink = document.querySelector('a[href*="logout"]');
+          const isLoggedIn = !loginLink || logoutLink;
+          
+          if (!isLoggedIn) {
+            alert('フィードバック、感想を送るにはログインしてください');
+            window.location.href = '/login';
+            return;
+          }
+          document.getElementById('feedback-modal').style.display = 'flex';
+          return;
+        }
+        
+        // Special handling for mobile sitemap tool
+        if (this.id === 'mobile-sitemap-tool') {
+          loadSitemap();
+          return;
+        }
+        
+        // Special handling for mobile language tool
+        if (this.id === 'mobile-language-tool') {
+          showMobileLanguageMenu(this);
+          return;
+        }
+        
+        // Special handling for mobile font tool
+        if (this.id === 'mobile-font-tool') {
+          showMobileFontMenu(this);
+          return;
+        }
+        
+        // Special handling for mobile donation tool
+        if (this.id === 'mobile-donation-tool') {
+          window.location.href = '/donation';
+          return;
+        }
+        
+        // For link buttons (Preply, Patreon), let them handle their own navigation
+      });
+    });
     
     // Feedback modal functionality
     document.addEventListener('DOMContentLoaded', function() {
@@ -866,6 +936,100 @@
         });
       });
     });
+
+    // Mobile Language menu functionality
+    let mobileLanguageMenuOpen = false;
+    
+    function showMobileLanguageMenu(toolElement) {
+      // Remove any existing language menu
+      const existingMenu = document.querySelector('.mobile-language-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+        mobileLanguageMenuOpen = false;
+        return;
+      }
+      
+      const menu = document.createElement('div');
+      menu.className = 'mobile-language-menu';
+      menu.innerHTML = `
+        <div class="mobile-language-option" onclick="changeLanguage('en')">English</div>
+        <div class="mobile-language-option" onclick="changeLanguage('ja')">日本語</div>
+        <div class="mobile-language-option" onclick="changeLanguage('es')">Español</div>
+      `;
+      
+      menu.style.position = 'fixed';
+      menu.style.bottom = '100px';
+      menu.style.left = '50%';
+      menu.style.transform = 'translateX(-50%)';
+      menu.style.backgroundColor = '#C0C0C0';
+      menu.style.border = '2px outset #C0C0C0';
+      menu.style.padding = '8px';
+      menu.style.fontSize = '14px';
+      menu.style.zIndex = '11000';
+      menu.style.minWidth = '120px';
+      menu.style.textAlign = 'center';
+      
+      document.body.appendChild(menu);
+      mobileLanguageMenuOpen = true;
+      
+      // Close menu when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeMobileLanguageMenu(e) {
+          if (!menu.contains(e.target) && e.target !== toolElement) {
+            menu.remove();
+            mobileLanguageMenuOpen = false;
+            document.removeEventListener('click', closeMobileLanguageMenu);
+          }
+        });
+      }, 100);
+    }
+
+    // Mobile Font menu functionality
+    let mobileFontMenuOpen = false;
+    
+    function showMobileFontMenu(toolElement) {
+      // Remove any existing font menu
+      const existingMenu = document.querySelector('.mobile-font-menu');
+      if (existingMenu) {
+        existingMenu.remove();
+        mobileFontMenuOpen = false;
+        return;
+      }
+      
+      const menu = document.createElement('div');
+      menu.className = 'mobile-font-menu';
+      menu.innerHTML = `
+        <div class="mobile-font-option" onclick="changeFont('notosans')">Noto Sans JP (Modern)</div>
+        <div class="mobile-font-option" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</div>
+        <div class="mobile-font-option" onclick="changeFont('klee')">Klee One (Textbook)</div>
+      `;
+      
+      menu.style.position = 'fixed';
+      menu.style.bottom = '100px';
+      menu.style.left = '50%';
+      menu.style.transform = 'translateX(-50%)';
+      menu.style.backgroundColor = '#C0C0C0';
+      menu.style.border = '2px outset #C0C0C0';
+      menu.style.padding = '8px';
+      menu.style.fontSize = '14px';
+      menu.style.zIndex = '11000';
+      menu.style.minWidth = '200px';
+      menu.style.textAlign = 'center';
+      
+      document.body.appendChild(menu);
+      mobileFontMenuOpen = true;
+      
+      // Close menu when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeMobileFontMenu(e) {
+          if (!menu.contains(e.target) && e.target !== toolElement) {
+            menu.remove();
+            mobileFontMenuOpen = false;
+            document.removeEventListener('click', closeMobileFontMenu);
+          }
+        });
+      }, 100);
+    }
     
     // Prevent Akinator parent link from navigating
     document.addEventListener('DOMContentLoaded', function() {
