@@ -467,16 +467,12 @@
     <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
     <!-- Feedback Tool -->
     {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
+    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">🖐️</div>
     {% endif %}
     <!-- Sitemap Tool -->
     <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
     <!-- Donation Tool -->
     <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
-    <!-- Feedback Tool (add the missing one) -->
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="mobile-tool-btn" id="mobile-feedback-tool-2" title="{{ _('feedback_tool') }}">🖐️</div>
-    {% endif %}
     <!-- Preply Button -->
     <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
     <!-- Patreon Button -->
@@ -542,10 +538,16 @@
     // Mobile tool palette interaction
     document.querySelectorAll('.mobile-tool-btn').forEach(tool => {
       tool.addEventListener('click', function(e) {
+        // Don't prevent default for link buttons (Preply, Patreon)
+        if (this.tagName.toLowerCase() === 'a') {
+          return; // Let the link work normally
+        }
+        
         e.preventDefault();
         
         // Special handling for mobile feedback tool
         if (this.id === 'mobile-feedback-tool') {
+          e.stopPropagation();
           const loginLink = document.querySelector('a[href*="login"]');
           const logoutLink = document.querySelector('a[href*="logout"]');
           const isLoggedIn = !loginLink || logoutLink;
@@ -561,29 +563,33 @@
         
         // Special handling for mobile sitemap tool
         if (this.id === 'mobile-sitemap-tool') {
+          e.stopPropagation();
           loadSitemap();
           return;
         }
         
         // Special handling for mobile language tool
         if (this.id === 'mobile-language-tool') {
+          e.stopPropagation();
           showMobileLanguageMenu(this);
           return;
         }
         
         // Special handling for mobile font tool
         if (this.id === 'mobile-font-tool') {
+          e.stopPropagation();
           showMobileFontMenu(this);
           return;
         }
         
         // Special handling for mobile donation tool
         if (this.id === 'mobile-donation-tool') {
+          e.stopPropagation();
           window.location.href = '/donation';
           return;
         }
         
-        // For link buttons (Preply, Patreon), let them handle their own navigation
+        // For link buttons (Preply, Patreon), don't prevent default to allow navigation
       });
     });
 
@@ -767,22 +773,6 @@
     window.addEventListener('resize', checkMobileAndShowToolbar);
     document.addEventListener('DOMContentLoaded', checkMobileAndShowToolbar);
 
-    // Handle additional mobile feedback button
-    const mobileFeedbackBtn2 = document.getElementById('mobile-feedback-tool-2');
-    if (mobileFeedbackBtn2) {
-      mobileFeedbackBtn2.addEventListener('click', function() {
-        const loginLink = document.querySelector('a[href*="login"]');
-        const logoutLink = document.querySelector('a[href*="logout"]');
-        const isLoggedIn = !loginLink || logoutLink;
-        
-        if (!isLoggedIn) {
-          alert('フィードバック、感想を送るにはログインしてください');
-          window.location.href = '/login';
-          return;
-        }
-        document.getElementById('feedback-modal').style.display = 'flex';
-      });
-    }
     
     // Feedback modal functionality
     document.addEventListener('DOMContentLoaded', function() {
