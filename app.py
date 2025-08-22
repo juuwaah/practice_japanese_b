@@ -133,7 +133,6 @@ def google_logged_in(blueprint, token):
         if not hasattr(oauth.user, 'is_patreon') or oauth.user.is_patreon is None:
             oauth.user.is_patreon = True  # Enable Flashcard for Google users
         login_user(oauth.user, remember=True)
-        flash(f'Successfully signed in with Google!', 'success')
     else:
         # Check if a user with this email already exists
         user = User.query.filter_by(email=email).first()
@@ -169,7 +168,6 @@ def google_logged_in(blueprint, token):
         db.session.commit()
 
         login_user(user, remember=True)
-        flash(f'Successfully signed in with Google!', 'success')
 
     # Return redirect to home instead of False
     return redirect(url_for('home'))
