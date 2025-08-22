@@ -415,29 +415,6 @@
     </div>
   </div>
 
-  <!-- Mobile Bottom Toolbar (only visible on mobile) -->
-  <div class="mobile-bottom-toolbar">
-    <!-- Language Tool -->
-    <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
-    <!-- Font Tool -->
-    <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
-    <!-- Feedback Tool -->
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
-    {% endif %}
-    <!-- Sitemap Tool -->
-    <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <!-- Donation Tool -->
-    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
-    <!-- Feedback Tool (add the missing one) -->
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="mobile-tool-btn" id="mobile-feedback-tool-2" title="{{ _('feedback_tool') }}">🖐️</div>
-    {% endif %}
-    <!-- Preply Button -->
-    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
-    <!-- Patreon Button -->
-    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
-  </div>
     </div> <!-- Close left-sidebar -->
     
     <!-- Main content wrapper -->
@@ -481,6 +458,30 @@
   </div>
     </div> <!-- Close content-wrapper -->
   </div> <!-- Close mobile-container -->
+
+  <!-- Mobile Bottom Toolbar (positioned outside containers to avoid hiding) -->
+  <div class="mobile-bottom-toolbar">
+    <!-- Language Tool -->
+    <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
+    <!-- Font Tool -->
+    <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
+    <!-- Feedback Tool -->
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
+    {% endif %}
+    <!-- Sitemap Tool -->
+    <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+    <!-- Donation Tool -->
+    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
+    <!-- Feedback Tool (add the missing one) -->
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="mobile-tool-btn" id="mobile-feedback-tool-2" title="{{ _('feedback_tool') }}">🖐️</div>
+    {% endif %}
+    <!-- Preply Button -->
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
+    <!-- Patreon Button -->
+    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
+  </div>
 
   {% block scripts %}{% endblock %}
 
