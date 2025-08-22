@@ -730,10 +730,28 @@ li {
   display: none;
 }
 
-/* Mobile toolbars - hidden on desktop */
+/* Mobile toolbars - hidden on desktop, shown on mobile only */
 .mobile-bottom-toolbar,
 .mobile-top-menu {
-  display: none;
+  display: none !important;
+}
+
+/* Override to show on mobile screens */
+@media (max-width: 768px) and (orientation: portrait),
+       (max-width: 480px) {
+  .mobile-bottom-toolbar,
+  .mobile-top-menu {
+    display: flex !important;
+  }
+  
+  /* Force visibility debugging */
+  .mobile-bottom-toolbar {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 99999 !important;
+    background-color: #FF0000 !important; /* Red background for debugging */
+  }
 }
 
 /* Win95/MacOS7.5 Style Input Controls for Retro Design */
@@ -1461,9 +1479,8 @@ body {
     background: #F0F0F0 !important;
   }
 
-  /* Show mobile toolbars on mobile */
+  /* Mobile bottom toolbar styling */
   .mobile-bottom-toolbar {
-    display: flex !important;
     position: fixed !important;
     bottom: 30px !important; /* Above copyright */
     left: 0 !important;
@@ -1476,10 +1493,6 @@ body {
     padding: 4px 8px !important;
     z-index: 10001 !important;
     box-shadow: 0 -1px 2px rgba(0,0,0,0.2) !important;
-  }
-
-  .mobile-top-menu {
-    display: flex !important;
   }
 
   /* Mobile toolbar buttons */

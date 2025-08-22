@@ -416,7 +416,8 @@
   </div>
 
   <!-- Mobile Bottom Toolbar (only visible on mobile) -->
-  <div class="mobile-bottom-toolbar">
+  <div class="mobile-bottom-toolbar" style="display: none;"
+       onload="if(window.innerWidth <= 768) { this.style.display='flex'; this.style.background='#FF0000'; }">
     <!-- Language Tool -->
     <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
     <!-- Font Tool -->
@@ -642,6 +643,46 @@
         });
       }, 100);
     }
+
+    // Force mobile toolbar display on mobile devices
+    function checkMobileAndShowToolbar() {
+      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const bottomToolbar = document.querySelector('.mobile-bottom-toolbar');
+      const topMenu = document.querySelector('.mobile-top-menu');
+      
+      console.log('Is mobile:', isMobile);
+      console.log('Bottom toolbar element:', bottomToolbar);
+      console.log('Top menu element:', topMenu);
+      
+      if (isMobile) {
+        if (bottomToolbar) {
+          bottomToolbar.style.display = 'flex';
+          bottomToolbar.style.visibility = 'visible';
+          bottomToolbar.style.opacity = '1';
+          bottomToolbar.style.zIndex = '99999';
+          bottomToolbar.style.backgroundColor = '#C0C0C0';
+          bottomToolbar.style.position = 'fixed';
+          bottomToolbar.style.bottom = '30px';
+          bottomToolbar.style.left = '0';
+          bottomToolbar.style.right = '0';
+          bottomToolbar.style.height = '60px';
+          bottomToolbar.style.borderTop = '2px solid #808080';
+          bottomToolbar.style.justifyContent = 'space-around';
+          bottomToolbar.style.alignItems = 'center';
+          bottomToolbar.style.padding = '4px 8px';
+          console.log('Mobile bottom toolbar forced visible');
+        }
+        if (topMenu) {
+          topMenu.style.display = 'flex';
+          console.log('Mobile top menu forced visible');
+        }
+      }
+    }
+    
+    // Run on load and resize
+    window.addEventListener('load', checkMobileAndShowToolbar);
+    window.addEventListener('resize', checkMobileAndShowToolbar);
+    document.addEventListener('DOMContentLoaded', checkMobileAndShowToolbar);
 
     // Handle additional mobile feedback button
     const mobileFeedbackBtn2 = document.getElementById('mobile-feedback-tool-2');
