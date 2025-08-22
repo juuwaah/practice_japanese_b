@@ -38,10 +38,13 @@
   <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F8F8F8;">
     <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px;">{{ _('example_sentences') }}:</div>
     <ul style="text-align: left; margin-left: 16px;">
-      {% for jp, en in example_pairs %}
-        <li style="margin-bottom: 4px;">
+      {% for jp, hiragana, en in example_pairs %}
+        <li style="margin-bottom: 6px;">
           <div style="font-weight: bold;">{{ jp }}</div>
-          <div style="font-size: 8px; color: #404040;">{{ en }}</div>
+          {% if hiragana %}
+          <div style="font-size: 9px; color: #666666; margin-top: 2px;">({{ hiragana }})</div>
+          {% endif %}
+          <div style="font-size: 8px; color: #404040; margin-top: 2px;">{{ en }}</div>
         </li>
       {% endfor %}
     </ul>

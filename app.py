@@ -253,7 +253,8 @@ def get_today_quiz():
 以下を作成してください：
 1. 間違い選択肢（英語の意味）を2つ作る（正解「{onomatope_meaning}」と紛らわしく、同じカテゴリの他のオノマトペの意味など）
 2. このオノマトペ「{onomatope_word}」を使った自然な日本語の例文を2つ作る
-3. 各例文に対応する自然な英語訳を作る
+3. 各例文のひらがな読み（漢字にひらがなをつけて読みやすくしたもの）を作る
+4. 各例文に対応する自然な英語訳を作る
 
 出力はJSON形式で：
 {{
@@ -261,6 +262,7 @@ def get_today_quiz():
   "correct_meaning_en": "{onomatope_meaning}",
   "distractors_en": ["...", "..."],
   "examples": ["...", "..."],
+  "examples_hiragana": ["...", "..."],
   "examples_en": ["...", "..."]
 }}
 """
@@ -371,8 +373,9 @@ def home():
         answered=answered,
         correct=correct,
         examples=quiz['examples'],
+        examples_hiragana=quiz.get('examples_hiragana', []),
         examples_en=quiz.get('examples_en', []),
-        example_pairs=list(zip(quiz['examples'], quiz.get('examples_en', [])))
+        example_pairs=list(zip(quiz['examples'], quiz.get('examples_hiragana', []), quiz.get('examples_en', [])))
     )
 
 @app.route("/login", methods=['GET', 'POST'])
