@@ -867,5 +867,21 @@
       });
     });
   </script>
+
+  <style>
+    /* Fix for nested menu dropdown (Akinator submenu) */
+    .menu-content .menu-dropdown {
+      position: relative;
+    }
+    
+    .menu-content .menu-dropdown:hover .menu-content {
+      display: block !important;
+      position: absolute;
+      left: 100%;
+      top: 0;
+      margin-left: 2px;
+      z-index: 12002;
+    }
+  </style>
 </body>
 </html>
