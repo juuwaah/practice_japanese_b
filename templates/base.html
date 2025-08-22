@@ -273,6 +273,102 @@
     
   </div>
 
+
+  <!-- Left Tool Palette -->
+  <div class="tool-palette">
+    <div class="tool-icon" id="language-tool" title="{{ _('language_selection') }}">🌐</div>
+    <div class="tool-icon" id="font-tool" title="{{ _('select_font') }}">A</div>
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
+    {% endif %}
+    <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+    <div class="tool-icon" id="donation-tool" title="{{ _('donation_support') }}">🤏</div>
+  </div>
+
+  <!-- External Links Section Below Tool Palette -->
+  <div class="external-links-section">
+    <!-- Preply Button -->
+    <div class="external-link-container">
+      <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="external-link-btn preply-btn">
+        <div class="btn-text">Preply</div>
+      </a>
+      <div class="btn-description">Get 30% off coupon for the trial lesson!</div>
+    </div>
+    
+    <!-- Patreon Button -->
+    <div class="external-link-container">
+      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
+        <div class="btn-text">Patreon</div>
+      </a>
+      <div class="btn-description">Support ongoing development</div>
+    </div>
+  </div>
+
+    </div> <!-- Close left-sidebar -->
+    
+    <!-- Main content wrapper -->
+    <div class="content-wrapper">
+
+  <!-- Main Content Window -->
+  <div class="main-content-wrapper">
+    <div class="window">
+      <div class="title-bar">
+        {% block window_title %}{{ _('japanese_learning_app') }}{% endblock %}
+      </div>
+      <div class="main-content">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Loading Indicator -->
+  <div id="global-loading" class="global-loading" style="display: none;">
+    <div class="loading-content">
+      <div class="retro-spinner"></div>
+      <div class="loading-text">Processing...</div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span>{{ _('ready') }}</span>
+    <span style="margin-left: auto;">
+      {% if current_user.is_authenticated %}
+        {{ _('user') }}: {{ current_user.username }}
+      {% else %}
+        {{ _('not_logged_in') }}
+      {% endif %}
+    </span>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-copyright">
+    {{ _('copyright') }}
+  </div>
+    </div> <!-- Close content-wrapper -->
+  </div> <!-- Close mobile-container -->
+
+  <!-- Mobile Bottom Toolbar (positioned outside containers to avoid hiding) -->
+  <div class="mobile-bottom-toolbar">
+    <!-- Language Tool -->
+    <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
+    <!-- Font Tool -->
+    <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
+    <!-- Feedback Tool -->
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">🖐️</div>
+    {% endif %}
+    <!-- Sitemap Tool -->
+    <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
+    <!-- Donation Tool -->
+    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
+    <!-- Preply Button -->
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
+    <!-- Patreon Button -->
+    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
+  </div>
+
+  <!-- Global Popup Modals (Outside all containers for proper z-index) -->
   <!-- Feedback Popup Modal -->
   <div id="feedback-modal" class="feedback-modal" style="display: none;">
     <div class="feedback-window">
@@ -385,100 +481,6 @@
     </div>
   </div>
 
-  <!-- Left Tool Palette -->
-  <div class="tool-palette">
-    <div class="tool-icon" id="language-tool" title="{{ _('language_selection') }}">🌐</div>
-    <div class="tool-icon" id="font-tool" title="{{ _('select_font') }}">A</div>
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
-    {% endif %}
-    <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <div class="tool-icon" id="donation-tool" title="{{ _('donation_support') }}">🤏</div>
-  </div>
-
-  <!-- External Links Section Below Tool Palette -->
-  <div class="external-links-section">
-    <!-- Preply Button -->
-    <div class="external-link-container">
-      <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="external-link-btn preply-btn">
-        <div class="btn-text">Preply</div>
-      </a>
-      <div class="btn-description">Get 30% off coupon for the trial lesson!</div>
-    </div>
-    
-    <!-- Patreon Button -->
-    <div class="external-link-container">
-      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
-        <div class="btn-text">Patreon</div>
-      </a>
-      <div class="btn-description">Support ongoing development</div>
-    </div>
-  </div>
-
-    </div> <!-- Close left-sidebar -->
-    
-    <!-- Main content wrapper -->
-    <div class="content-wrapper">
-
-  <!-- Main Content Window -->
-  <div class="main-content-wrapper">
-    <div class="window">
-      <div class="title-bar">
-        {% block window_title %}{{ _('japanese_learning_app') }}{% endblock %}
-      </div>
-      <div class="main-content">
-        {% block content %}{% endblock %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Global Loading Indicator -->
-  <div id="global-loading" class="global-loading" style="display: none;">
-    <div class="loading-content">
-      <div class="retro-spinner"></div>
-      <div class="loading-text">Processing...</div>
-    </div>
-  </div>
-
-  <!-- Status Bar -->
-  <div class="status-bar">
-    <span>{{ _('ready') }}</span>
-    <span style="margin-left: auto;">
-      {% if current_user.is_authenticated %}
-        {{ _('user') }}: {{ current_user.username }}
-      {% else %}
-        {{ _('not_logged_in') }}
-      {% endif %}
-    </span>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer-copyright">
-    {{ _('copyright') }}
-  </div>
-    </div> <!-- Close content-wrapper -->
-  </div> <!-- Close mobile-container -->
-
-  <!-- Mobile Bottom Toolbar (positioned outside containers to avoid hiding) -->
-  <div class="mobile-bottom-toolbar">
-    <!-- Language Tool -->
-    <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
-    <!-- Font Tool -->
-    <div class="mobile-tool-btn" id="mobile-font-tool" title="{{ _('select_font') }}">A</div>
-    <!-- Feedback Tool -->
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="mobile-tool-btn" id="mobile-feedback-tool" title="{{ _('feedback_tool') }}">🖐️</div>
-    {% endif %}
-    <!-- Sitemap Tool -->
-    <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <!-- Donation Tool -->
-    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
-    <!-- Preply Button -->
-    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
-    <!-- Patreon Button -->
-    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
-  </div>
-
   {% block scripts %}{% endblock %}
 
   <script>
@@ -497,7 +499,9 @@
             window.location.href = '/login';
             return;
           }
-          document.getElementById('feedback-modal').style.display = 'flex';
+          const feedbackModal = document.getElementById('feedback-modal');
+          feedbackModal.classList.add('mobile-force-display');
+          feedbackModal.style.display = 'flex';
           return;
         }
         
@@ -558,24 +562,12 @@
             return;
           }
           
-          // Force feedback modal display for mobile
+          // Force feedback modal display for mobile with CSS class
           const feedbackModal = document.getElementById('feedback-modal');
           if (feedbackModal) {
-            feedbackModal.style.cssText = `
-              display: flex !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-              position: fixed !important;
-              top: 0 !important;
-              left: 0 !important;
-              right: 0 !important;
-              bottom: 0 !important;
-              z-index: 99999 !important;
-              background-color: rgba(0,0,0,0.5) !important;
-              justify-content: center !important;
-              align-items: center !important;
-            `;
-            console.log('🖐️ Feedback modal force displayed');
+            feedbackModal.classList.add('mobile-force-display');
+            feedbackModal.style.display = 'flex';
+            console.log('🖐️ Feedback modal force displayed with mobile class');
           } else {
             console.error('❌ Feedback modal not found');
           }
@@ -810,6 +802,7 @@
       
       // Close modal functions
       function closeModal() {
+        modal.classList.remove('mobile-force-display');
         modal.style.display = 'none';
         form.reset();
       }
@@ -855,6 +848,7 @@
       
       // Close sitemap modal function
       function closeSitemapModal() {
+        sitemapModal.classList.remove('mobile-force-display');
         sitemapModal.style.display = 'none';
       }
       
@@ -874,11 +868,13 @@
       
       // Open settings modal function
       function openSettingsModal() {
+        settingsModal.classList.add('mobile-force-display');
         settingsModal.style.display = 'flex';
       }
       
       // Close settings modal function
       function closeSettingsModal() {
+        settingsModal.classList.remove('mobile-force-display');
         settingsModal.style.display = 'none';
       }
       
@@ -902,6 +898,7 @@
       
       // Close donation modal function
       function closeDonationModal() {
+        donationModal.classList.remove('mobile-force-display');
         donationModal.style.display = 'none';
       }
       
@@ -931,21 +928,9 @@
         return;
       }
       
-      // Force modal display with high priority styles
-      modal.style.cssText = `
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        z-index: 99999 !important;
-        background-color: rgba(0,0,0,0.5) !important;
-        justify-content: center !important;
-        align-items: center !important;
-      `;
+      // Force modal display with CSS class for better mobile support
+      modal.classList.add('mobile-force-display');
+      modal.style.display = 'flex';
       
       if (loading) loading.style.display = 'block';
       if (dataDiv) dataDiv.style.display = 'none';
