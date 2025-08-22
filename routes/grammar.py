@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, redirect, url_for, flash
 from flask_login import current_user
+from functools import wraps
 import openai
 import os
 import re
@@ -42,7 +43,27 @@ def load_grammar():
 
 load_grammar()
 
+def google_login_required(f):
+    """Googleログインが必要な機能用デコレーター"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('文法機能を利用するにはGoogleログインが必要です。', 'warning')
+            return redirect(url_for('login'))
+        
+        # Google OAuthユーザーかチェック
+        is_google_user = (hasattr(current_user, 'auth_type') and current_user.auth_type == 'google') or \
+                        (hasattr(current_user, 'google_id') and current_user.google_id)
+        
+        if not is_google_user:
+            flash('文法機能はGoogleログイン限定です。', 'warning')
+            return redirect(url_for('login'))
+        
+        return f(*args, **kwargs)
+    return decorated_function
+
 @grammar_bp.route("/", methods=["GET", "POST"])
+@google_login_required
 def grammar_index():
     original = ""
     translation = ""
