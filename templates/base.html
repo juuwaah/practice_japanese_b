@@ -557,7 +557,28 @@
             window.location.href = '/login';
             return;
           }
-          document.getElementById('feedback-modal').style.display = 'flex';
+          
+          // Force feedback modal display for mobile
+          const feedbackModal = document.getElementById('feedback-modal');
+          if (feedbackModal) {
+            feedbackModal.style.cssText = `
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              bottom: 0 !important;
+              z-index: 99999 !important;
+              background-color: rgba(0,0,0,0.5) !important;
+              justify-content: center !important;
+              align-items: center !important;
+            `;
+            console.log('🖐️ Feedback modal force displayed');
+          } else {
+            console.error('❌ Feedback modal not found');
+          }
           return;
         }
         
@@ -910,11 +931,26 @@
         return;
       }
       
-      modal.style.display = 'flex';
+      // Force modal display with high priority styles
+      modal.style.cssText = `
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 99999 !important;
+        background-color: rgba(0,0,0,0.5) !important;
+        justify-content: center !important;
+        align-items: center !important;
+      `;
+      
       if (loading) loading.style.display = 'block';
       if (dataDiv) dataDiv.style.display = 'none';
       
-      console.log('🔍 Modal displayed, fetching data...');
+      console.log('🔍 Modal force displayed with high priority styles');
       
       fetch('/sitemap_data')
         .then(response => response.json())
