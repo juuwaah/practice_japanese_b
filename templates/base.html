@@ -460,7 +460,7 @@
   </div> <!-- Close mobile-container -->
 
   <!-- Mobile Bottom Toolbar (positioned outside containers to avoid hiding) -->
-  <div class="mobile-bottom-toolbar" style="display: none !important; visibility: hidden !important; opacity: 0 !important; position: absolute !important; left: -9999px !important; top: -9999px !important; width: 0 !important; height: 0 !important; z-index: -1 !important; overflow: hidden !important;">
+  <div class="mobile-bottom-toolbar">
     <!-- Language Tool -->
     <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
     <!-- Font Tool -->
@@ -664,22 +664,32 @@
       if (isMobile) {
         if (bottomToolbar) {
           try {
-            bottomToolbar.style.display = 'flex';
-            bottomToolbar.style.visibility = 'visible';
-            bottomToolbar.style.opacity = '1';
-            bottomToolbar.style.zIndex = '99999';
-            bottomToolbar.style.backgroundColor = '#C0C0C0'; // Normal gray
-            bottomToolbar.style.position = 'fixed';
-            bottomToolbar.style.bottom = '30px';
-            bottomToolbar.style.left = '0';
-            bottomToolbar.style.right = '0';
-            bottomToolbar.style.height = '60px';
-            bottomToolbar.style.borderTop = '2px solid #808080';
-            bottomToolbar.style.justifyContent = 'space-around';
-            bottomToolbar.style.alignItems = 'center';
-            bottomToolbar.style.padding = '4px 8px';
-            bottomToolbar.style.boxSizing = 'border-box';
-            console.log('✅ Mobile toolbar ready');
+            // Remove all CSS classes temporarily to override any conflicting styles
+            bottomToolbar.className = 'mobile-bottom-toolbar';
+            
+            // Force mobile display with maximum priority
+            bottomToolbar.style.cssText = `
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              position: fixed !important;
+              bottom: 30px !important;
+              left: 0 !important;
+              right: 0 !important;
+              width: auto !important;
+              height: 60px !important;
+              z-index: 99999 !important;
+              background-color: #C0C0C0 !important;
+              border-top: 2px solid #808080 !important;
+              justify-content: space-around !important;
+              align-items: center !important;
+              padding: 4px 8px !important;
+              box-sizing: border-box !important;
+              overflow: visible !important;
+              top: auto !important;
+              box-shadow: 0 -1px 2px rgba(0,0,0,0.2) !important;
+            `;
+            console.log('✅ Mobile bottom toolbar forced visible');
           } catch (e) {
             console.error('❌ Error styling bottom toolbar:', e);
           }
@@ -689,15 +699,29 @@
         
         if (topMenu) {
           try {
-            topMenu.style.display = 'flex';
-            topMenu.style.position = 'fixed';
-            topMenu.style.top = '0';
-            topMenu.style.left = '0';
-            topMenu.style.right = '0';
-            topMenu.style.height = '50px';
-            topMenu.style.backgroundColor = '#C0C0C0';
-            topMenu.style.zIndex = '10002';
-            console.log('✅ Mobile top menu ready');
+            // Force mobile top menu display
+            topMenu.style.cssText = `
+              display: flex !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              width: auto !important;
+              height: 50px !important;
+              z-index: 10002 !important;
+              background-color: #C0C0C0 !important;
+              border-bottom: 2px solid #808080 !important;
+              justify-content: space-around !important;
+              align-items: center !important;
+              padding: 4px 8px !important;
+              box-sizing: border-box !important;
+              overflow: visible !important;
+              bottom: auto !important;
+              box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+            `;
+            console.log('✅ Mobile top menu forced visible');
           } catch (e) {
             console.error('❌ Error styling top menu:', e);
           }
@@ -706,20 +730,34 @@
         }
       } else {
         // Force hide on non-mobile devices (PC/Desktop)
-        console.log('💻 Desktop detected - hiding mobile toolbars');
+        console.log('💻 Desktop detected - aggressively hiding mobile toolbars');
         if (bottomToolbar) {
-          bottomToolbar.style.display = 'none';
-          bottomToolbar.style.visibility = 'hidden';
-          bottomToolbar.style.opacity = '0';
-          bottomToolbar.style.position = 'absolute';
-          bottomToolbar.style.left = '-9999px';
+          bottomToolbar.style.cssText = `
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            width: 0 !important;
+            height: 0 !important;
+            z-index: -1 !important;
+            overflow: hidden !important;
+          `;
         }
         if (topMenu) {
-          topMenu.style.display = 'none';
-          topMenu.style.visibility = 'hidden';
-          topMenu.style.opacity = '0';
-          topMenu.style.position = 'absolute';
-          topMenu.style.left = '-9999px';
+          topMenu.style.cssText = `
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            width: 0 !important;
+            height: 0 !important;
+            z-index: -1 !important;
+            overflow: hidden !important;
+          `;
         }
       }
     }
