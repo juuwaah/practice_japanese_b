@@ -370,7 +370,7 @@
 
   <!-- Global Popup Modals (Outside all containers for proper z-index) -->
   <!-- Feedback Popup Modal -->
-  <div id="feedback-modal" class="feedback-modal" style="display: none;">
+  <div id="feedback-modal" class="feedback-modal">
     <div class="feedback-window">
       <div class="feedback-title-bar">
         <span>{{ _('feedback') }}</span>
@@ -392,7 +392,7 @@
   </div>
 
   <!-- Sitemap Popup Modal -->
-  <div id="sitemap-modal" class="sitemap-modal" style="display: none;">
+  <div id="sitemap-modal" class="sitemap-modal">
     <div class="sitemap-window">
       <div class="sitemap-title-bar">
         <span>{{ _('sitemap_tool') }}</span>
@@ -408,7 +408,7 @@
   </div>
 
   <!-- Settings Popup Modal -->
-  <div id="settings-modal" class="settings-modal" style="display: none;">
+  <div id="settings-modal" class="settings-modal">
     <div class="settings-window">
       <div class="settings-title-bar">
         <span>{{ _('settings') }}</span>
@@ -446,7 +446,7 @@
   </div>
 
   <!-- Donation Popup Modal -->
-  <div id="donation-modal" class="donation-modal" style="display: none;">
+  <div id="donation-modal" class="donation-modal">
     <div class="donation-window">
       <div class="donation-title-bar">
         <span>{{ _('support_development') }}</span>
@@ -500,8 +500,7 @@
             return;
           }
           const feedbackModal = document.getElementById('feedback-modal');
-          feedbackModal.classList.add('mobile-force-display');
-          feedbackModal.style.display = 'flex';
+          feedbackModal.classList.add('modal-show');
           return;
         }
         
@@ -562,12 +561,11 @@
             return;
           }
           
-          // Force feedback modal display for mobile with CSS class
+          // Show feedback modal with standard class approach
           const feedbackModal = document.getElementById('feedback-modal');
           if (feedbackModal) {
-            feedbackModal.classList.add('mobile-force-display');
-            feedbackModal.style.display = 'flex';
-            console.log('🖐️ Feedback modal force displayed with mobile class');
+            feedbackModal.classList.add('modal-show');
+            console.log('🖐️ Feedback modal displayed');
           } else {
             console.error('❌ Feedback modal not found');
           }
@@ -802,8 +800,7 @@
       
       // Close modal functions
       function closeModal() {
-        modal.classList.remove('mobile-force-display');
-        modal.style.display = 'none';
+        modal.classList.remove('modal-show');
         form.reset();
       }
       
@@ -848,8 +845,7 @@
       
       // Close sitemap modal function
       function closeSitemapModal() {
-        sitemapModal.classList.remove('mobile-force-display');
-        sitemapModal.style.display = 'none';
+        sitemapModal.classList.remove('modal-show');
       }
       
       sitemapCloseBtn.addEventListener('click', closeSitemapModal);
@@ -869,56 +865,13 @@
       // Open settings modal function  
       function openSettingsModal() {
         console.log('⚙️ Opening settings modal');
-        settingsModal.classList.add('mobile-force-display');
-        // Force display with highest priority styles
-        settingsModal.style.cssText = `
-          display: flex !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-          z-index: 999999 !important;
-          background-color: rgba(128, 128, 128, 0.8) !important;
-          justify-content: center !important;
-          align-items: center !important;
-          pointer-events: auto !important;
-        `;
-        
-        // Also force the settings window to be visible
-        const settingsWindow = settingsModal.querySelector('.settings-window');
-        if (settingsWindow) {
-          settingsWindow.style.cssText = `
-            position: relative !important;
-            z-index: 1000000 !important;
-            max-width: 90vw !important;
-            max-height: 90vh !important;
-            background: #F0F0F0 !important;
-            border: 2px outset #C0C0C0 !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            overflow: auto !important;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.5) !important;
-            display: flex !important;
-            flex-direction: column !important;
-          `;
-        }
-        console.log('⚙️ Settings modal forced display');
+        settingsModal.classList.add('modal-show');
+        console.log('⚙️ Settings modal class added');
       }
       
       // Close settings modal function
       function closeSettingsModal() {
-        settingsModal.classList.remove('mobile-force-display');
-        settingsModal.style.cssText = 'display: none !important;';
-        // Also reset window styles
-        const settingsWindow = settingsModal.querySelector('.settings-window');
-        if (settingsWindow) {
-          settingsWindow.style.cssText = '';
-        }
+        settingsModal.classList.remove('modal-show');
         console.log('⚙️ Settings modal closed');
       }
       
@@ -942,8 +895,7 @@
       
       // Close donation modal function
       function closeDonationModal() {
-        donationModal.classList.remove('mobile-force-display');
-        donationModal.style.display = 'none';
+        donationModal.classList.remove('modal-show');
       }
       
       donationCloseBtn.addEventListener('click', closeDonationModal);
@@ -972,9 +924,8 @@
         return;
       }
       
-      // Force modal display with CSS class for better mobile support
-      modal.classList.add('mobile-force-display');
-      modal.style.display = 'flex';
+      // Show modal with standard class approach
+      modal.classList.add('modal-show');
       
       if (loading) loading.style.display = 'block';
       if (dataDiv) dataDiv.style.display = 'none';

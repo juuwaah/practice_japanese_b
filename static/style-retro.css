@@ -903,10 +903,14 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.7);
-  z-index: 10000;
-  display: flex;
+  z-index: 999999;
+  display: none;
   align-items: center;
   justify-content: center;
+}
+
+.feedback-modal.modal-show {
+  display: flex;
 }
 
 .feedback-window {
@@ -1096,10 +1100,14 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.7);
-  z-index: 10000;
-  display: flex;
+  z-index: 999999;
+  display: none;
   align-items: center;
   justify-content: center;
+}
+
+.sitemap-modal.modal-show {
+  display: flex;
 }
 
 .sitemap-window {
@@ -1196,9 +1204,13 @@ body {
   height: 100%;
   background-color: rgba(128, 128, 128, 0.7);
   z-index: 999999;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
+}
+
+.settings-modal.modal-show {
+  display: flex;
 }
 
 .settings-window {
@@ -1674,53 +1686,11 @@ body {
   }
 }
 
-/* Global modal display fixes for mobile devices */
-/* These apply when JavaScript forces modal display, regardless of screen size */
-.feedback-modal.mobile-force-display,
-.sitemap-modal.mobile-force-display,
-.settings-modal.mobile-force-display,
-.donation-modal.mobile-force-display,
-.feedback-modal,
-.sitemap-modal,
-.settings-modal,
-.donation-modal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 999999 !important;
-  background-color: rgba(0, 0, 0, 0.7) !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-/* Only show modals when display is set to flex */
-.feedback-modal[style*="display: flex"],
-.sitemap-modal[style*="display: flex"],
-.settings-modal[style*="display: flex"],
-.donation-modal[style*="display: flex"] {
+/* Clean modal system - show/hide with simple class toggle */
+/* All modals are hidden by default and shown with .modal-show class */
+.feedback-modal.modal-show,
+.sitemap-modal.modal-show, 
+.settings-modal.modal-show,
+.donation-modal.modal-show {
   display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-/* Force modal windows to be visible and centered on mobile */
-.mobile-force-display .feedback-window,
-.mobile-force-display .sitemap-window,
-.mobile-force-display .settings-window,
-.mobile-force-display .donation-window {
-  position: relative !important;
-  z-index: 1000000 !important;
-  max-width: 90vw !important;
-  max-height: 90vh !important;
-  background: #C0C0C0 !important;
-  border: 2px outset #C0C0C0 !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  overflow: auto !important;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.5) !important;
 }
