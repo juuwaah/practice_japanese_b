@@ -730,8 +730,9 @@ li {
   display: none;
 }
 
-/* Mobile Bottom Toolbar - hidden on desktop */
-.mobile-bottom-toolbar {
+/* Mobile toolbars - hidden on desktop */
+.mobile-bottom-toolbar,
+.mobile-top-menu {
   display: none;
 }
 
@@ -1287,25 +1288,16 @@ body {
     padding: 0 !important;
   }
   
-  /* Create mobile container */
+  /* Create mobile container - now just holds content */
   .mobile-container {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start !important;
+    display: block !important;
+    width: 100% !important;
     min-height: 100vh !important;
   }
   
-  /* Left sidebar container for menu + external links */
+  /* Hide left sidebar completely on mobile */
   .left-sidebar {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 12% !important;
-    min-width: 80px !important;
-    max-width: 120px !important;
-    flex-shrink: 0 !important;
-    background: transparent !important;
-    padding: 8px 2px 8px 8px !important;
-    box-sizing: border-box !important;
+    display: none !important;
   }
   
   /* Mobile navigation sidebar - override fixed positioning */
@@ -1426,6 +1418,49 @@ body {
     display: none !important;
   }
 
+  /* Mobile top menu */
+  .mobile-top-menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 50px !important;
+    background: #C0C0C0 !important;
+    border-bottom: 2px solid #808080 !important;
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 4px 8px !important;
+    z-index: 10002 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 60px !important;
+    height: 40px !important;
+    background: #E0E0E0 !important;
+    border: 2px outset #C0C0C0 !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    padding: 0 8px !important;
+  }
+
+  .mobile-menu-btn:active {
+    border: 2px inset #C0C0C0 !important;
+    background: #D0D0D0 !important;
+  }
+
+  .mobile-menu-btn:hover {
+    background: #F0F0F0 !important;
+  }
+
   /* Mobile bottom toolbar */
   .mobile-bottom-toolbar {
     position: fixed !important;
@@ -1470,16 +1505,46 @@ body {
     background: #F0F0F0 !important;
   }
 
+  /* Text buttons for Preply/Patreon */
+  .mobile-text-btn {
+    font-size: 10px !important;
+    font-weight: bold !important;
+    width: 60px !important;
+    height: 48px !important;
+  }
+
   /* Adjust main content to avoid toolbar overlap */
   .content-wrapper {
+    margin-top: 60px !important; /* Space for top menu */
     margin-bottom: 100px !important; /* Space for bottom toolbar + copyright */
+    width: 100% !important; /* Full width without sidebar */
+    padding: 8px !important;
   }
 
   /* Mobile menu styles */
   .mobile-language-menu,
-  .mobile-font-menu {
+  .mobile-font-menu,
+  .mobile-dropdown-menu {
     border-radius: 0 !important;
     box-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+  }
+
+  /* Mobile dropdown menu styling */
+  .mobile-dropdown-menu a {
+    display: block !important;
+    padding: 8px 12px !important;
+    color: #000 !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid #808080 !important;
+    font-size: 12px !important;
+  }
+
+  .mobile-dropdown-menu a:hover {
+    background-color: #D0D0D0 !important;
+  }
+
+  .mobile-dropdown-menu a:last-child {
+    border-bottom: none !important;
   }
 
   .mobile-language-option,

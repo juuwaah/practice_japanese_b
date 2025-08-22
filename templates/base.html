@@ -209,6 +209,14 @@
     </style> -->
 </head>
 <body class="font-{{ get_current_font() }}">
+  <!-- Mobile Top Menu Bar (horizontal layout) -->
+  <div class="mobile-top-menu">
+    <div class="mobile-menu-btn" id="mobile-file-menu">File</div>
+    <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
+    <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
+    <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
+  </div>
+
   <!-- Mobile container wrapper -->
   <div class="mobile-container">
     <!-- Left sidebar for mobile -->
@@ -421,10 +429,14 @@
     <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
     <!-- Donation Tool -->
     <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
+    <!-- Feedback Tool (add the missing one) -->
+    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+    <div class="mobile-tool-btn" id="mobile-feedback-tool-2" title="{{ _('feedback_tool') }}">🖐️</div>
+    {% endif %}
     <!-- Preply Button -->
-    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn" title="Preply">P</a>
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
     <!-- Patreon Button -->
-    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn" title="Patreon">♥</a>
+    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
   </div>
     </div> <!-- Close left-sidebar -->
     
@@ -573,6 +585,80 @@
         // For link buttons (Preply, Patreon), let them handle their own navigation
       });
     });
+
+    // Mobile top menu interaction
+    document.querySelectorAll('.mobile-menu-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Show corresponding menu from desktop version
+        const menuMap = {
+          'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
+          'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
+          'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
+          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
+        };
+        
+        const targetSelector = menuMap[this.id];
+        if (targetSelector) {
+          showMobileDropdown(targetSelector, this);
+        }
+      });
+    });
+
+    // Show mobile dropdown menu
+    function showMobileDropdown(selector, triggerBtn) {
+      // Remove any existing dropdown
+      const existing = document.querySelector('.mobile-dropdown-menu');
+      if (existing) existing.remove();
+      
+      const sourceMenu = document.querySelector(selector);
+      if (!sourceMenu) return;
+      
+      const dropdown = document.createElement('div');
+      dropdown.className = 'mobile-dropdown-menu';
+      dropdown.innerHTML = sourceMenu.innerHTML;
+      
+      dropdown.style.position = 'fixed';
+      dropdown.style.top = '60px'; // Below top menu
+      dropdown.style.left = '50%';
+      dropdown.style.transform = 'translateX(-50%)';
+      dropdown.style.backgroundColor = '#C0C0C0';
+      dropdown.style.border = '2px outset #C0C0C0';
+      dropdown.style.padding = '8px';
+      dropdown.style.fontSize = '12px';
+      dropdown.style.zIndex = '11000';
+      dropdown.style.minWidth = '150px';
+      dropdown.style.maxWidth = '300px';
+      dropdown.style.textAlign = 'left';
+      
+      document.body.appendChild(dropdown);
+      
+      // Close dropdown when clicking outside
+      setTimeout(() => {
+        document.addEventListener('click', function closeMobileDropdown(e) {
+          if (!dropdown.contains(e.target) && e.target !== triggerBtn) {
+            dropdown.remove();
+            document.removeEventListener('click', closeMobileDropdown);
+          }
+        });
+      }, 100);
+    }
+
+    // Handle additional mobile feedback button
+    const mobileFeedbackBtn2 = document.getElementById('mobile-feedback-tool-2');
+    if (mobileFeedbackBtn2) {
+      mobileFeedbackBtn2.addEventListener('click', function() {
+        const loginLink = document.querySelector('a[href*="login"]');
+        const logoutLink = document.querySelector('a[href*="logout"]');
+        const isLoggedIn = !loginLink || logoutLink;
+        
+        if (!isLoggedIn) {
+          alert('フィードバック、感想を送るにはログインしてください');
+          window.location.href = '/login';
+          return;
+        }
+        document.getElementById('feedback-modal').style.display = 'flex';
+      });
+    }
     
     // Feedback modal functionality
     document.addEventListener('DOMContentLoaded', function() {
