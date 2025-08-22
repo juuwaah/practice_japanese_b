@@ -416,8 +416,7 @@
   </div>
 
   <!-- Mobile Bottom Toolbar (only visible on mobile) -->
-  <div class="mobile-bottom-toolbar" style="display: none;"
-       onload="if(window.innerWidth <= 768) { this.style.display='flex'; this.style.background='#FF0000'; }">
+  <div class="mobile-bottom-toolbar">
     <!-- Language Tool -->
     <div class="mobile-tool-btn" id="mobile-language-tool" title="{{ _('language_selection') }}">🌐</div>
     <!-- Font Tool -->
@@ -646,36 +645,67 @@
 
     // Force mobile toolbar display on mobile devices
     function checkMobileAndShowToolbar() {
-      const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      const isNarrowScreen = screenWidth <= 768;
+      const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobile = isNarrowScreen || isMobileUA;
+      
       const bottomToolbar = document.querySelector('.mobile-bottom-toolbar');
       const topMenu = document.querySelector('.mobile-top-menu');
       
-      console.log('Is mobile:', isMobile);
+      console.log('Screen width:', screenWidth);
+      console.log('Is narrow screen (<=768):', isNarrowScreen);
+      console.log('Is mobile UA:', isMobileUA);
+      console.log('Is mobile (final):', isMobile);
       console.log('Bottom toolbar element:', bottomToolbar);
       console.log('Top menu element:', topMenu);
       
-      if (isMobile) {
+      // Always show on narrow screens for debugging
+      if (isNarrowScreen) {
         if (bottomToolbar) {
-          bottomToolbar.style.display = 'flex';
-          bottomToolbar.style.visibility = 'visible';
-          bottomToolbar.style.opacity = '1';
-          bottomToolbar.style.zIndex = '99999';
-          bottomToolbar.style.backgroundColor = '#C0C0C0';
-          bottomToolbar.style.position = 'fixed';
-          bottomToolbar.style.bottom = '30px';
-          bottomToolbar.style.left = '0';
-          bottomToolbar.style.right = '0';
-          bottomToolbar.style.height = '60px';
-          bottomToolbar.style.borderTop = '2px solid #808080';
-          bottomToolbar.style.justifyContent = 'space-around';
-          bottomToolbar.style.alignItems = 'center';
-          bottomToolbar.style.padding = '4px 8px';
-          console.log('Mobile bottom toolbar forced visible');
+          try {
+            bottomToolbar.style.display = 'flex';
+            bottomToolbar.style.visibility = 'visible';
+            bottomToolbar.style.opacity = '1';
+            bottomToolbar.style.zIndex = '99999';
+            bottomToolbar.style.backgroundColor = '#FF0000'; // Red for debugging
+            bottomToolbar.style.position = 'fixed';
+            bottomToolbar.style.bottom = '30px';
+            bottomToolbar.style.left = '0';
+            bottomToolbar.style.right = '0';
+            bottomToolbar.style.height = '60px';
+            bottomToolbar.style.borderTop = '2px solid #808080';
+            bottomToolbar.style.justifyContent = 'space-around';
+            bottomToolbar.style.alignItems = 'center';
+            bottomToolbar.style.padding = '4px 8px';
+            bottomToolbar.style.boxSizing = 'border-box';
+            console.log('✅ Mobile bottom toolbar forced visible');
+          } catch (e) {
+            console.error('❌ Error styling bottom toolbar:', e);
+          }
+        } else {
+          console.error('❌ Bottom toolbar element not found');
         }
+        
         if (topMenu) {
-          topMenu.style.display = 'flex';
-          console.log('Mobile top menu forced visible');
+          try {
+            topMenu.style.display = 'flex';
+            topMenu.style.position = 'fixed';
+            topMenu.style.top = '0';
+            topMenu.style.left = '0';
+            topMenu.style.right = '0';
+            topMenu.style.height = '50px';
+            topMenu.style.backgroundColor = '#C0C0C0';
+            topMenu.style.zIndex = '10002';
+            console.log('✅ Mobile top menu forced visible');
+          } catch (e) {
+            console.error('❌ Error styling top menu:', e);
+          }
+        } else {
+          console.error('❌ Top menu element not found');
         }
+      } else {
+        console.log('📱 Not narrow screen, skipping mobile toolbar');
       }
     }
     

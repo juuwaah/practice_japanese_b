@@ -736,9 +736,8 @@ li {
   display: none !important;
 }
 
-/* Override to show on mobile screens */
-@media (max-width: 768px) and (orientation: portrait),
-       (max-width: 480px) {
+/* Override to show on mobile screens - simplified media query */
+@media (max-width: 768px) {
   .mobile-bottom-toolbar,
   .mobile-top-menu {
     display: flex !important;
@@ -751,6 +750,27 @@ li {
     opacity: 1 !important;
     z-index: 99999 !important;
     background-color: #FF0000 !important; /* Red background for debugging */
+    position: fixed !important;
+    bottom: 30px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    border-top: 2px solid #808080 !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 4px 8px !important;
+  }
+  
+  .mobile-top-menu {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 50px !important;
+    background: #C0C0C0 !important;
+    border-bottom: 2px solid #808080 !important;
+    z-index: 10002 !important;
   }
 }
 
