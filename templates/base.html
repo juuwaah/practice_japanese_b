@@ -866,16 +866,60 @@
       const settingsCloseBtn = document.getElementById('settings-close');
       const settingsMenuLink = document.getElementById('settings-menu-link');
       
-      // Open settings modal function
+      // Open settings modal function  
       function openSettingsModal() {
+        console.log('⚙️ Opening settings modal');
         settingsModal.classList.add('mobile-force-display');
-        settingsModal.style.display = 'flex';
+        // Force display with highest priority styles
+        settingsModal.style.cssText = `
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          z-index: 999999 !important;
+          background-color: rgba(128, 128, 128, 0.8) !important;
+          justify-content: center !important;
+          align-items: center !important;
+          pointer-events: auto !important;
+        `;
+        
+        // Also force the settings window to be visible
+        const settingsWindow = settingsModal.querySelector('.settings-window');
+        if (settingsWindow) {
+          settingsWindow.style.cssText = `
+            position: relative !important;
+            z-index: 1000000 !important;
+            max-width: 90vw !important;
+            max-height: 90vh !important;
+            background: #F0F0F0 !important;
+            border: 2px outset #C0C0C0 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            overflow: auto !important;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5) !important;
+            display: flex !important;
+            flex-direction: column !important;
+          `;
+        }
+        console.log('⚙️ Settings modal forced display');
       }
       
       // Close settings modal function
       function closeSettingsModal() {
         settingsModal.classList.remove('mobile-force-display');
-        settingsModal.style.display = 'none';
+        settingsModal.style.cssText = 'display: none !important;';
+        // Also reset window styles
+        const settingsWindow = settingsModal.querySelector('.settings-window');
+        if (settingsWindow) {
+          settingsWindow.style.cssText = '';
+        }
+        console.log('⚙️ Settings modal closed');
       }
       
       settingsMenuLink.addEventListener('click', function(e) {
