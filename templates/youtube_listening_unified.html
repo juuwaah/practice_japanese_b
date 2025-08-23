@@ -82,12 +82,6 @@
                             ↓
                         </a>
                     </th>
-                    <th class="col-id">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='id', order='asc') }}" 
-                           class="sort-link {% if current_sort == 'id' and current_order == 'asc' %}active{% endif %}">
-                            ID ↑
-                        </a>
-                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -116,7 +110,6 @@
                             {{ quiz.play_count }}
                         {% endif %}
                     </td>
-                    <td class="col-id">{{ quiz.id }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -299,7 +292,6 @@
     text-decoration: none;
 }
 
-.col-id { width: 60px; text-align: center; }
 .col-level { width: 80px; text-align: center; }
 .col-title { 
     width: auto; 

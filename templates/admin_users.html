@@ -58,7 +58,7 @@
             {% if user.is_admin %}
               <span style="color: #FF0000;">管理者</span>
             {% elif user.is_patreon %}
-              <span style="color: #FF6600;">Patreon</span>
+              <span style="color: #4285F4;">Google</span>
             {% else %}
               <span style="color: #666;">一般</span>
             {% endif %}
@@ -121,7 +121,7 @@
   <div style="font-size: 8px;">
     総ユーザー数: {{ users_list.total }}人 | 
     管理者: {{ users_list.items|selectattr('is_admin')|list|length }}人 | 
-    Patreonユーザー: {{ users_list.items|selectattr('is_patreon')|list|length }}人
+    Googleユーザー: {{ users_list.items|selectattr('is_patreon')|list|length }}人
   </div>
 </div>
 

@@ -12,10 +12,6 @@
     <!-- ソートボタン -->
     <div class="mb-3">
         <div class="btn-group" role="group">
-            <a href="{{ url_for('youtube_listening.listening_quiz_list', level=level, sort='id', order='asc') }}" 
-               class="btn btn-outline-primary {% if current_sort == 'id' and current_order == 'asc' %}active{% endif %}">
-                ID ↑
-            </a>
             <a href="{{ url_for('youtube_listening.listening_quiz_list', level=level, sort='title', order='asc') }}" 
                class="btn btn-outline-primary {% if current_sort == 'title' and current_order == 'asc' %}active{% endif %}">
                 タイトル ↑
@@ -38,7 +34,6 @@
                 <div class="card-body">
                     <h6 class="card-title">{{ quiz.title }}</h6>
                     <p class="card-text small">
-                        ID: {{ quiz.id }}<br>
                         時間: {{ (quiz.duration // 60) }}分{{ (quiz.duration % 60) }}秒
                     </p>
                     <a href="{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id) }}" 
