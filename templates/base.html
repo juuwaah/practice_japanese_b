@@ -214,7 +214,6 @@
     <div class="mobile-menu-btn" id="mobile-file-menu">File</div>
     <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
     <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
-    <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
   </div>
 
   <!-- Mobile container wrapper -->
@@ -263,13 +262,6 @@
       </div>
     </div>
     
-    <div class="menu-dropdown">
-      <span class="menu-item">{{ _('support_menu') }}</span>
-      <div class="menu-content">
-        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('patreon_support') }}</a>
-        <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
-      </div>
-    </div>
     
   </div>
 
@@ -282,7 +274,6 @@
     <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
     {% endif %}
     <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <div class="tool-icon" id="donation-tool" title="{{ _('donation_support') }}">🤏</div>
   </div>
 
   <!-- External Links Section Below Tool Palette -->
@@ -295,13 +286,6 @@
       <div class="btn-description">Get 30% off coupon for the trial lesson!</div>
     </div>
     
-    <!-- Patreon Button -->
-    <div class="external-link-container">
-      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
-        <div class="btn-text">Patreon</div>
-      </a>
-      <div class="btn-description">Support ongoing development</div>
-    </div>
   </div>
 
     </div> <!-- Close left-sidebar -->
@@ -360,12 +344,8 @@
     {% endif %}
     <!-- Sitemap Tool -->
     <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <!-- Donation Tool -->
-    <div class="mobile-tool-btn" id="mobile-donation-tool" title="{{ _('donation_support') }}">🤏</div>
     <!-- Preply Button -->
     <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
-    <!-- Patreon Button -->
-    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
   </div>
 
   <!-- Global Popup Modals (Outside all containers for proper z-index) -->
@@ -445,41 +425,6 @@
     </div>
   </div>
 
-  <!-- Donation Popup Modal -->
-  <div id="donation-modal" class="donation-modal">
-    <div class="donation-window">
-      <div class="donation-title-bar">
-        <span>{{ _('support_development') }}</span>
-        <button id="donation-close" class="donation-close-btn">×</button>
-      </div>
-      <div class="donation-content">
-        <div style="padding: 16px; text-align: center;">
-          <h3 style="font-size: 12px; margin: 0 0 12px 0; font-weight: bold;">{{ _('support_message') }}</h3>
-          <p style="font-size: 9px; margin: 0 0 16px 0; color: #606060; line-height: 1.4;">
-            {{ _('support_description') }}
-          </p>
-          
-          <!-- Donation Buttons -->
-          <div class="donation-buttons">
-            <a href="https://buymeacoffee.com/japanesewithb" target="_blank" class="donation-btn bmc-btn">
-              <span style="font-size: 10px;">☕</span>
-              <span style="font-size: 9px;">Buy me a coffee</span>
-            </a>
-            
-            <a href="https://www.paypal.com/ncp/payment/PCB595CBVLF7J" target="_blank" class="donation-btn paypal-btn">
-              <span style="font-size: 10px;">💳</span>
-              <span style="font-size: 9px;">PayPal</span>
-            </a>
-          </div>
-          
-          <!-- Thank you note -->
-          <div style="margin-top: 16px; padding: 8px; background: #F0F8FF; border: 1px solid #4285F4; font-size: 8px; color: #2C5CC5;">
-            💙 {{ _('thank_you_message') }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   {% block scripts %}{% endblock %}
 
@@ -522,11 +467,6 @@
           return;
         }
         
-        // Special handling for donation tool
-        if (this.id === 'donation-tool') {
-          window.location.href = '/donation';
-          return;
-        }
         
         document.querySelectorAll('.tool-icon').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
@@ -599,12 +539,6 @@
           return;
         }
         
-        // Special handling for mobile donation tool
-        if (this.id === 'mobile-donation-tool') {
-          e.stopPropagation();
-          window.location.href = '/donation';
-          return;
-        }
         
         // For link buttons (Preply, Patreon), don't prevent default to allow navigation
       });
@@ -618,7 +552,6 @@
           'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
           'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
           'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
-          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
         };
         
         const targetSelector = menuMap[this.id];
@@ -923,23 +856,6 @@
         }
       });
       
-      // Donation modal functionality
-      const donationModal = document.getElementById('donation-modal');
-      const donationCloseBtn = document.getElementById('donation-close');
-      
-      // Close donation modal function
-      function closeDonationModal() {
-        donationModal.classList.remove('modal-show');
-      }
-      
-      donationCloseBtn.addEventListener('click', closeDonationModal);
-      
-      // Close when clicking outside the window
-      donationModal.addEventListener('click', function(e) {
-        if (e.target === donationModal) {
-          closeDonationModal();
-        }
-      });
       
       // PayPal button is now functional - no placeholder needed
     });
