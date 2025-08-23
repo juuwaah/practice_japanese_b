@@ -214,6 +214,7 @@
     <div class="mobile-menu-btn" id="mobile-file-menu">File</div>
     <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
     <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
+    <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
   </div>
 
   <!-- Mobile container wrapper -->
@@ -262,6 +263,13 @@
       </div>
     </div>
     
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('support_menu') }}</span>
+      <div class="menu-content">
+        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('patreon_support') }}</a>
+        <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
+      </div>
+    </div>
     
   </div>
 
@@ -286,6 +294,13 @@
       <div class="btn-description">Get 30% off coupon for the trial lesson!</div>
     </div>
     
+    <!-- Patreon Button -->
+    <div class="external-link-container">
+      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
+        <div class="btn-text">Patreon</div>
+      </a>
+      <div class="btn-description">Support ongoing development</div>
+    </div>
   </div>
 
     </div> <!-- Close left-sidebar -->
@@ -552,6 +567,7 @@
           'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
           'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
           'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
+          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
         };
         
         const targetSelector = menuMap[this.id];
