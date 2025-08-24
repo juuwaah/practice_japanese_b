@@ -101,7 +101,24 @@ def flashcard_index():
         FlashcardProgress.next_review <= datetime.utcnow()
     ).count()
     
-    return render_template("flashcard_setup.html", review_count=review_count)
+    # 統計情報を取得
+    user_progress = FlashcardProgress.query.filter_by(user_id=current_user.id)
+    total_learned = user_progress.count()
+    
+    # レベル別統計
+    level_stats = {}
+    for level in ['N5', 'N4', 'N3', 'N2', 'N1']:
+        level_learned = user_progress.join(VocabMaster).filter(VocabMaster.jlpt_level == level).count()
+        level_stats[level] = level_learned
+    
+    # 習熟度別統計（study_count >= 3を「覚えた」とする）
+    well_learned = user_progress.filter(FlashcardProgress.study_count >= 3).count()
+    
+    return render_template("flashcard_setup.html", 
+                         review_count=review_count,
+                         total_learned=total_learned,
+                         level_stats=level_stats,
+                         well_learned=well_learned)
 
 @flashcard_bp.route('/study', methods=['GET', 'POST'])
 @google_login_required

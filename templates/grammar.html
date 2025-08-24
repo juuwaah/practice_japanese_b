@@ -14,6 +14,10 @@
         📊 {{ _('view_my_logs') }}
       </a>
     </div>
+  {% else %}
+    <div style="margin-top: 8px; font-size: 8px; color: #666;">
+      {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}" style="text-decoration: underline; color: #0066CC;">{{ _('google_login_here') }}</a>
+    </div>
   {% endif %}
 </div>
 
