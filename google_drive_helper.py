@@ -31,15 +31,29 @@ def get_drive_service():
         return None
         
     try:
-        if not os.path.exists(SERVICE_ACCOUNT_FILE):
-            print(f"ERROR: Service account file not found: {SERVICE_ACCOUNT_FILE}")
+        # 環境変数からサービスアカウント情報を取得（Railway用）
+        service_account_json = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        
+        if service_account_json:
+            # 環境変数から認証情報を取得（本番環境）
+            service_account_info = json.loads(service_account_json)
+            credentials = service_account.Credentials.from_service_account_info(
+                service_account_info,
+                scopes=['https://www.googleapis.com/auth/drive.readonly',
+                       'https://www.googleapis.com/auth/documents.readonly']
+            )
+            print("Using Google service account from environment variable")
+        elif os.path.exists(SERVICE_ACCOUNT_FILE):
+            # ローカル開発用：ファイルから認証情報を取得
+            credentials = service_account.Credentials.from_service_account_file(
+                SERVICE_ACCOUNT_FILE,
+                scopes=['https://www.googleapis.com/auth/drive.readonly',
+                       'https://www.googleapis.com/auth/documents.readonly']
+            )
+            print("Using Google service account from file")
+        else:
+            print(f"ERROR: No Google credentials found. Set GOOGLE_SERVICE_ACCOUNT_JSON env var or place {SERVICE_ACCOUNT_FILE}")
             return None
-            
-        credentials = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE,
-            scopes=['https://www.googleapis.com/auth/drive.readonly',
-                   'https://www.googleapis.com/auth/documents.readonly']
-        )
         
         drive_service = build('drive', 'v3', credentials=credentials)
         return drive_service
@@ -54,15 +68,29 @@ def get_docs_service():
         return None
         
     try:
-        if not os.path.exists(SERVICE_ACCOUNT_FILE):
-            print(f"ERROR: Service account file not found: {SERVICE_ACCOUNT_FILE}")
+        # 環境変数からサービスアカウント情報を取得（Railway用）
+        service_account_json = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        
+        if service_account_json:
+            # 環境変数から認証情報を取得（本番環境）
+            service_account_info = json.loads(service_account_json)
+            credentials = service_account.Credentials.from_service_account_info(
+                service_account_info,
+                scopes=['https://www.googleapis.com/auth/drive.readonly',
+                       'https://www.googleapis.com/auth/documents.readonly']
+            )
+            print("Using Google service account from environment variable")
+        elif os.path.exists(SERVICE_ACCOUNT_FILE):
+            # ローカル開発用：ファイルから認証情報を取得
+            credentials = service_account.Credentials.from_service_account_file(
+                SERVICE_ACCOUNT_FILE,
+                scopes=['https://www.googleapis.com/auth/drive.readonly',
+                       'https://www.googleapis.com/auth/documents.readonly']
+            )
+            print("Using Google service account from file")
+        else:
+            print(f"ERROR: No Google credentials found. Set GOOGLE_SERVICE_ACCOUNT_JSON env var or place {SERVICE_ACCOUNT_FILE}")
             return None
-            
-        credentials = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE,
-            scopes=['https://www.googleapis.com/auth/drive.readonly',
-                   'https://www.googleapis.com/auth/documents.readonly']
-        )
         
         docs_service = build('docs', 'v1', credentials=credentials)
         return docs_service
