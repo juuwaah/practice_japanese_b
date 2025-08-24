@@ -230,6 +230,11 @@ def convert_to_html(content: List[Dict]) -> str:
             p_html = convert_paragraph_to_html(paragraph)
             if p_html.strip():  # 空の段落をスキップ
                 html.append(p_html)
+        elif 'table' in element:
+            table = element['table']
+            table_html = convert_table_to_html(table)
+            if table_html.strip():
+                html.append(table_html)
     
     return '\n'.join(html)
 
@@ -262,12 +267,44 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
             text_style = text_run.get('textStyle', {})
             
             # スタイル適用
+            span_styles = []
+            
             if text_style.get('bold'):
                 text = f'<strong>{text}</strong>'
             if text_style.get('italic'):
                 text = f'<em>{text}</em>'
             if text_style.get('underline'):
                 text = f'<u>{text}</u>'
+                
+            # 背景色の処理
+            if 'backgroundColor' in text_style:
+                bg_color = text_style['backgroundColor'].get('color', {})
+                if 'rgbColor' in bg_color:
+                    rgb = bg_color['rgbColor']
+                    r = int(rgb.get('red', 0) * 255)
+                    g = int(rgb.get('green', 0) * 255) 
+                    b = int(rgb.get('blue', 0) * 255)
+                    span_styles.append(f'background-color: rgb({r}, {g}, {b})')
+                    
+            # 文字色の処理
+            if 'foregroundColor' in text_style:
+                fg_color = text_style['foregroundColor'].get('color', {})
+                if 'rgbColor' in fg_color:
+                    rgb = fg_color['rgbColor']
+                    r = int(rgb.get('red', 0) * 255)
+                    g = int(rgb.get('green', 0) * 255)
+                    b = int(rgb.get('blue', 0) * 255)
+                    span_styles.append(f'color: rgb({r}, {g}, {b})')
+                    
+            # フォントサイズの処理
+            if 'fontSize' in text_style:
+                font_size = text_style['fontSize'].get('magnitude', 10)
+                span_styles.append(f'font-size: {font_size}px')
+            
+            # スタイルをspanで適用
+            if span_styles:
+                style_str = '; '.join(span_styles)
+                text = f'<span style="{style_str}">{text}</span>'
             
             # リンクの処理
             if 'link' in text_style:
@@ -282,6 +319,68 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
         return ''
     
     return f'<{tag}>{content_text}</{tag}>'
+
+def convert_table_to_html(table: Dict) -> str:
+    """Google Docsの表をHTMLテーブルに変換"""
+    if not table.get('tableRows'):
+        return ''
+    
+    html = ['<table style="border-collapse: collapse; width: 100%; margin: 16px 0;">']
+    
+    for i, row in enumerate(table['tableRows']):
+        html.append('<tr>')
+        
+        for j, cell in enumerate(row.get('tableCells', [])):
+            # セルのスタイルを取得
+            cell_style = cell.get('tableCellStyle', {})
+            cell_styles = []
+            
+            # 背景色
+            if 'backgroundColor' in cell_style:
+                bg_color = cell_style['backgroundColor'].get('color', {})
+                if 'rgbColor' in bg_color:
+                    rgb = bg_color['rgbColor']
+                    r = int(rgb.get('red', 0) * 255)
+                    g = int(rgb.get('green', 0) * 255)
+                    b = int(rgb.get('blue', 0) * 255)
+                    cell_styles.append(f'background-color: rgb({r}, {g}, {b})')
+            
+            # 境界線
+            cell_styles.extend([
+                'border: 1px solid #ddd',
+                'padding: 8px',
+                'vertical-align: top'
+            ])
+            
+            # セルの内容を変換
+            cell_content = []
+            for content_element in cell.get('content', []):
+                if 'paragraph' in content_element:
+                    para_html = convert_paragraph_to_html(content_element['paragraph'])
+                    # テーブル内では<p>タグを除去してシンプルにする
+                    if para_html.startswith('<p>') and para_html.endswith('</p>'):
+                        para_html = para_html[3:-4]
+                    elif para_html.startswith('<h'):
+                        # 見出しタグもシンプルにする
+                        import re
+                        para_html = re.sub(r'<h[1-6]>(.*?)</h[1-6]>', r'<strong>\1</strong>', para_html)
+                    cell_content.append(para_html)
+            
+            cell_text = '<br>'.join(cell_content) if cell_content else '&nbsp;'
+            style_str = '; '.join(cell_styles) if cell_styles else ''
+            
+            # ヘッダー行の判定（最初の行をヘッダーとして扱う）
+            tag = 'th' if i == 0 else 'td'
+            if tag == 'th':
+                cell_styles.append('font-weight: bold')
+                style_str = '; '.join(cell_styles)
+            
+            html.append(f'<{tag} style="{style_str}">{cell_text}</{tag}>')
+        
+        html.append('</tr>')
+    
+    html.append('</table>')
+    return '\n'.join(html)
 
 def format_date(date_str: str) -> str:
     """日付文字列を読みやすい形式に変換"""
