@@ -240,7 +240,16 @@ def get_today_quiz():
     onomatope_meaning = selected_onomatope["meaning"]
     onomatope_category = selected_onomatope["category"]
     
-    # Step 2: AIで例文と間違い選択肢を生成
+    # Step 2: スプレッドシートから間違い選択肢を取得
+    from onomatopoeia_data import get_onomatopoeia_list
+    all_onomatopoeia = get_onomatopoeia_list()
+    
+    # 正解以外の選択肢をランダムに2つ選択
+    other_meanings = [item["meaning"] for item in all_onomatopoeia if item["word"] != onomatope_word]
+    random.shuffle(other_meanings)
+    distractors = other_meanings[:2]
+    
+    # Step 3: AIで例文のみ生成
     prompt = f"""
 あなたは日本語教師です。以下の日本語オノマトペを使ったクイズを作ってください。
 
@@ -251,16 +260,15 @@ def get_today_quiz():
 【重要】正解の英語意味は必ず「{onomatope_meaning}」を使用してください。変更しないでください。
 
 以下を作成してください：
-1. 間違い選択肢（英語の意味）を2つ作る（正解「{onomatope_meaning}」と紛らわしく、同じカテゴリの他のオノマトペの意味など）
-2. このオノマトペ「{onomatope_word}」を使った自然な日本語の例文を2つ作る
-3. 各例文のひらがな読み（漢字にひらがなをつけて読みやすくしたもの）を作る
-4. 各例文に対応する自然な英語訳を作る
+1. このオノマトペ「{onomatope_word}」を使った自然な日本語の例文を2つ作る
+2. 各例文のひらがな読み（漢字にひらがなをつけて読みやすくしたもの）を作る
+3. 各例文に対応する自然な英語訳を作る
 
 出力はJSON形式で：
 {{
   "onomatope": "{onomatope_word}",
   "correct_meaning_en": "{onomatope_meaning}",
-  "distractors_en": ["...", "..."],
+  "distractors_en": {distractors},
   "examples": ["...", "..."],
   "examples_hiragana": ["...", "..."],
   "examples_en": ["...", "..."]
