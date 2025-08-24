@@ -63,7 +63,6 @@ def google_login_required(f):
     return decorated_function
 
 @grammar_bp.route("/", methods=["GET", "POST"])
-@google_login_required
 def grammar_index():
     original = ""
     translation = ""
@@ -101,7 +100,7 @@ def grammar_index():
                 feedback = result.get("feedback", "")
                 casual_answer = result.get("casual_answer", "")
                 
-                # ログイン済みユーザーの場合、ログを保存
+                # ログイン時のみログを保存
                 if current_user.is_authenticated:
                     try:
                         # スコアを計算（grammarとmeaningの平均を0-100スケールに変換）
@@ -267,3 +266,17 @@ def extract_json(text):
     if match:
         return match.group(0)
     raise ValueError("Failed to extract JSON.")
+
+@grammar_bp.route("/logs", methods=["GET"])
+@google_login_required
+def grammar_logs():
+    """ユーザーの文法クイズログを表示"""
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    # 現在のユーザーのログのみを取得
+    logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
+                             .order_by(GrammarQuizLog.created_at.desc())\
+                             .paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('grammar_logs.html', logs=logs)

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('grammar_logs') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('my_grammar_logs') }}{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>📊 {{ _('my_grammar_logs') }}</h1>
+  <div style="margin-top: 8px;">
+    <a href="{{ url_for('grammar.grammar_index') }}" 
+       style="font-size: 9px; text-decoration: underline; color: #000;">
+      ← {{ _('back_to_grammar_quiz') }}
+    </a>
+  </div>
+</div>
+
+{% if logs.items %}
+<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+      <thead>
+        <tr style="background: #E0E0E0;">
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('date') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('level') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('direction') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('original_sentence') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('your_translation') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">{{ _('score') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs.items %}
+        <tr>
+          <td style="border: 1px solid #888; padding: 4px;">
+            {{ log.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            <span style="background: #E0E0E0; padding: 2px 4px; border-radius: 2px;">{{ log.jlpt_level }}</span>
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            {% if log.direction == 'en_to_ja' %}
+              🇺🇸→🇯🇵
+            {% else %}
+              🇯🇵→🇺🇸
+            {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            {{ log.original_sentence[:100] }}
+            {% if log.original_sentence|length > 100 %}...{% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px;">
+            {{ log.user_translation[:100] }}
+            {% if log.user_translation|length > 100 %}...{% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            {% if log.score %}
+              <span style="color: {% if log.score >= 80 %}#008000{% elif log.score >= 60 %}#FFA500{% else %}#FF0000{% endif %};">
+                {{ "%.0f"|format(log.score) }}%
+              </span>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ページネーション -->
+{% if logs.pages > 1 %}
+<div style="text-align: center; margin: 16px 0;">
+  <div style="border: 1px solid #000; padding: 4px; background: #F0F0F0; display: inline-block;">
+    {% if logs.has_prev %}
+      <a href="{{ url_for('grammar.grammar_logs', page=logs.prev_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        {{ _('previous') }}
+      </a>
+    {% endif %}
+    
+    {% for page_num in logs.iter_pages() %}
+      {% if page_num %}
+        {% if page_num != logs.page %}
+          <a href="{{ url_for('grammar.grammar_logs', page=page_num) }}" 
+             style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                    text-decoration: none; color: #000; font-size: 8px;">
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span style="padding: 2px 6px; margin: 0 2px; background: #000000; color: #FFFFFF; 
+                       border: 1px solid #000; font-size: 8px;">
+            {{ page_num }}
+          </span>
+        {% endif %}
+      {% else %}
+        <span style="padding: 2px 6px; margin: 0 2px; font-size: 8px;">…</span>
+      {% endif %}
+    {% endfor %}
+    
+    {% if logs.has_next %}
+      <a href="{{ url_for('grammar.grammar_logs', page=logs.next_num) }}" 
+         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
+                text-decoration: none; color: #000; font-size: 8px;">
+        {{ _('next') }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+<!-- 統計情報 -->
+<div style="border: 1px solid #000; padding: 8px; background: #F0F0F0; margin-top: 16px;">
+  <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">{{ _('statistics') }}</div>
+  <div style="font-size: 8px;">
+    {{ _('total_attempts') }}: {{ logs.total }} | 
+    {{ _('average_score') }}: 
+    {% set scored_logs = logs.items|selectattr('score')|list %}
+    {% if scored_logs %}
+      {{ "%.1f"|format((scored_logs|sum(attribute='score')) / (scored_logs|length)) }}%
+    {% else %}
+      -
+    {% endif %}
+  </div>
+</div>
+
+{% else %}
+<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0;">
+  <div style="font-size: 12px; margin-bottom: 8px;">📝</div>
+  <div style="font-size: 10px;">{{ _('no_grammar_logs_yet') }}</div>
+  <div style="font-size: 8px; color: #666; margin-top: 4px;">
+    {{ _('start_grammar_quiz_to_see_logs') }}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

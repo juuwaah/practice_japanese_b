@@ -373,6 +373,10 @@
       </div>
       <div class="feedback-content">
         <form id="feedback-form" method="POST" action="/feedback">
+          <!-- Privacy Notice -->
+          <div style="margin-bottom: 8px; padding: 6px; background: #f0f8ff; border: 1px solid #cce7f0; font-size: 7px; color: #2c5282; line-height: 1.2;">
+            ℹ️ {{ _('feedback_privacy_notice') }}
+          </div>
           <div class="feedback-field">
             <label>{{ _('message') }}:</label>
             <textarea name="message" id="feedback-message" rows="8" required placeholder="{{ _('feedback_placeholder') }}"></textarea>
