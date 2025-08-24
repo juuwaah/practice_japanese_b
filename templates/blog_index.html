@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('blog') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ _('blog') }}{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-bottom: 16px;">
+  <h1>📝 {{ _('blog') }}</h1>
+  <div style="font-size: 9px; color: #666; margin-top: 4px;">
+    {{ _('blog_description') }}
+  </div>
+</div>
+
+<!-- 検索フォーム -->
+<div style="border: 1px solid #000; padding: 8px; margin-bottom: 16px; background: #F0F0F0; max-width: 400px; margin-left: auto; margin-right: auto;">
+  <form method="GET" action="{{ url_for('blog.blog_index') }}">
+    <div style="display: flex; gap: 4px;">
+      <input type="text" name="q" value="{{ search_query }}" placeholder="{{ _('search_blog_posts') }}" 
+             style="flex: 1; padding: 4px; font-size: 9px; border: 1px solid #000;">
+      <button type="submit" style="padding: 4px 8px; font-size: 9px; background: #FFFFFF; border: 1px solid #000;">
+        🔍 {{ _('search') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% if search_query %}
+<div style="text-align: center; margin-bottom: 12px; font-size: 9px; color: #666;">
+  "{{ search_query }}" {{ _('search_results') }}: {{ blog_posts|length }} {{ _('articles_found') }}
+  <a href="{{ url_for('blog.blog_index') }}" style="margin-left: 8px; text-decoration: underline;">{{ _('show_all_articles') }}</a>
+</div>
+{% endif %}
+
+<!-- ブログ記事一覧 -->
+{% if blog_posts %}
+<div style="max-width: 600px; margin: 0 auto;">
+  {% for post in blog_posts %}
+  <div style="border: 2px solid #000; padding: 12px; margin-bottom: 12px; background: #FFFFFF;">
+    <div style="margin-bottom: 8px;">
+      <h2 style="margin: 0 0 4px 0; font-size: 12px;">
+        <a href="{{ url_for('blog.blog_post', document_id=post.id) }}" 
+           style="color: #000; text-decoration: none;">
+          {{ post.title }}
+        </a>
+      </h2>
+      <div style="font-size: 8px; color: #666;">
+        📅 {{ _('published') }}: {{ post.created_date }}
+        {% if post.modified_date != post.created_date %}
+          | ✏️ {{ _('updated') }}: {{ post.modified_date }}
+        {% endif %}
+      </div>
+    </div>
+    
+    <div style="text-align: right; margin-top: 8px;">
+      <a href="{{ url_for('blog.blog_post', document_id=post.id) }}" 
+         style="font-size: 9px; background: #F0F0F0; border: 1px solid #000; padding: 4px 8px; 
+                text-decoration: none; color: #000;">
+        {{ _('read_more') }} →
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0; max-width: 400px; margin: 0 auto;">
+  <div style="font-size: 12px; margin-bottom: 8px;">📖</div>
+  {% if search_query %}
+    <div style="font-size: 10px;">{{ _('no_articles_found') }}</div>
+    <div style="font-size: 8px; color: #666; margin-top: 4px;">{{ _('try_different_search') }}</div>
+  {% else %}
+    <div style="font-size: 10px;">{{ _('no_blog_posts_yet') }}</div>
+    <div style="font-size: 8px; color: #666; margin-top: 4px;">{{ _('check_back_later') }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+<style>
+/* ブログ記事リンクのホバー効果 */
+.blog-post-link:hover {
+  background: #F8F8F8 !important;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  div[style*="max-width: 600px"] {
+    max-width: 100% !important;
+    margin: 0 8px !important;
+  }
+  
+  div[style*="max-width: 400px"] {
+    max-width: calc(100% - 16px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+  
+  h2 {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+  
+  div[style*="font-size: 8px"] {
+    font-size: 9px !important;
+  }
+  
+  div[style*="font-size: 9px"] {
+    font-size: 10px !important;
+  }
+}
+</style>
+{% endblock %}

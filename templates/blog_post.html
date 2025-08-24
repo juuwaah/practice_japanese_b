@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - {{ _('blog') }} - {{ _('japanese_learning_app') }}{% endblock %}
+
+{% block window_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto;">
+  <!-- ナビゲーション -->
+  <div style="text-align: center; margin-bottom: 16px;">
+    <a href="{{ url_for('blog.blog_index') }}" 
+       style="font-size: 9px; text-decoration: underline; color: #000;">
+      ← {{ _('back_to_blog') }}
+    </a>
+  </div>
+
+  <!-- 記事タイトル -->
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="margin: 0; font-size: 16px; line-height: 1.4;">{{ title }}</h1>
+  </div>
+
+  <!-- 記事内容 -->
+  <article style="border: 2px solid #000; padding: 16px; background: #FFFFFF; line-height: 1.6;">
+    <div class="blog-content">
+      {{ content | safe }}
+    </div>
+  </article>
+
+  <!-- フッター -->
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{{ url_for('blog.blog_index') }}" 
+       style="background: #F0F0F0; border: 1px solid #000; padding: 8px 16px; 
+              text-decoration: none; color: #000; font-size: 9px; font-weight: bold;">
+      {{ _('back_to_blog') }}
+    </a>
+  </div>
+</div>
+
+<style>
+/* ブログコンテンツスタイル */
+.blog-content h1 {
+  font-size: 16px;
+  margin: 20px 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #000;
+  line-height: 1.4;
+}
+
+.blog-content h2 {
+  font-size: 14px;
+  margin: 18px 0 10px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #666;
+  line-height: 1.4;
+}
+
+.blog-content h3 {
+  font-size: 12px;
+  margin: 16px 0 8px 0;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.blog-content h4 {
+  font-size: 11px;
+  margin: 14px 0 6px 0;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.blog-content p {
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.blog-content strong {
+  font-weight: bold;
+}
+
+.blog-content em {
+  font-style: italic;
+}
+
+.blog-content u {
+  text-decoration: underline;
+}
+
+.blog-content a {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+.blog-content a:hover {
+  color: #004499;
+}
+
+/* 日本語フォント対応 */
+.blog-content {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  div[style*="max-width: 700px"] {
+    max-width: calc(100% - 16px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+  
+  article {
+    padding: 12px !important;
+  }
+  
+  .blog-content h1 {
+    font-size: 14px !important;
+  }
+  
+  .blog-content h2 {
+    font-size: 13px !important;
+  }
+  
+  .blog-content h3 {
+    font-size: 11px !important;
+  }
+  
+  .blog-content h4 {
+    font-size: 10px !important;
+  }
+  
+  .blog-content p {
+    font-size: 9px !important;
+    line-height: 1.5 !important;
+  }
+  
+  h1[style*="font-size: 16px"] {
+    font-size: 14px !important;
+  }
+}
+
+/* 非常に小さい画面対応 */
+@media (max-width: 480px) {
+  .blog-content h1 {
+    font-size: 13px !important;
+  }
+  
+  .blog-content h2 {
+    font-size: 12px !important;
+  }
+  
+  .blog-content p {
+    font-size: 8px !important;
+  }
+  
+  h1[style*="font-size: 16px"] {
+    font-size: 13px !important;
+  }
+}
+</style>
+{% endblock %}

@@ -215,6 +215,7 @@
     <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
     <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
     <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
+    <div class="mobile-menu-btn" id="mobile-blog-menu">Blog</div>
   </div>
 
   <!-- Mobile container wrapper -->
@@ -268,6 +269,13 @@
       <div class="menu-content">
         <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('patreon_support') }}</a>
         <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
+      </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item">{{ _('blog') }}</span>
+      <div class="menu-content">
+        <a href="{{ url_for('blog.blog_index') }}">{{ _('blog_articles') }}</a>
       </div>
     </div>
     
@@ -571,7 +579,8 @@
           'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
           'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
           'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
-          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
+          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content',
+          'mobile-blog-menu': '.menu-dropdown:nth-child(5) .menu-content'
         };
         
         const targetSelector = menuMap[this.id];

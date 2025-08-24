@@ -299,6 +299,23 @@ TRANSLATIONS = {
         'audio_player': 'Audio Player',
         'score': 'Score',
         'submit_answers': 'Submit Answers',
+        
+        # Blog translations
+        'blog': 'Blog',
+        'blog_description': 'Articles and updates about Japanese learning',
+        'search_blog_posts': 'Search blog posts...',
+        'search': 'Search',
+        'search_results': 'search results',
+        'articles_found': 'articles found',
+        'show_all_articles': 'Show all articles',
+        'published': 'Published',
+        'updated': 'Updated',
+        'read_more': 'Read more',
+        'no_articles_found': 'No articles found',
+        'try_different_search': 'Try a different search term',
+        'no_blog_posts_yet': 'No blog posts yet',
+        'check_back_later': 'Check back later for new articles',
+        'back_to_blog': 'Back to blog',
     },
     
     'ja': {
@@ -600,6 +617,23 @@ TRANSLATIONS = {
         'submit_answers': '答えを提出',
         'your_selections': 'あなたの選択',
         'none_selected': '選択なし',
+        
+        # Blog translations
+        'blog': 'ブログ',
+        'blog_description': '日本語学習に関する記事と更新情報',
+        'search_blog_posts': 'ブログ記事を検索...',
+        'search': '検索',
+        'search_results': '検索結果',
+        'articles_found': '件の記事が見つかりました',
+        'show_all_articles': 'すべての記事を表示',
+        'published': '公開',
+        'updated': '更新',
+        'read_more': '続きを読む',
+        'no_articles_found': '記事が見つかりません',
+        'try_different_search': '別の検索語句をお試しください',
+        'no_blog_posts_yet': 'まだブログ記事がありません',
+        'check_back_later': '新しい記事については後でチェックしてください',
+        'back_to_blog': 'ブログに戻る',
     },
     
     'es': {
@@ -902,6 +936,23 @@ TRANSLATIONS = {
         'submit_answers': 'Enviar respuestas',
         'your_selections': 'Tus selecciones',
         'none_selected': 'Ninguna seleccionada',
+        
+        # Blog translations
+        'blog': 'Blog',
+        'blog_description': 'Articles and updates about Japanese learning',
+        'search_blog_posts': 'Search blog posts...',
+        'search': 'Search',
+        'search_results': 'search results',
+        'articles_found': 'articles found',
+        'show_all_articles': 'Show all articles',
+        'published': 'Published',
+        'updated': 'Updated',
+        'read_more': 'Read more',
+        'no_articles_found': 'No articles found',
+        'try_different_search': 'Try a different search term',
+        'no_blog_posts_yet': 'No blog posts yet',
+        'check_back_later': 'Check back later for new articles',
+        'back_to_blog': 'Back to blog',
     }
 }
 
