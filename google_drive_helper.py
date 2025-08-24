@@ -12,13 +12,21 @@ from typing import List, Dict, Optional
 try:
     from googleapiclient.discovery import build
     from google.oauth2 import service_account
+    from googleapiclient.errors import HttpError
     GOOGLE_APIS_AVAILABLE = True
     print("Google APIs loaded successfully")
-except Exception as e:
-    print(f"Warning: Google APIs not available: {e}")
+except ImportError as e:
+    print(f"Warning: Google API libraries not installed: {e}")
     GOOGLE_APIS_AVAILABLE = False
     build = None
     service_account = None
+    HttpError = None
+except Exception as e:
+    print(f"Warning: Google APIs not available due to system error: {e}")
+    GOOGLE_APIS_AVAILABLE = False
+    build = None
+    service_account = None
+    HttpError = None
 
 # Google Drive設定
 BLOG_FOLDER_ID = '1dm9jGD2qXzLVcW7JbOnjL_tg9eqM6PZS'
