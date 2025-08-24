@@ -32,7 +32,7 @@ def get_drive_service():
         
     try:
         # 環境変数からサービスアカウント情報を取得（Railway用）
-        service_account_json = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        service_account_json = os.getenv('GOOGLE_BLOG_SERVICE_ACCOUNT_JSON') or os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
         
         if service_account_json:
             # 環境変数から認証情報を取得（本番環境）
@@ -69,7 +69,7 @@ def get_docs_service():
         
     try:
         # 環境変数からサービスアカウント情報を取得（Railway用）
-        service_account_json = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        service_account_json = os.getenv('GOOGLE_BLOG_SERVICE_ACCOUNT_JSON') or os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
         
         if service_account_json:
             # 環境変数から認証情報を取得（本番環境）
