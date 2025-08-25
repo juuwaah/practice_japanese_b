@@ -207,6 +207,22 @@ def get_document_content(document_id: str) -> Optional[Dict]:
         title = document.get('title', 'Untitled')
         content = document.get('body', {}).get('content', [])
         
+        # デバッグ: 最初の段落の構造を確認
+        if content and len(content) > 0:
+            first_element = content[0]
+            print(f"DEBUG: First element keys: {first_element.keys()}")
+            if 'paragraph' in first_element:
+                para = first_element['paragraph']
+                print(f"DEBUG: Paragraph keys: {para.keys()}")
+                if 'elements' in para and para['elements']:
+                    elem = para['elements'][0]
+                    print(f"DEBUG: Element keys: {elem.keys()}")
+                    if 'textRun' in elem:
+                        text_run = elem['textRun']
+                        print(f"DEBUG: TextRun keys: {text_run.keys()}")
+                        if 'textStyle' in text_run:
+                            print(f"DEBUG: TextStyle keys: {text_run['textStyle'].keys()}")
+        
         # コンテンツをHTMLに変換
         html_content = convert_to_html(content)
         
@@ -228,11 +244,28 @@ def convert_to_html(content: List[Dict]) -> str:
         if 'paragraph' in element:
             paragraph = element['paragraph']
             p_html = convert_paragraph_to_html(paragraph)
-            if p_html.strip():  # 空の段落をスキップ
+            
+            # 段落が完全に空かチェック
+            is_empty_paragraph = False
+            if not paragraph.get('elements'):
+                is_empty_paragraph = True
+            else:
+                # 全ての要素の内容をチェック
+                all_content = ''
+                for elem in paragraph.get('elements', []):
+                    if 'textRun' in elem:
+                        content = elem['textRun'].get('content', '')
+                        all_content += content
+                
+                # 空白文字のみの段落も空として扱う
+                if all_content.strip() == '' or all_content == '\n':
+                    is_empty_paragraph = True
+            
+            if p_html.strip():
                 html.append(p_html)
-            elif not paragraph.get('elements') or all(elem.get('textRun', {}).get('content', '').strip() == '' for elem in paragraph.get('elements', [])):
+            elif is_empty_paragraph:
                 # 空の段落は改行として追加
-                html.append('<br>')
+                html.append('<div style="height: 1em;"></div>')  # 段落間スペース
         elif 'table' in element:
             table = element['table']
             table_html = convert_table_to_html(table)
@@ -299,6 +332,10 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
             text = text_run.get('content', '')
             text_style = text_run.get('textStyle', {})
             
+            # デバッグ: テキストの内容をログ出力
+            if '\n' in text or '\r' in text or '\u000b' in text:
+                print(f"DEBUG: Line break found in text: {repr(text)}")
+            
             # スタイル適用
             span_styles = []
             
@@ -335,19 +372,36 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
                 span_styles.append(f'font-size: {font_size}px')
                 
             # フォントファミリーの処理
+            font_family = None
             if 'weightedFontFamily' in text_style:
                 font_family = text_style['weightedFontFamily'].get('fontFamily', '')
-                if font_family:
-                    # Google Fontsの場合の対応
-                    if font_family in ['Arial', 'Times New Roman', 'Courier New', 'Helvetica', 'Georgia', 'Verdana']:
-                        span_styles.append(f'font-family: "{font_family}", sans-serif')
-                    elif 'Noto' in font_family or 'Gothic' in font_family or 'Mincho' in font_family:
-                        span_styles.append(f'font-family: "{font_family}", "Hiragino Sans", "Meiryo", sans-serif')
-                    else:
-                        span_styles.append(f'font-family: "{font_family}", serif')
+            elif 'fontFamily' in text_style:
+                font_family = text_style['fontFamily']
+                
+            if font_family:
+                print(f"DEBUG: Font family found: {font_family}")
+                # Google Fontsの場合の対応
+                if font_family in ['Arial', 'Times New Roman', 'Courier New', 'Helvetica', 'Georgia', 'Verdana', 'Roboto', 'Open Sans']:
+                    span_styles.append(f'font-family: "{font_family}", sans-serif')
+                elif font_family in ['Times', 'serif']:
+                    span_styles.append(f'font-family: "{font_family}", serif')
+                elif 'Noto' in font_family or 'Gothic' in font_family or 'Mincho' in font_family or 'Hiragino' in font_family:
+                    span_styles.append(f'font-family: "{font_family}", "Hiragino Sans", "Meiryo", sans-serif')
+                elif 'monospace' in font_family.lower() or 'courier' in font_family.lower() or 'mono' in font_family.lower():
+                    span_styles.append(f'font-family: "{font_family}", "Courier New", monospace')
+                else:
+                    # その他のフォントも適用
+                    span_styles.append(f'font-family: "{font_family}", sans-serif')
             
             # 改行の処理（改行文字を<br>に変換）
+            # Google Docsでは改行は\n以外にも\u000bで表現される場合がある
             text = text.replace('\n', '<br>')
+            text = text.replace('\u000b', '<br>')  # 垂直タブ文字
+            text = text.replace('\r', '<br>')      # キャリッジリターン
+            
+            # 連続する<br>を整理
+            import re
+            text = re.sub(r'(<br>\s*){2,}', '<br><br>', text)
             
             # スタイルをspanで適用
             if span_styles:
