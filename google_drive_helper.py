@@ -230,6 +230,9 @@ def convert_to_html(content: List[Dict]) -> str:
             p_html = convert_paragraph_to_html(paragraph)
             if p_html.strip():  # 空の段落をスキップ
                 html.append(p_html)
+            elif not paragraph.get('elements') or all(elem.get('textRun', {}).get('content', '').strip() == '' for elem in paragraph.get('elements', [])):
+                # 空の段落は改行として追加
+                html.append('<br>')
         elif 'table' in element:
             table = element['table']
             table_html = convert_table_to_html(table)
@@ -257,6 +260,36 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
         tag = 'h4'
     else:
         tag = 'p'
+    
+    # 段落レベルのスタイル処理
+    paragraph_styles = []
+    
+    # 行間の処理
+    if 'lineSpacing' in paragraph_style:
+        line_spacing = paragraph_style['lineSpacing']
+        if isinstance(line_spacing, dict) and 'magnitude' in line_spacing:
+            spacing_value = line_spacing['magnitude']
+            paragraph_styles.append(f'line-height: {spacing_value}')
+    
+    # 段落の前後スペース
+    if 'spaceAbove' in paragraph_style:
+        space_above = paragraph_style['spaceAbove'].get('magnitude', 0)
+        if space_above > 0:
+            paragraph_styles.append(f'margin-top: {space_above}px')
+    
+    if 'spaceBelow' in paragraph_style:
+        space_below = paragraph_style['spaceBelow'].get('magnitude', 0)
+        if space_below > 0:
+            paragraph_styles.append(f'margin-bottom: {space_below}px')
+    
+    # テキスト揃えの処理
+    alignment = paragraph_style.get('alignment', '')
+    if alignment == 'CENTER':
+        paragraph_styles.append('text-align: center')
+    elif alignment == 'END':
+        paragraph_styles.append('text-align: right')
+    elif alignment == 'JUSTIFY':
+        paragraph_styles.append('text-align: justify')
     
     # テキスト要素を処理
     text_parts = []
@@ -300,6 +333,21 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
             if 'fontSize' in text_style:
                 font_size = text_style['fontSize'].get('magnitude', 10)
                 span_styles.append(f'font-size: {font_size}px')
+                
+            # フォントファミリーの処理
+            if 'weightedFontFamily' in text_style:
+                font_family = text_style['weightedFontFamily'].get('fontFamily', '')
+                if font_family:
+                    # Google Fontsの場合の対応
+                    if font_family in ['Arial', 'Times New Roman', 'Courier New', 'Helvetica', 'Georgia', 'Verdana']:
+                        span_styles.append(f'font-family: "{font_family}", sans-serif')
+                    elif 'Noto' in font_family or 'Gothic' in font_family or 'Mincho' in font_family:
+                        span_styles.append(f'font-family: "{font_family}", "Hiragino Sans", "Meiryo", sans-serif')
+                    else:
+                        span_styles.append(f'font-family: "{font_family}", serif')
+            
+            # 改行の処理（改行文字を<br>に変換）
+            text = text.replace('\n', '<br>')
             
             # スタイルをspanで適用
             if span_styles:
@@ -318,7 +366,12 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
     if not content_text:
         return ''
     
-    return f'<{tag}>{content_text}</{tag}>'
+    # 段落スタイルを適用
+    if paragraph_styles:
+        style_str = '; '.join(paragraph_styles)
+        return f'<{tag} style="{style_str}">{content_text}</{tag}>'
+    else:
+        return f'<{tag}>{content_text}</{tag}>'
 
 def convert_table_to_html(table: Dict) -> str:
     """Google Docsの表をHTMLテーブルに変換"""
