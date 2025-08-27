@@ -362,6 +362,12 @@ def get_today_quiz():
         json.dump({"date": today_str, "quiz": quiz}, f, ensure_ascii=False)
     return quiz
 
+# Domain redirect middleware
+@app.before_request
+def redirect_to_custom_domain():
+    if request.host == 'web-production-65363.up.railway.app':
+        return redirect(f'https://www.japanese-b.com{request.full_path}', code=301)
+
 # ルート設定
 @app.route("/", methods=["GET", "POST"])
 def home():
