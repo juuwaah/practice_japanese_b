@@ -59,7 +59,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 # Force HTTPS for OAuth in production
 app.config['PREFERRED_URL_SCHEME'] = 'https'
-app.config['SERVER_NAME'] = 'web-production-65363.up.railway.app'
+# app.config['SERVER_NAME'] = 'web-production-65363.up.railway.app'  # Comment out for local testing
 
 # CSRF protection completely disabled
 app.config['WTF_CSRF_ENABLED'] = False
@@ -815,6 +815,53 @@ except Exception as e:
     print(f"DEBUG: Database table creation error: {e}")
     import traceback
     traceback.print_exc()
+
+# Speech recognition API endpoint
+@app.route("/api/speech-to-text", methods=["POST"])
+def speech_to_text():
+    """音声をテキストに変換 (OpenAI Whisper API使用)"""
+    try:
+        if 'audio' not in request.files:
+            return jsonify({'success': False, 'error': '音声ファイルがありません'}), 400
+        
+        audio_file = request.files['audio']
+        language = request.form.get('language', 'ja')  # デフォルトは日本語
+        
+        if audio_file.filename == '':
+            return jsonify({'success': False, 'error': '音声ファイルが選択されていません'}), 400
+        
+        # OpenAI Whisper APIで音声認識
+        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        
+        # 音声ファイルを一時的に保存
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp_file:
+            audio_file.save(tmp_file.name)
+            
+            # Whisper APIを呼び出し
+            with open(tmp_file.name, 'rb') as audio:
+                response = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio,
+                    language=language if language != 'auto' else None,
+                    response_format="text"
+                )
+            
+            # 一時ファイルを削除
+            os.unlink(tmp_file.name)
+        
+        return jsonify({
+            'success': True,
+            'text': response.strip(),
+            'language': language
+        })
+        
+    except Exception as e:
+        print(f"Speech recognition error: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'音声認識エラー: {str(e)}'
+        }), 500
 
 # Patreon OAuth callback removed - using Google login only
 
