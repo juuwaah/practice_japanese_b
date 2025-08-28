@@ -1562,6 +1562,25 @@ body {
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    text-decoration: none !important; /* リンク要素用 */
+  }
+
+  /* Link menu buttons (like Blog) - same styles as regular buttons */
+  a.mobile-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    color: #000 !important;
+  }
+
+  a.mobile-menu-btn:hover {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+
+  a.mobile-menu-btn:visited {
+    color: #000 !important;
   }
 
   .mobile-menu-btn:active {

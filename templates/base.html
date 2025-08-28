@@ -218,7 +218,7 @@
     <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
     <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
     <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
-    <div class="mobile-menu-btn" id="mobile-blog-menu">Blog</div>
+    <a href="{{ url_for('blog.blog_index') }}" class="mobile-menu-btn" id="mobile-blog-menu">Blog</a>
   </div>
 
   <!-- Mobile container wrapper -->
@@ -575,14 +575,18 @@
 
     // Mobile top menu interaction
     document.querySelectorAll('.mobile-menu-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Show corresponding menu from desktop version
+      btn.addEventListener('click', function(e) {
+        // If this is a link button (like Blog), let it navigate normally
+        if (this.tagName.toLowerCase() === 'a') {
+          return; // Let the link work normally
+        }
+        
+        // For dropdown buttons, show corresponding menu from desktop version
         const menuMap = {
           'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
           'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
           'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
-          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content',
-          'mobile-blog-menu': '.menu-dropdown:nth-child(5) .menu-content'
+          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
         };
         
         const targetSelector = menuMap[this.id];
