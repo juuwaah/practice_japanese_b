@@ -229,6 +229,8 @@ body {
   /* transform: scale(var(--current-scale)); */
   /* transform-origin: top left; */
   letter-spacing: var(--current-letter-spacing);
+  /* デフォルトでブラウザズーム200%相当 */
+  zoom: 2.0;
 }
 
 /* Classic Mac window styling - 1980s enhanced */
