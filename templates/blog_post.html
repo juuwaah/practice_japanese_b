@@ -24,7 +24,106 @@
     <div class="blog-content">
       {{ content | safe }}
     </div>
+    
+    <!-- タグ表示 -->
+    {% if tags %}
+    <div style="margin-top: 20px; padding-top: 12px; border-top: 1px dashed #999;">
+      <div style="font-size: 9px; color: #666; margin-bottom: 4px;">📂 Tags:</div>
+      <div>
+        {% for tag in tags %}
+          <a href="{{ url_for('blog.blog_index', tag=tag) }}" class="blog-tag">
+            {{ tag }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- お気に入りボタン -->
+    {% if current_user.is_authenticated %}
+    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #999; text-align: center;">
+      <form method="POST" action="{{ url_for('blog.toggle_favorite', document_id=document_id) }}" style="display: inline;">
+        <button type="submit" class="favorite-btn {% if is_favorited %}favorited{% endif %}">
+          {% if is_favorited %}❤️{% else %}🤍{% endif %} 
+          {{ _('favorite') }} ({{ favorite_count }})
+        </button>
+      </form>
+    </div>
+    {% endif %}
   </article>
+
+  <!-- コメントセクション -->
+  <div class="blog-comments">
+    <h3>💬 {{ _('comments') }} ({{ comments|length }})</h3>
+    
+    {% if current_user.is_authenticated %}
+    <!-- コメント投稿フォーム -->
+    <div class="comment-form">
+      <form method="POST" action="{{ url_for('blog.add_comment', document_id=document_id) }}">
+        <textarea name="content" placeholder="{{ _('write_comment') }}..." required></textarea>
+        <button type="submit">{{ _('post_comment') }}</button>
+      </form>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 12px; border: 1px dashed #999; background: #F9F9F9; margin-bottom: 12px;">
+      <div style="font-size: 9px; color: #666;">
+        <a href="{{ url_for('login') }}" style="text-decoration: underline;">{{ _('login') }}</a> 
+        {{ _('to_post_comments') }}
+      </div>
+    </div>
+    {% endif %}
+    
+    <!-- コメント一覧 -->
+    {% if comments %}
+      {% for comment in comments %}
+        <div class="blog-comment {% if comment.is_admin_reply %}admin-reply{% endif %}">
+          <div class="blog-comment-header">
+            <span class="blog-comment-author {% if comment.is_admin_reply %}admin{% endif %}">
+              {{ comment.anonymized_username }}
+              {% if comment.is_admin_reply %}👑{% endif %}
+            </span>
+            <span>{{ comment.created_at.strftime('%Y/%m/%d %H:%M') }}</span>
+          </div>
+          <div class="blog-comment-content">
+            {{ comment.content | replace('\n', '<br>') | safe }}
+          </div>
+          
+          <!-- 管理者返信機能 -->
+          {% if current_user.is_authenticated and current_user.is_admin and not comment.is_admin_reply %}
+            <div style="margin-top: 8px;">
+              <form method="POST" action="{{ url_for('blog.add_comment', document_id=document_id) }}" style="display: inline;">
+                <input type="hidden" name="parent_comment_id" value="{{ comment.id }}">
+                <input type="text" name="content" placeholder="{{ _('admin_reply') }}..." style="width: 200px; font-size: 8px; padding: 2px;">
+                <button type="submit" style="font-size: 8px; padding: 2px 4px;">{{ _('reply') }}</button>
+              </form>
+            </div>
+          {% endif %}
+          
+          <!-- 返信表示 -->
+          {% for reply in comment.replies %}
+            {% if not reply.is_deleted %}
+            <div class="blog-comment-reply blog-comment {% if reply.is_admin_reply %}admin-reply{% endif %}">
+              <div class="blog-comment-header">
+                <span class="blog-comment-author {% if reply.is_admin_reply %}admin{% endif %}">
+                  {{ reply.anonymized_username }}
+                  {% if reply.is_admin_reply %}👑{% endif %}
+                </span>
+                <span>{{ reply.created_at.strftime('%Y/%m/%d %H:%M') }}</span>
+              </div>
+              <div class="blog-comment-content">
+                {{ reply.content | replace('\n', '<br>') | safe }}
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 9px; border: 1px dashed #CCC;">
+        {{ _('no_comments_yet') }}
+      </div>
+    {% endif %}
+  </div>
 
   <!-- フッター -->
   <div style="text-align: center; margin-top: 20px;">

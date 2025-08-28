@@ -103,6 +103,14 @@ TRANSLATIONS = {
         'incorrect_try_again': 'Incorrect. Try again next time!',
         'example_sentences': 'Example Sentences',
         'detailed_explanation': 'Detailed Explanation',
+        'favorite': 'Favorite',
+        'comments': 'Comments', 
+        'write_comment': 'Write a comment',
+        'post_comment': 'Post Comment',
+        'to_post_comments': 'to post comments',
+        'no_comments_yet': 'No comments yet. Be the first to comment!',
+        'admin_reply': 'Admin reply',
+        'reply': 'Reply',
         'try_another_quiz': 'Try Another Quiz',
         
         # Akinator game translations
@@ -422,6 +430,14 @@ TRANSLATIONS = {
         'incorrect_try_again': '不正解。がんばって！',
         'example_sentences': '例文',
         'detailed_explanation': '詳細解説',
+        'favorite': 'お気に入り',
+        'comments': 'コメント',
+        'write_comment': 'コメントを書く',
+        'post_comment': 'コメント投稿',
+        'to_post_comments': 'でコメントを投稿できます',
+        'no_comments_yet': 'まだコメントがありません。最初のコメントを投稿しませんか？',
+        'admin_reply': '管理者返信',
+        'reply': '返信',
         'try_another_quiz': '別のクイズを試す',
         
         # Akinator game translations

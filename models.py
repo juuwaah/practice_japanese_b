@@ -154,3 +154,57 @@ class OAuth(OAuthConsumerMixin, db.Model):
     provider_user_id = db.Column(db.String(256), unique=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship("User")
+
+class BlogComment(db.Model):
+    __tablename__ = 'blog_comments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.String(100), nullable=False)  # Google Docs document ID
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 返信関連
+    parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'), nullable=True)
+    is_admin_reply = db.Column(db.Boolean, default=False)  # 管理者の返信かどうか
+    
+    # 状態管理
+    is_deleted = db.Column(db.Boolean, default=False)
+    is_approved = db.Column(db.Boolean, default=True)  # デフォルトで承認済み
+    
+    # リレーションシップ
+    user = db.relationship('User', backref='blog_comments')
+    parent_comment = db.relationship('BlogComment', remote_side=[id], backref='replies')
+    
+    @property
+    def anonymized_username(self):
+        """ユーザー名を匿名化（頭2文字 + 記号）"""
+        if not self.user:
+            return "Anonymous"
+        
+        display_name = self.user.display_name
+        if len(display_name) <= 2:
+            return display_name + "***"
+        else:
+            return display_name[:2] + "*" * (len(display_name) - 2)
+    
+    def __repr__(self):
+        return f'<BlogComment {self.document_id}:{self.user_id}>'
+
+class BlogFavorite(db.Model):
+    __tablename__ = 'blog_favorites'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    document_id = db.Column(db.String(100), nullable=False)  # Google Docs document ID
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # リレーションシップ
+    user = db.relationship('User', backref='blog_favorites')
+    
+    # ユニーク制約（同じユーザーが同じ記事を複数回お気に入りしないため）
+    __table_args__ = (db.UniqueConstraint('user_id', 'document_id', name='user_document_favorite_unique'),)
+    
+    def __repr__(self):
+        return f'<BlogFavorite {self.user_id}:{self.document_id}>'

@@ -1750,3 +1750,236 @@ body {
     max-width: 180px;
   }
 }
+
+/* Blog Tags - レトロデザイン */
+.blog-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 2px;
+  background: #C0C0C0;
+  border: 1px solid #000;
+  border-bottom: 2px solid #808080;
+  border-right: 2px solid #808080;
+  color: #000;
+  text-decoration: none;
+  font-family: var(--current-font-family);
+  font-size: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.blog-tag:hover {
+  background: #D0D0D0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-bottom: 2px solid #606060;
+  border-right: 2px solid #606060;
+}
+
+.blog-tag.active {
+  background: #A0A0A0;
+  border: 1px solid #808080;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+}
+
+/* Blog Tag Filter Section */
+.blog-tag-filter {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #808080;
+  background: #F0F0F0;
+}
+
+.blog-tag-filter h4 {
+  margin: 0 0 4px 0;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Favorite Heart Button - レトロデザイン */
+.favorite-btn {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #E0E0E0;
+  border: 2px solid #000;
+  border-bottom: 3px solid #808080;
+  border-right: 3px solid #808080;
+  color: #000;
+  text-decoration: none;
+  font-family: var(--current-font-family);
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 1px 1px 0px #C0C0C0;
+  margin: 2px;
+  user-select: none;
+  text-align: center;
+}
+
+.favorite-btn:hover {
+  background: #F0F0F0;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0px #A0A0A0;
+}
+
+.favorite-btn:active {
+  background: #D0D0D0;
+  border: 2px solid #808080;
+  border-top: 3px solid #808080;
+  border-left: 3px solid #808080;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+  box-shadow: inset 1px 1px 2px #A0A0A0;
+  transform: translate(1px, 1px);
+}
+
+.favorite-btn.favorited {
+  background: #FF9999;
+  color: #800000;
+}
+
+.favorite-btn.favorited:hover {
+  background: #FFAAAA;
+}
+
+/* Blog Comments Section - レトロデザイン */
+.blog-comments {
+  margin-top: 20px;
+  border: 2px solid #000;
+  background: #F8F8F8;
+  padding: 12px;
+}
+
+.blog-comments h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid #808080;
+  padding-bottom: 4px;
+}
+
+.blog-comment {
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #C0C0C0;
+  background: #FFFFFF;
+}
+
+.blog-comment.admin-reply {
+  background: #E0FFE0;
+  border-left: 4px solid #008000;
+}
+
+.blog-comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 8px;
+  color: #666;
+}
+
+.blog-comment-author {
+  font-weight: bold;
+  color: #000;
+}
+
+.blog-comment-author.admin {
+  color: #008000;
+}
+
+.blog-comment-content {
+  font-size: 9px;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.blog-comment-reply {
+  margin-left: 20px;
+  margin-top: 8px;
+  border-left: 2px solid #C0C0C0;
+  padding-left: 8px;
+}
+
+/* Comment Form - レトロデザイン */
+.comment-form {
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid #808080;
+  background: #F0F0F0;
+}
+
+.comment-form textarea {
+  width: 100%;
+  height: 60px;
+  padding: 4px;
+  border: 1px solid #808080;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  font-family: var(--current-font-family);
+  font-size: 9px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.comment-form button {
+  padding: 4px 8px;
+  background: #E0E0E0;
+  border: 2px solid #000;
+  border-bottom: 3px solid #808080;
+  border-right: 3px solid #808080;
+  color: #000;
+  font-family: var(--current-font-family);
+  font-size: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.comment-form button:hover {
+  background: #F0F0F0;
+  transform: translate(-1px, -1px);
+}
+
+.comment-form button:active {
+  background: #D0D0D0;
+  border: 2px solid #808080;
+  border-top: 3px solid #808080;
+  border-left: 3px solid #808080;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+  transform: translate(1px, 1px);
+}
+
+/* Mobile adjustments for blog features */
+@media (max-width: 768px) {
+  .blog-tag {
+    font-size: 7px;
+    padding: 1px 4px;
+  }
+  
+  .favorite-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
+  .blog-comment {
+    padding: 6px;
+  }
+  
+  .comment-form textarea {
+    height: 50px;
+    font-size: 8px;
+  }
+  
+  .comment-form button {
+    font-size: 7px;
+    padding: 3px 6px;
+  }
+}

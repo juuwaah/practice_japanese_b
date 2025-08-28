@@ -226,10 +226,14 @@ def get_document_content(document_id: str) -> Optional[Dict]:
         # コンテンツをHTMLに変換
         html_content = convert_to_html(content)
         
+        # Extract tags from content (##tag format)
+        tags = extract_tags_from_content(html_content)
+        
         return {
             'title': title,
             'content': html_content,
-            'raw_content': content
+            'raw_content': content,
+            'tags': tags
         }
         
     except Exception as e:
@@ -551,6 +555,34 @@ def convert_table_to_html(table: Dict) -> str:
     
     html.append('</table>')
     return '\n'.join(html)
+
+def extract_tags_from_content(html_content: str) -> List[str]:
+    """HTMLコンテンツから##tag形式のタグを抽出"""
+    if not html_content:
+        return []
+    
+    try:
+        import re
+        # HTMLタグを除去してプレーンテキストを取得
+        text_content = re.sub(r'<[^>]+>', '', html_content)
+        
+        # 最後の5行程度を確認
+        lines = text_content.strip().split('\n')
+        last_lines = lines[-5:] if len(lines) >= 5 else lines
+        
+        tags = []
+        for line in last_lines:
+            line = line.strip()
+            # ##tag形式のタグを検索
+            tag_matches = re.findall(r'##([a-zA-Z0-9_\-]+)', line)
+            tags.extend(tag_matches)
+        
+        # 重複を除去して返す
+        return list(set(tags))
+        
+    except Exception as e:
+        print(f"Tag extraction error: {e}")
+        return []
 
 def format_date(date_str: str) -> str:
     """日付文字列を読みやすい形式に変換"""

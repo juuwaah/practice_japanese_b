@@ -8,7 +8,7 @@ from routes.akinator import akinator_bp
 from routes.flashcard import flashcard_bp
 from routes.youtube_listening import youtube_listening_bp
 from routes.blog import blog_bp
-from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog
+from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog, BlogComment, BlogFavorite
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
 import datetime as dt
@@ -637,6 +637,14 @@ def admin_dashboard():
     total_feedback = Feedback.query.count()
     unread_feedback = Feedback.query.filter_by(status='unread').count()
     
+    # ブログコメント統計
+    total_comments = BlogComment.query.filter_by(is_deleted=False).count()
+    recent_comments = BlogComment.query.filter_by(is_deleted=False)\
+                                      .order_by(BlogComment.created_at.desc()).limit(5).all()
+    
+    # お気に入り統計
+    total_favorites = BlogFavorite.query.count()
+    
     # 最近のフィードバック
     recent_feedback = Feedback.query.order_by(Feedback.created_at.desc()).limit(10).all()
     
@@ -650,7 +658,10 @@ def admin_dashboard():
                          total_feedback=total_feedback,
                          unread_feedback=unread_feedback,
                          recent_feedback=recent_feedback,
-                         recent_users=recent_users)
+                         recent_users=recent_users,
+                         total_comments=total_comments,
+                         recent_comments=recent_comments,
+                         total_favorites=total_favorites)
 
 @app.route("/admin/feedback")
 @admin_required
@@ -710,6 +721,57 @@ def admin_user_detail(user_id):
                          user=user, 
                          grammar_logs=grammar_logs, 
                          flashcard_logs=flashcard_logs)
+
+@app.route("/admin/comments")
+@admin_required
+def admin_comments():
+    """ブログコメント管理"""
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    comments_query = BlogComment.query.filter_by(is_deleted=False)\
+                                     .order_by(BlogComment.created_at.desc())
+    comments_list = comments_query.paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    return render_template('admin_comments.html', comments_list=comments_list)
+
+@app.route("/admin/comment/<int:comment_id>/reply", methods=["POST"])
+@admin_required
+def admin_reply_comment(comment_id):
+    """管理者がコメントに返信"""
+    parent_comment = BlogComment.query.get_or_404(comment_id)
+    reply_content = request.form.get('reply_content', '').strip()
+    
+    if not reply_content:
+        flash('返信内容を入力してください', 'error')
+        return redirect(url_for('admin_comments'))
+    
+    reply = BlogComment(
+        document_id=parent_comment.document_id,
+        user_id=current_user.id,
+        content=reply_content,
+        parent_comment_id=comment_id,
+        is_admin_reply=True
+    )
+    
+    db.session.add(reply)
+    db.session.commit()
+    
+    flash('返信を投稿しました', 'success')
+    return redirect(url_for('admin_comments'))
+
+@app.route("/admin/comment/<int:comment_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_comment(comment_id):
+    """コメントを削除（論理削除）"""
+    comment = BlogComment.query.get_or_404(comment_id)
+    comment.is_deleted = True
+    db.session.commit()
+    
+    flash('コメントを削除しました', 'success')
+    return redirect(url_for('admin_comments'))
 
 # GCSバケット名（環境変数から取得、なければ直接指定）
 BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', 'your-bucket-name')
