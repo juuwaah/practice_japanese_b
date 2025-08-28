@@ -582,27 +582,66 @@
         }
         
         // For dropdown buttons, show corresponding menu from desktop version
-        const menuMap = {
-          'mobile-file-menu': '.menu-dropdown:nth-child(1) .menu-content',
-          'mobile-quiz-menu': '.menu-dropdown:nth-child(2) .menu-content', 
-          'mobile-help-menu': '.menu-dropdown:nth-child(3) .menu-content',
-          'mobile-support-menu': '.menu-dropdown:nth-child(4) .menu-content'
-        };
+        let targetSelector = null;
         
-        const targetSelector = menuMap[this.id];
+        if (this.id === 'mobile-file-menu') {
+          // Find File menu by matching text content
+          const fileMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
+          for (let menu of fileMenus) {
+            const span = menu.querySelector('.menu-item');
+            if (span && span.textContent.includes('file')) {
+              targetSelector = menu.querySelector('.menu-content');
+              break;
+            }
+          }
+        } else if (this.id === 'mobile-quiz-menu') {
+          // Find Quiz menu
+          const quizMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
+          for (let menu of quizMenus) {
+            const span = menu.querySelector('.menu-item');
+            if (span && span.textContent.includes('quiz')) {
+              targetSelector = menu.querySelector('.menu-content');
+              break;
+            }
+          }
+        } else if (this.id === 'mobile-help-menu') {
+          // Find Help menu
+          const helpMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
+          for (let menu of helpMenus) {
+            const span = menu.querySelector('.menu-item');
+            if (span && span.textContent.includes('help')) {
+              targetSelector = menu.querySelector('.menu-content');
+              break;
+            }
+          }
+        } else if (this.id === 'mobile-support-menu') {
+          // Find Support menu
+          const supportMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
+          for (let menu of supportMenus) {
+            const span = menu.querySelector('.menu-item');
+            if (span && span.textContent.includes('support')) {
+              targetSelector = menu.querySelector('.menu-content');
+              break;
+            }
+          }
+        }
+        
         if (targetSelector) {
-          showMobileDropdown(targetSelector, this);
+          showMobileDropdown(null, this, targetSelector);
         }
       });
     });
 
     // Show mobile dropdown menu
-    function showMobileDropdown(selector, triggerBtn) {
+    function showMobileDropdown(selector, triggerBtn, sourceMenu = null) {
       // Remove any existing dropdown
       const existing = document.querySelector('.mobile-dropdown-menu');
       if (existing) existing.remove();
       
-      const sourceMenu = document.querySelector(selector);
+      // Use passed sourceMenu or find by selector
+      if (!sourceMenu) {
+        sourceMenu = document.querySelector(selector);
+      }
       if (!sourceMenu) return;
       
       const dropdown = document.createElement('div');
