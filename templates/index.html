@@ -48,6 +48,16 @@
         </li>
       {% endfor %}
     </ul>
+    
+    <!-- Blog article link button -->
+    {% if blog_link and blog_title %}
+    <div style="margin-top: 12px; text-align: center; border-top: 1px dashed #999; padding-top: 8px;">
+      <div style="font-size: 9px; color: #666; margin-bottom: 4px;">{{ _('detailed_explanation') }}:</div>
+      <a href="{{ blog_link }}" target="_blank" class="blog-link-btn">
+        📝 {{ blog_title }}
+      </a>
+    </div>
+    {% endif %}
   </div>
   
 {% endif %}

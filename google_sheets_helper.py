@@ -173,11 +173,18 @@ def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
         onomatopoeia_list = []
         for record in records:
             if record.get('word') and record.get('meaning'):  # 必須フィールドをチェック
-                onomatopoeia_list.append({
+                onomatopoeia_item = {
                     'word': str(record.get('word', '')).strip(),
                     'meaning': str(record.get('meaning', '')).strip(),
                     'category': str(record.get('category', '擬音語')).strip()
-                })
+                }
+                
+                # ref_link列が存在する場合は追加
+                ref_link = record.get('ref_link', '').strip()
+                if ref_link:
+                    onomatopoeia_item['ref_link'] = ref_link
+                    
+                onomatopoeia_list.append(onomatopoeia_item)
         
         print(f"オノマトペデータ読み込み成功: {len(onomatopoeia_list)}個")
         return onomatopoeia_list

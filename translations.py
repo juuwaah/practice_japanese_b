@@ -102,6 +102,7 @@ TRANSLATIONS = {
         'correct_well_done': 'Correct! Well done!',
         'incorrect_try_again': 'Incorrect. Try again next time!',
         'example_sentences': 'Example Sentences',
+        'detailed_explanation': 'Detailed Explanation',
         'try_another_quiz': 'Try Another Quiz',
         
         # Akinator game translations
@@ -420,6 +421,7 @@ TRANSLATIONS = {
         'correct_well_done': '正解！すごい！',
         'incorrect_try_again': '不正解。がんばって！',
         'example_sentences': '例文',
+        'detailed_explanation': '詳細解説',
         'try_another_quiz': '別のクイズを試す',
         
         # Akinator game translations

@@ -32,6 +32,25 @@ from email.mime.multipart import MIMEMultipart
 
 CACHE_FILE = ".onomatope_cache.json"
 
+def get_blog_article_title(ref_link):
+    """ブログ記事のリンクからタイトルを取得"""
+    if not ref_link:
+        return None
+        
+    try:
+        # /blog/post/document_id の形式からdocument_idを抽出
+        if '/blog/post/' in ref_link:
+            document_id = ref_link.split('/blog/post/')[-1]
+            # google_drive_helperから記事の内容を取得
+            from google_drive_helper import get_document_content
+            document_content = get_document_content(document_id)
+            if document_content:
+                return document_content['title']
+    except Exception as e:
+        print(f"Blog title fetch error: {e}")
+    
+    return None
+
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-development-only')
 
@@ -240,6 +259,7 @@ def get_today_quiz():
     onomatope_word = selected_onomatope["word"]
     onomatope_meaning = selected_onomatope["meaning"]
     onomatope_category = selected_onomatope["category"]
+    onomatope_ref_link = selected_onomatope.get("ref_link", "")
     
     # Step 2: スプレッドシートから間違い選択肢を取得
     from onomatopoeia_data import get_onomatopoeia_list
@@ -357,6 +377,14 @@ def get_today_quiz():
         print(f"Final check: correcting answer from '{quiz.get('correct_meaning_en')}' to '{onomatope_meaning}'")
         quiz["correct_meaning_en"] = onomatope_meaning
     
+    # ref_linkをクイズデータに追加
+    if onomatope_ref_link:
+        quiz["ref_link"] = onomatope_ref_link
+        # ブログ記事のタイトルを取得
+        blog_title = get_blog_article_title(onomatope_ref_link)
+        if blog_title:
+            quiz["blog_title"] = blog_title
+    
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump({"date": today_str, "quiz": quiz}, f, ensure_ascii=False)
@@ -390,7 +418,9 @@ def home():
         examples=quiz['examples'],
         examples_hiragana=quiz.get('examples_hiragana', []),
         examples_en=quiz.get('examples_en', []),
-        example_pairs=list(zip(quiz['examples'], quiz.get('examples_hiragana', []), quiz.get('examples_en', [])))
+        example_pairs=list(zip(quiz['examples'], quiz.get('examples_hiragana', []), quiz.get('examples_en', []))),
+        blog_link=quiz.get('ref_link'),
+        blog_title=quiz.get('blog_title')
     )
 
 @app.route("/login", methods=['GET', 'POST'])
