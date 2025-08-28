@@ -271,6 +271,9 @@ def convert_to_html(content: List[Dict]) -> str:
             table_html = convert_table_to_html(table)
             if table_html.strip():
                 html.append(table_html)
+        elif 'sectionBreak' in element:
+            # セクション区切りは改ページとして扱う
+            html.append('<hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">')
     
     return '\n'.join(html)
 
@@ -281,6 +284,45 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
     
     paragraph_style = paragraph.get('paragraphStyle', {})
     named_style_type = paragraph_style.get('namedStyleType', '')
+    
+    # 箇条書き（bullet）の処理
+    bullet = paragraph.get('bullet')
+    is_bulleted = bool(bullet)
+    bullet_prefix = ''
+    
+    if is_bulleted:
+        # Googleドキュメントの箇条書き情報を取得
+        nest_level = bullet.get('nestingLevel', 0)
+        list_id = bullet.get('listId', '')
+        
+        # ネストレベルに応じたインデント
+        indent_level = nest_level * 20  # 20pxずつインデント
+        
+        # 箇条書きのスタイルを確認
+        glyph_format = bullet.get('textStyle', {}).get('weightedFontFamily', {}).get('fontFamily', '')
+        glyph_symbol = bullet.get('textStyle', {}).get('foregroundColor', {})
+        
+        # 番号付きリストか点リストかを判定
+        # Google Docsでは番号付きリストも 'bullet' として扱われる
+        # glyphFormatやlistPropertiesで判定可能
+        is_numbered = False
+        
+        # 簡易的な番号付きリスト判定（実際のAPIレスポンスに基づいて調整が必要）
+        if 'DECIMAL' in str(bullet) or '1.' in str(bullet) or 'NUMBER' in str(bullet):
+            is_numbered = True
+        
+        if is_numbered:
+            # 番号付きリストの場合（簡易実装）
+            bullet_symbol = '1.'  # 実際は動的に番号を計算すべき
+        else:
+            # 箇条書きの記号を設定
+            bullet_symbol = '•'
+            if nest_level == 1:
+                bullet_symbol = '◦'  # 2番目のレベル
+            elif nest_level >= 2:
+                bullet_symbol = '▪'  # 3番目以降のレベル
+            
+        bullet_prefix = f'<span style="margin-left: {indent_level}px; display: inline-block; margin-right: 8px;">{bullet_symbol}</span>'
     
     # 見出しスタイルの判定
     if named_style_type == 'HEADING_1':
@@ -415,10 +457,31 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
                     text = f'<a href="{url}" target="_blank">{text}</a>'
             
             text_parts.append(text)
+            
+        elif 'inlineObjectElement' in element:
+            # 画像やその他のインラインオブジェクトを処理
+            inline_obj = element['inlineObjectElement']
+            object_id = inline_obj.get('inlineObjectId', '')
+            
+            # 画像の場合の処理（プレースホルダーとして表示）
+            if object_id:
+                # Google Docs APIでは画像の実際のURLを取得するのが複雑
+                # ここでは画像のプレースホルダーを表示
+                image_html = f'''<div style="margin: 16px 0; padding: 20px; border: 2px dashed #ccc; text-align: center; background-color: #f9f9f9; border-radius: 8px;">
+                    <p style="margin: 0; color: #666; font-size: 14px;">
+                        📷 画像が挿入されています<br>
+                        <small style="color: #999;">(ID: {object_id})</small>
+                    </p>
+                </div>'''
+                text_parts.append(image_html)
     
     content_text = ''.join(text_parts).strip()
     if not content_text:
         return ''
+    
+    # 箇条書きの場合は bullet_prefix を追加
+    if bullet_prefix:
+        content_text = bullet_prefix + content_text
     
     # 段落スタイルを適用
     if paragraph_styles:
