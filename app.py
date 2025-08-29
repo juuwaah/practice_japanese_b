@@ -85,7 +85,7 @@ def record_auth(setup_state):
     setup_state.app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
     
 # Force HTTPS redirect manually
-google_bp.redirect_url = "https://web-production-65363.up.railway.app/auth/google/authorized"
+google_bp.redirect_url = "https://www.japanese-b.com/auth/google/authorized"
 
 # Debug: Print actual redirect URL being used
 print(f"DEBUG: Google BP redirect_url = {google_bp.redirect_url}")
