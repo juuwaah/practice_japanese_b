@@ -582,52 +582,32 @@
         }
         
         // For dropdown buttons, show corresponding menu from desktop version
-        let targetSelector = null;
+        // Debug logging
+        console.log('Mobile menu clicked:', this.id, this.textContent);
         
+        let targetMenu = null;
+        const allMenus = document.querySelectorAll('.menu-bar > .menu-dropdown');
+        console.log('Found menus:', allMenus.length);
+        
+        // Map by button text to menu content
         if (this.id === 'mobile-file-menu') {
-          // Find File menu by matching text content
-          const fileMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
-          for (let menu of fileMenus) {
-            const span = menu.querySelector('.menu-item');
-            if (span && span.textContent.includes('file')) {
-              targetSelector = menu.querySelector('.menu-content');
-              break;
-            }
-          }
+          // Find File menu - first menu dropdown
+          targetMenu = allMenus[0]?.querySelector('.menu-content');
         } else if (this.id === 'mobile-quiz-menu') {
-          // Find Quiz menu
-          const quizMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
-          for (let menu of quizMenus) {
-            const span = menu.querySelector('.menu-item');
-            if (span && span.textContent.includes('quiz')) {
-              targetSelector = menu.querySelector('.menu-content');
-              break;
-            }
-          }
+          // Find Quiz menu - second menu dropdown  
+          targetMenu = allMenus[1]?.querySelector('.menu-content');
         } else if (this.id === 'mobile-help-menu') {
-          // Find Help menu
-          const helpMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
-          for (let menu of helpMenus) {
-            const span = menu.querySelector('.menu-item');
-            if (span && span.textContent.includes('help')) {
-              targetSelector = menu.querySelector('.menu-content');
-              break;
-            }
-          }
+          // Find Help menu - third menu dropdown
+          targetMenu = allMenus[2]?.querySelector('.menu-content');
         } else if (this.id === 'mobile-support-menu') {
-          // Find Support menu
-          const supportMenus = document.querySelectorAll('.menu-bar .menu-dropdown');
-          for (let menu of supportMenus) {
-            const span = menu.querySelector('.menu-item');
-            if (span && span.textContent.includes('support')) {
-              targetSelector = menu.querySelector('.menu-content');
-              break;
-            }
-          }
+          // Find Support menu - fourth menu dropdown
+          targetMenu = allMenus[3]?.querySelector('.menu-content');
         }
         
-        if (targetSelector) {
-          showMobileDropdown(null, this, targetSelector);
+        console.log('Target menu found:', !!targetMenu);
+        if (targetMenu) {
+          console.log('Target menu content:', targetMenu.innerHTML.substring(0, 100));
+          showMobileDropdown(null, this, targetMenu);
         }
       });
     });
