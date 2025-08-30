@@ -4,6 +4,7 @@ import pandas as pd
 from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify
 import openai
 import re
+from error_handler import safe_openai_request, format_error_response, get_localized_error_message
 
 """
 JLPT Kotoba Akinator - How to play

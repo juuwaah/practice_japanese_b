@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for, flash
+from flask import Blueprint, render_template, request, session, redirect, url_for, flash, jsonify
 from flask_login import current_user
 from functools import wraps
 import openai
@@ -10,6 +10,7 @@ import pandas as pd
 import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
+from error_handler import safe_openai_request, format_error_response, get_localized_error_message, handle_database_errors
 # from utils.furigana import text_to_ruby_html  # 削除
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
@@ -102,7 +103,8 @@ def grammar_index():
                 
                 # ログイン時のみログを保存
                 if current_user.is_authenticated:
-                    try:
+                    @handle_database_errors
+                    def save_quiz_log():
                         # スコアを計算（grammarとmeaningの平均を0-100スケールに変換）
                         score = ((grammar + meaning) / 6.0) * 100 if grammar and meaning else None
                         
@@ -118,10 +120,16 @@ def grammar_index():
                         )
                         db.session.add(log)
                         db.session.commit()
-                    except Exception as e:
-                        # ログ保存エラーは無視（メイン機能に影響させない）
-                        print(f"Grammar quiz log save error: {e}")
-                        db.session.rollback()
+                        return {"success": True}
+                    
+                    # ログ保存を試行（エラーが発生してもメイン機能には影響させない）
+                    save_result = save_quiz_log()
+                    if isinstance(save_result, dict) and "error" in save_result:
+                        print(f"Grammar quiz log save error: {save_result['error']}")
+                        try:
+                            db.session.rollback()
+                        except:
+                            pass
         except Exception as e:
             message = f"Error: {str(e)}"
 
@@ -152,7 +160,7 @@ def grammar_index():
 def generate_example_sentence(level, direction):
     grammar_list = grammar_dict.get(level, [])
     if not grammar_list:
-        raise ValueError(f"No grammar for level {level}")
+        return get_localized_error_message("feature_temporarily_disabled")
     selected_grammar = random.choice(grammar_list)
 
     if direction == "en-ja":
@@ -170,13 +178,21 @@ Create one short English sentence that could naturally be translated into Japane
 - 文中で使う漢字は必ず「{level}までに習う漢字」だけにしてください。それ以外の難しい漢字はひらがなで書いてください。
 '''
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
-    )
-
-    return re.split(r'→|:|\n', response.choices[0].message.content.strip())[0]
+    def make_api_call():
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7
+        )
+        return re.split(r'→|:|\n', response.choices[0].message.content.strip())[0]
+    
+    # エラーハンドリング付きでAPI呼び出し
+    result = safe_openai_request(make_api_call)
+    
+    if isinstance(result, dict) and "error" in result:
+        return result["error"]  # エラーメッセージを返す
+    
+    return result
 
 def score_translation(original, student_translation, direction, level):
     # For Japanese → English direction, provide scoring and examples but no feedback
@@ -203,15 +219,29 @@ Leave "casual_answer" and "feedback" as empty strings since this is Japanese to 
 Respond only with JSON.
 """
         
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.4
-        )
-
-        raw = response.choices[0].message.content
-        json_text = extract_json(raw)
-        return json.loads(json_text)
+        def make_api_call():
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.4
+            )
+            raw = response.choices[0].message.content
+            json_text = extract_json(raw)
+            return json.loads(json_text)
+        
+        # エラーハンドリング付きでAPI呼び出し
+        result = safe_openai_request(make_api_call)
+        
+        if isinstance(result, dict) and "error" in result:
+            return {
+                "grammar": None,
+                "meaning": None, 
+                "model_answer": [],
+                "feedback": result["error"],
+                "casual_answer": ""
+            }
+        
+        return result
     
     # Only provide full feedback for English → Japanese direction
     prompt = f"""
@@ -251,15 +281,29 @@ For "casual_answer", rewrite the original sentence in very casual, relaxed, ever
 Respond only with JSON.
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.4
-    )
-
-    raw = response.choices[0].message.content
-    json_text = extract_json(raw)
-    return json.loads(json_text)
+    def make_api_call():
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4
+        )
+        raw = response.choices[0].message.content
+        json_text = extract_json(raw)
+        return json.loads(json_text)
+    
+    # エラーハンドリング付きでAPI呼び出し
+    result = safe_openai_request(make_api_call)
+    
+    if isinstance(result, dict) and "error" in result:
+        return {
+            "grammar": None,
+            "meaning": None, 
+            "model_answer": [],
+            "feedback": result["error"],
+            "casual_answer": ""
+        }
+    
+    return result
 
 def extract_json(text):
     match = re.search(r"\{.*\}", text, re.DOTALL)

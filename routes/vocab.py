@@ -7,6 +7,7 @@ import json
 from flask import Blueprint, render_template, request, session
 import re
 from google_sheets_helper import load_vocab_data_from_sheets
+from error_handler import safe_openai_request, format_error_response, get_localized_error_message
 
 vocab_bp = Blueprint("vocab", __name__, url_prefix="/vocab")
 

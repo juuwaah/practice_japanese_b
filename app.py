@@ -11,6 +11,7 @@ from routes.blog import blog_bp
 from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog, BlogComment, BlogFavorite
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
+from error_handler import safe_openai_request, format_error_response, get_localized_error_message
 import datetime as dt
 import random
 import json
@@ -296,7 +297,7 @@ def get_today_quiz():
 }}
 """
     
-    try:
+    def make_quiz_request():
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         response = client.chat.completions.create(
             model="gpt-4o",
@@ -310,15 +311,15 @@ def get_today_quiz():
         if content:
             match = re.search(r'\{[\s\S]*\}', content)
             if match:
-                quiz = json.loads(match.group(0))
-            else:
-                # fallback: use selected onomatope with default examples
-                quiz = {
-                    "onomatope": onomatope_word,
-                    "correct_meaning_en": onomatope_meaning,
-                    "distractors_en": [
-                        "the sound of something crashing",
-                        "the feeling of being sleepy"
+                return json.loads(match.group(0))
+        
+        # fallback: use selected onomatope with default examples
+        return {
+            "onomatope": onomatope_word,
+            "correct_meaning_en": onomatope_meaning,
+            "distractors_en": [
+                "the sound of something crashing",
+                "the feeling of being sleepy"
                     ],
                     "examples": [
                         f"この{onomatope_word}という音が好きです。",
@@ -329,12 +330,14 @@ def get_today_quiz():
                         f"I felt {onomatope_meaning}."
                     ]
                 }
-            
-            # 重要：AIが正解を変更していないかチェック
-            if quiz.get("correct_meaning_en") != onomatope_meaning:
-                print(f"AI changed correct answer from '{onomatope_meaning}' to '{quiz.get('correct_meaning_en')}' - fixing it")
-                quiz["correct_meaning_en"] = onomatope_meaning
-        else:
+    
+    try:
+        # エラーハンドリング付きでAPI呼び出し
+        quiz = safe_openai_request(make_quiz_request)
+        
+        # APIエラーの場合はフォールバック
+        if isinstance(quiz, dict) and "error" in quiz:
+            print(f"Daily quiz generation failed: {quiz['error']}")
             # fallback: use selected onomatope with default examples
             quiz = {
                 "onomatope": onomatope_word,
@@ -869,26 +872,34 @@ def speech_to_text():
         # OpenAI Whisper APIで音声認識
         client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
-        # 音声ファイルを一時的に保存
-        import tempfile
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp_file:
-            audio_file.save(tmp_file.name)
-            
-            # Whisper APIを呼び出し
-            with open(tmp_file.name, 'rb') as audio:
-                response = client.audio.transcriptions.create(
-                    model="whisper-1",
-                    file=audio,
-                    language=language if language != 'auto' else None,
-                    response_format="text"
-                )
-            
-            # 一時ファイルを削除
-            os.unlink(tmp_file.name)
+        def make_whisper_request():
+            # 音声ファイルを一時的に保存
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp_file:
+                audio_file.save(tmp_file.name)
+                
+                # Whisper APIを呼び出し
+                with open(tmp_file.name, 'rb') as audio:
+                    response = client.audio.transcriptions.create(
+                        model="whisper-1",
+                        file=audio,
+                        language=language if language != 'auto' else None,
+                        response_format="text"
+                    )
+                
+                # 一時ファイルを削除
+                os.unlink(tmp_file.name)
+                return response
+        
+        # エラーハンドリング付きでAPI呼び出し
+        result = safe_openai_request(make_whisper_request)
+        
+        if isinstance(result, dict) and "error" in result:
+            return jsonify({'success': False, 'error': result["error"]}), 500
         
         return jsonify({
             'success': True,
-            'text': response.strip(),
+            'text': result.strip(),
             'language': language
         })
         

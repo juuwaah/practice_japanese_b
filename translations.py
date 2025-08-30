@@ -332,6 +332,15 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_2': 'We use YouTube\'s official embedding functionality, and ownership and copyright of the videos belong to <strong>each video\'s creator or rights holder</strong>. This site does not modify video content or distribute it independently.',
         'youtube_disclaimer_text_3': 'By using this site, you also agree to YouTube\'s <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.',
         'youtube_disclaimer_terms': 'By using this site, you also agree to YouTube\'s Terms of Service and Privacy Policy. We comply with the YouTube API Developer Policies in implementing embedded content.',
+        
+        # Error Messages
+        'api_rate_limit_error': 'Too many requests. Please wait a moment and try again.',
+        'api_connection_error': 'Connection error occurred. Please check your internet connection and try again.',
+        'database_connection_error': 'Database connection failed. Please try again in a few moments.',
+        'service_temporarily_unavailable': 'Service is temporarily unavailable due to high traffic. Please try again later.',
+        'openai_quota_exceeded': 'AI service quota exceeded. Please try again later.',
+        'general_system_error': 'A system error occurred. Please try again.',
+        'feature_temporarily_disabled': 'This feature is temporarily unavailable. Please try other features.',
     },
     
     'ja': {
@@ -666,6 +675,15 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_2': '本サイトでは、YouTube 公式の埋め込み機能を利用しており、動画の所有権や著作権は<strong>各動画の制作者または権利者</strong>に帰属します。当サイトは動画の内容を変更したり、独自配信しているものではありません。',
         'youtube_disclaimer_text_3': 'また、当サイトを使用することにより、ユーザーは YouTube の<a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">利用規約</a>および<a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">プライバシーポリシー</a>に同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。',
         'youtube_disclaimer_terms': '当サイトを使用することにより、ユーザーは YouTube の利用規約およびプライバシーポリシーに同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。',
+        
+        # エラーメッセージ
+        'api_rate_limit_error': 'リクエストが多すぎます。しばらく待ってから再度お試しください。',
+        'api_connection_error': '接続エラーが発生しました。インターネット接続を確認して再度お試しください。',
+        'database_connection_error': 'データベース接続に失敗しました。しばらくしてから再度お試しください。',
+        'service_temporarily_unavailable': 'アクセスが集中しているため、サービスが一時的に利用できません。後でもう一度お試しください。',
+        'openai_quota_exceeded': 'AI サービスの利用上限に達しました。後でもう一度お試しください。',
+        'general_system_error': 'システムエラーが発生しました。再度お試しください。',
+        'feature_temporarily_disabled': 'この機能は一時的に利用できません。他の機能をお試しください。',
     },
     
     'es': {
@@ -992,6 +1010,15 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_2': 'Utilizamos la funcionalidad oficial de incrustación de YouTube, y la propiedad y los derechos de autor de los videos pertenecen a <strong>cada creador o titular de derechos del video</strong>. Este sitio no modifica el contenido del video ni lo distribuye de forma independiente.',
         'youtube_disclaimer_text_3': 'Al usar este sitio, también aceptas los <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">Términos de servicio</a> y la <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">Política de privacidad</a> de YouTube. Cumplimos con las Políticas para desarrolladores de la API de YouTube en la implementación de contenido incrustado.',
         'youtube_disclaimer_terms': 'Al usar este sitio, también aceptas los Términos de servicio y la Política de privacidad de YouTube. Cumplimos con las Políticas para desarrolladores de la API de YouTube en la implementación de contenido incrustado.',
+        
+        # Mensajes de Error
+        'api_rate_limit_error': 'Demasiadas solicitudes. Espere un momento e inténtelo de nuevo.',
+        'api_connection_error': 'Error de conexión. Verifique su conexión a internet e inténtelo de nuevo.',
+        'database_connection_error': 'Error de conexión a la base de datos. Inténtelo de nuevo en unos momentos.',
+        'service_temporarily_unavailable': 'El servicio no está disponible temporalmente debido al alto tráfico. Inténtelo más tarde.',
+        'openai_quota_exceeded': 'Se excedió la cuota del servicio de IA. Inténtelo más tarde.',
+        'general_system_error': 'Ocurrió un error del sistema. Inténtelo de nuevo.',
+        'feature_temporarily_disabled': 'Esta función no está disponible temporalmente. Pruebe otras funciones.',
     }
 }
 
