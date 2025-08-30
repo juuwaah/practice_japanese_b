@@ -22,6 +22,47 @@
                 <div id="video-info" class="alert alert-info small">
                     <strong>📺 Playback Range:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span>
                 </div>
+                
+                <!-- Report Button -->
+                <div style="text-align: center; margin-top: 8px;">
+                    <button onclick="showReportForm()" class="btn btn-sm btn-outline-danger">
+                        📢 Report Video Issue
+                    </button>
+                </div>
+                
+                <!-- Report Form (initially hidden) -->
+                <div id="report-form-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">
+                    <h6>Report Video Issue</h6>
+                    <p class="small text-muted">If you have concerns about copyright infringement or inappropriate content, please let us know using the form below.</p>
+                    
+                    <form id="report-form" method="POST" action="/youtube_report">
+                        <input type="hidden" name="video_id" value="{{ base_quiz.video_id }}">
+                        <input type="hidden" name="quiz_title" value="{{ base_quiz.title }}">
+                        <input type="hidden" name="quiz_id" value="{{ base_quiz.id }}">
+                        
+                        <div class="form-group mb-3">
+                            <label for="report-type">Issue Type:</label>
+                            <select name="report_type" id="report-type" class="form-control form-control-sm" required>
+                                <option value="">Please select</option>
+                                <option value="copyright">Copyright Infringement</option>
+                                <option value="inappropriate">Inappropriate Content</option>
+                                <option value="privacy">Privacy Concerns</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="report-message">Details:</label>
+                            <textarea name="message" id="report-message" rows="4" class="form-control form-control-sm" 
+                                      placeholder="Please provide details about the issue..." required></textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+                            <button type="button" onclick="hideReportForm()" class="btn btn-secondary btn-sm">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -262,6 +303,46 @@ function jumpToTime(seconds) {
     const newSrc = `https://www.youtube.com/embed/${videoId}?start=${seconds}&end=${endTime}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0`;
     iframe.src = newSrc;
 }
+
+// Report form show/hide functions
+function showReportForm() {
+    document.getElementById('report-form-container').style.display = 'block';
+}
+
+function hideReportForm() {
+    document.getElementById('report-form-container').style.display = 'none';
+    document.getElementById('report-form').reset();
+}
+
+// Report form submission handling
+document.addEventListener('DOMContentLoaded', function() {
+    const reportForm = document.getElementById('report-form');
+    if (reportForm) {
+        reportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(reportForm);
+            
+            fetch('/youtube_report', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you for your report. We have received your submission.');
+                    hideReportForm();
+                } else {
+                    alert('An error occurred while submitting. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting. Please try again.');
+            });
+        });
+    }
+});
 </script>
 
 <style>
