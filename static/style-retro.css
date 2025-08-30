@@ -1119,9 +1119,9 @@ body {
 }
 
 .sitemap-window {
-  width: 480px;
-  max-width: 90vw;
-  max-height: 80vh;
+  width: 600px;
+  max-width: 85vw;
+  max-height: 75vh;
   background-color: #F0F0F0;
   border: 2px outset #C0C0C0;
   box-shadow: 2px 2px 4px #808080;
@@ -1129,6 +1129,9 @@ body {
   font-size: var(--current-font-size);
   display: flex;
   flex-direction: column;
+  position: relative;
+  transform: scale(0.8); /* 200%スケール時の調整 */
+  transform-origin: center;
 }
 
 .sitemap-title-bar {

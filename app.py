@@ -545,6 +545,42 @@ def sitemap_data():
     
     return jsonify(sitemap)
 
+@app.route("/youtube_report", methods=["POST"])
+def youtube_report():
+    """YouTube動画の申立て処理"""
+    try:
+        video_id = request.form.get('video_id', '')
+        quiz_title = request.form.get('quiz_title', '')
+        quiz_id = request.form.get('quiz_id', '')
+        report_type = request.form.get('report_type', '')
+        message = request.form.get('message', '')
+        
+        # 必須フィールドの検証
+        if not all([video_id, report_type, message]):
+            return jsonify({'success': False, 'error': '必要な情報が不足しています'})
+        
+        # フィードバックと同じ形式で保存
+        feedback = Feedback(
+            user_id=current_user.id if current_user.is_authenticated else None,
+            message=f"""YouTube動画申立て:
+動画ID: {video_id}
+クイズタイトル: {quiz_title}
+クイズID: {quiz_id}
+申立て種類: {report_type}
+
+詳細:
+{message}"""
+        )
+        
+        db.session.add(feedback)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': '申立てを受け付けました'})
+        
+    except Exception as e:
+        print(f"YouTube report error: {e}")
+        return jsonify({'success': False, 'error': '処理中にエラーが発生しました'})
+
 @app.route("/language", methods=["POST"])
 def set_language():
     """言語設定変更"""
