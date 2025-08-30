@@ -8,6 +8,7 @@ from routes.akinator import akinator_bp
 from routes.flashcard import flashcard_bp
 from routes.youtube_listening import youtube_listening_bp
 from routes.blog import blog_bp
+from routes.admin import admin_bp
 from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog, BlogComment, BlogFavorite
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
@@ -834,6 +835,7 @@ app.register_blueprint(akinator_bp)
 app.register_blueprint(flashcard_bp)
 app.register_blueprint(youtube_listening_bp)
 app.register_blueprint(blog_bp)
+app.register_blueprint(admin_bp)
 
 # Patreon OAuth removed - using Google login only
 

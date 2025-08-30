@@ -1,0 +1,111 @@
+{% extends "base_admin.html" %}
+
+{% block title %}ユーザー管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>ユーザー管理</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">ダッシュボードに戻る</a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>登録ユーザー一覧 ({{ users.total }}人)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>表示名</th>
+                            <th>メールアドレス</th>
+                            <th>認証種別</th>
+                            <th>登録日時</th>
+                            <th>最終ログイン</th>
+                            <th>言語</th>
+                            <th>ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users.items %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.display_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if user.auth_type == 'google' %}bg-danger
+                                    {% elif user.auth_type == 'patreon' %}bg-warning
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ user.auth_type }}
+                                </span>
+                            </td>
+                            <td>
+                                <small>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </td>
+                            <td>
+                                <small>
+                                    {% if user.last_login %}
+                                    {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td>{{ user.language }}</td>
+                            <td>
+                                {% if user.is_admin %}
+                                <span class="badge bg-danger">管理者</span>
+                                {% endif %}
+                                {% if user.is_patreon %}
+                                <span class="badge bg-warning">Patreon</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- ページネーション -->
+            {% if users.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if users.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.users', page=users.prev_num) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in users.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != users.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.users', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if users.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.users', page=users.next_num) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

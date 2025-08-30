@@ -1,0 +1,117 @@
+{% extends "base_admin.html" %}
+
+{% block title %}管理者ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>システム監視ダッシュボード</h1>
+    
+    <!-- 基本統計 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">総ユーザー数</h5>
+                    <h2>{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">未解決エラー</h5>
+                    <h2>{{ unresolved_errors }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">24時間以内エラー</h5>
+                    <h2>{{ recent_errors }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">総エラー数</h5>
+                    <h2>{{ total_errors }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- エラー種別統計 -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>エラー種別（上位5件）</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>エラー種別</th>
+                                <th>件数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for error_type, count in error_stats %}
+                            <tr>
+                                <td>{{ error_type }}</td>
+                                <td><span class="badge bg-secondary">{{ count }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>機能別エラー（上位5件）</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>機能</th>
+                                <th>件数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for feature, count in feature_stats %}
+                            <tr>
+                                <td>{{ feature }}</td>
+                                <td><span class="badge bg-secondary">{{ count }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- クイックアクション -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>クイックアクション</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('admin.error_logs') }}" class="btn btn-primary me-2">エラーログ表示</a>
+                    <a href="{{ url_for('admin.system_metrics') }}" class="btn btn-info me-2">システムメトリクス</a>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-secondary me-2">ユーザー管理</a>
+                    <a href="{{ url_for('admin.feedback') }}" class="btn btn-success">フィードバック管理</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

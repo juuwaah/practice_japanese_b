@@ -1,0 +1,52 @@
+{% extends "base_admin.html" %}
+
+{% block title %}システムメトリクス{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>システムメトリクス</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">ダッシュボードに戻る</a>
+    </div>
+    
+    {% if metrics_by_type %}
+        {% for metric_type, metrics in metrics_by_type.items() %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>{{ metric_type | title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>記録日時</th>
+                                <th>値</th>
+                                <th>期間開始</th>
+                                <th>期間終了</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for metric in metrics %}
+                            <tr>
+                                <td>{{ metric.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td><span class="badge bg-primary">{{ metric.metric_value }}</span></td>
+                                <td>{{ metric.period_start.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>{{ metric.period_end.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted text-center">システムメトリクスのデータがありません。</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

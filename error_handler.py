@@ -1,11 +1,44 @@
 # エラーハンドリング用のユーティリティモジュール
 import time
 from functools import wraps
-from flask import session
+from flask import session, request, g
+from flask_login import current_user
 from translations import get_text, get_user_language
 from sqlalchemy.exc import OperationalError
 import openai
 
+
+def log_system_error(error_type, error_message, feature=None):
+    """システムエラーをデータベースに記録"""
+    try:
+        # 循環インポートを避けるため、ここでインポート
+        from models import db, SystemErrorLog
+        
+        user_id = current_user.id if current_user.is_authenticated else None
+        user_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr) if request else None
+        user_agent = request.headers.get('User-Agent', '')[:255] if request else None
+        request_path = request.path if request else None
+        
+        error_log = SystemErrorLog(
+            error_type=error_type,
+            error_message=error_message[:1000] if error_message else None,  # メッセージを制限
+            feature=feature,
+            user_id=user_id,
+            user_ip=user_ip,
+            user_agent=user_agent,
+            request_path=request_path
+        )
+        
+        db.session.add(error_log)
+        db.session.commit()
+        
+    except Exception as e:
+        # ログ記録自体が失敗しても、メイン機能は継続
+        print(f"Failed to log system error: {e}")
+        try:
+            db.session.rollback()
+        except:
+            pass
 
 def get_localized_error_message(error_type, language=None):
     """言語設定に応じたエラーメッセージを取得"""
@@ -20,15 +53,20 @@ def handle_openai_errors(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except openai.RateLimitError:
+        except openai.RateLimitError as e:
+            log_system_error("rate_limit", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("api_rate_limit_error"), "type": "rate_limit"}
-        except openai.APIConnectionError:
+        except openai.APIConnectionError as e:
+            log_system_error("connection", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("api_connection_error"), "type": "connection"}
         except openai.APIError as e:
             if "quota" in str(e).lower() or "billing" in str(e).lower():
+                log_system_error("quota", str(e), kwargs.get('feature'))
                 return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
+            log_system_error("api_error", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("general_system_error"), "type": "api_error"}
         except Exception as e:
+            log_system_error("unknown", str(e), kwargs.get('feature'))
             print(f"Unexpected OpenAI error: {e}")
             return {"error": get_localized_error_message("general_system_error"), "type": "unknown"}
     return wrapper
@@ -41,9 +79,11 @@ def handle_database_errors(func):
         try:
             return func(*args, **kwargs)
         except OperationalError as e:
+            log_system_error("database", str(e), kwargs.get('feature'))
             print(f"Database connection error: {e}")
             return {"error": get_localized_error_message("database_connection_error"), "type": "database"}
         except Exception as e:
+            log_system_error("database_unknown", str(e), kwargs.get('feature'))
             print(f"Unexpected database error: {e}")
             return {"error": get_localized_error_message("general_system_error"), "type": "database_unknown"}
     return wrapper
@@ -57,8 +97,9 @@ def retry_with_backoff(max_retries=3, base_delay=1):
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
-                except openai.RateLimitError:
+                except openai.RateLimitError as e:
                     if attempt == max_retries - 1:
+                        log_system_error("rate_limit", str(e), func.__name__)
                         return {"error": get_localized_error_message("api_rate_limit_error"), "type": "rate_limit"}
                     delay = base_delay * (2 ** attempt)
                     print(f"Rate limit hit, waiting {delay}s before retry {attempt + 1}/{max_retries}")
@@ -66,11 +107,14 @@ def retry_with_backoff(max_retries=3, base_delay=1):
                 except (openai.APIConnectionError, openai.APIError) as e:
                     if attempt == max_retries - 1:
                         if "quota" in str(e).lower():
+                            log_system_error("quota", str(e), func.__name__)
                             return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
+                        log_system_error("api_connection", str(e), func.__name__)
                         return {"error": get_localized_error_message("api_connection_error"), "type": "connection"}
                     delay = base_delay * (2 ** attempt)
                     print(f"API error, waiting {delay}s before retry {attempt + 1}/{max_retries}: {e}")
                     time.sleep(delay)
+            log_system_error("max_retries", "Maximum retry attempts exceeded", func.__name__)
             return {"error": get_localized_error_message("general_system_error"), "type": "max_retries_exceeded"}
         return wrapper
     return decorator
@@ -85,6 +129,7 @@ def check_system_load():
     if 'last_api_request' in session:
         time_since_last = current_time - session['last_api_request']
         if time_since_last < 2:  # 2秒以内の連続リクエストを制限
+            log_system_error("rate_limit", "Session-based rate limiting triggered", "system")
             return {"error": get_localized_error_message("api_rate_limit_error"), "limited": True}
     
     session['last_api_request'] = current_time

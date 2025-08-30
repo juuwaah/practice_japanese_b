@@ -1,0 +1,132 @@
+{% extends "base_admin.html" %}
+
+{% block title %}フィードバック管理{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>フィードバック管理</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">ダッシュボードに戻る</a>
+    </div>
+    
+    <!-- フィルタ -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>フィルタ</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">ステータス</label>
+                    <select class="form-select" name="status" id="status">
+                        <option value="">全て</option>
+                        <option value="unread" {% if current_status == 'unread' %}selected{% endif %}>未読</option>
+                        <option value="read" {% if current_status == 'read' %}selected{% endif %}>既読</option>
+                        <option value="replied" {% if current_status == 'replied' %}selected{% endif %}>返信済み</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary d-block">フィルタ適用</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>フィードバック一覧 ({{ feedback_items.total }}件)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>受信日時</th>
+                            <th>送信者</th>
+                            <th>メールアドレス</th>
+                            <th>メッセージ</th>
+                            <th>ユーザー</th>
+                            <th>ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedback_items.items %}
+                        <tr class="{% if feedback.status == 'unread' %}table-warning{% endif %}">
+                            <td>
+                                <small>{{ feedback.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                            </td>
+                            <td>{{ feedback.name }}</td>
+                            <td>
+                                <a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 400px;" title="{{ feedback.message }}">
+                                    {{ feedback.message[:150] }}{% if feedback.message|length > 150 %}...{% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if feedback.user %}
+                                <small>{{ feedback.user.display_name }}</small>
+                                {% else %}
+                                <small class="text-muted">匿名</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if feedback.status == 'unread' %}bg-warning
+                                    {% elif feedback.status == 'read' %}bg-info
+                                    {% elif feedback.status == 'replied' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {% if feedback.status == 'unread' %}未読
+                                    {% elif feedback.status == 'read' %}既読
+                                    {% elif feedback.status == 'replied' %}返信済み
+                                    {% else %}{{ feedback.status }}{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- ページネーション -->
+            {% if feedback_items.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if feedback_items.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.feedback', page=feedback_items.prev_num, status=current_status) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in feedback_items.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != feedback_items.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.feedback', page=page_num, status=current_status) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if feedback_items.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.feedback', page=feedback_items.next_num, status=current_status) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

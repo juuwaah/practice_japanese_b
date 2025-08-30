@@ -208,3 +208,36 @@ class BlogFavorite(db.Model):
     
     def __repr__(self):
         return f'<BlogFavorite {self.user_id}:{self.document_id}>'
+
+class SystemErrorLog(db.Model):
+    __tablename__ = 'system_error_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    error_type = db.Column(db.String(50), nullable=False)  # 'rate_limit', 'api_error', 'database_error', etc.
+    error_message = db.Column(db.Text, nullable=True)
+    feature = db.Column(db.String(50), nullable=True)  # 'grammar', 'vocab', 'akinator', 'speech_to_text'
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_ip = db.Column(db.String(45), nullable=True)  # IPv6 support
+    user_agent = db.Column(db.String(255), nullable=True)
+    request_path = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    resolved = db.Column(db.Boolean, default=False)
+    
+    # リレーション
+    user = db.relationship('User', backref='error_logs', lazy=True)
+    
+    def __repr__(self):
+        return f'<SystemErrorLog {self.error_type}:{self.feature} ({self.created_at})>'
+
+class SystemMetrics(db.Model):
+    __tablename__ = 'system_metrics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    metric_type = db.Column(db.String(50), nullable=False)  # 'api_requests', 'active_users', 'error_rate'
+    metric_value = db.Column(db.Float, nullable=False)
+    period_start = db.Column(db.DateTime, nullable=False)
+    period_end = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<SystemMetrics {self.metric_type}:{self.metric_value} ({self.created_at})>'
