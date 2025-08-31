@@ -87,7 +87,7 @@ def record_auth(setup_state):
     setup_state.app.config['GOOGLE_OAUTH_CLIENT_SECRET'] = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
     
 # Force HTTPS redirect manually
-google_bp.redirect_url = "https://www.japanese-b.com/auth/google/authorized"
+google_bp.redirect_url = "https://japanese-b.com/auth/google/authorized"
 
 # Debug: Print actual redirect URL being used
 print(f"DEBUG: Google BP redirect_url = {google_bp.redirect_url}")
@@ -397,8 +397,12 @@ def get_today_quiz():
 # Domain redirect middleware
 @app.before_request
 def redirect_to_custom_domain():
+    # Redirect Railway domain to main domain
     if request.host == 'web-production-65363.up.railway.app':
-        return redirect(f'https://www.japanese-b.com{request.full_path}', code=301)
+        return redirect(f'https://japanese-b.com{request.full_path}', code=301)
+    # Redirect www subdomain to main domain
+    elif request.host == 'www.japanese-b.com':
+        return redirect(f'https://japanese-b.com{request.full_path}', code=301)
 
 # ルート設定
 @app.route("/", methods=["GET", "POST"])
