@@ -146,7 +146,7 @@ def users():
     page = request.args.get('page', 1, type=int)
     per_page = 50
     
-    users = User.query.order_by(desc(User.created_at)).paginate(
+    users = User.query.order_by(desc(User.last_login), desc(User.created_at)).paginate(
         page=page, per_page=per_page, error_out=False
     )
     

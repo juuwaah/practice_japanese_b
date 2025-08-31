@@ -150,10 +150,12 @@ def google_logged_in(blueprint, token):
 
     if oauth:
         # User already exists, log them in
-        oauth.user.last_login = datetime.utcnow()
         # Set Patreon status for existing Google users
         if not hasattr(oauth.user, 'is_patreon') or oauth.user.is_patreon is None:
             oauth.user.is_patreon = True  # Enable Flashcard for Google users
+        # Update last login time
+        oauth.user.last_login = datetime.utcnow()
+        db.session.commit()
         login_user(oauth.user, remember=True)
     else:
         # Check if a user with this email already exists
@@ -187,6 +189,10 @@ def google_logged_in(blueprint, token):
             token=token,
         )
         db.session.add(oauth)
+        db.session.commit()
+        
+        # Update last login time after linking/creating
+        user.last_login = datetime.utcnow()
         db.session.commit()
 
         login_user(user, remember=True)
@@ -459,9 +465,9 @@ def login():
                 admin_user.is_admin = True
                 admin_user.is_patreon = True
                 db.session.commit()
-            login_user(admin_user, remember=form.remember_me.data)
             admin_user.last_login = datetime.utcnow()
             db.session.commit()
+            login_user(admin_user, remember=form.remember_me.data)
             return redirect(url_for('admin_dashboard'))
         
         # 通常ユーザーの認証
@@ -470,9 +476,9 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         
-        login_user(user, remember=form.remember_me.data)
         user.last_login = datetime.utcnow()
         db.session.commit()
+        login_user(user, remember=form.remember_me.data)
         
         next_page = request.args.get('next')
         if not next_page or not next_page.startswith('/'):

@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)  # Primary identifier
     password_hash = db.Column(db.String(128), nullable=True)  # Null for OAuth users
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime, nullable=True)
     
     # OAuth fields
     auth_type = db.Column(db.String(32), default='guest')  # 'guest', 'google', 'patreon'
