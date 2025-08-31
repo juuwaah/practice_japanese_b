@@ -21,7 +21,6 @@
                             <th>ID</th>
                             <th>表示名</th>
                             <th>メールアドレス</th>
-                            <th>認証種別</th>
                             <th>登録日時</th>
                             <th>最終ログイン</th>
                             <th>言語</th>
@@ -35,14 +34,6 @@
                             <td>{{ user.display_name }}</td>
                             <td>{{ user.email }}</td>
                             <td>
-                                <span class="badge 
-                                    {% if user.auth_type == 'google' %}bg-danger
-                                    {% elif user.auth_type == 'patreon' %}bg-warning
-                                    {% else %}bg-secondary{% endif %}">
-                                    {{ user.auth_type }}
-                                </span>
-                            </td>
-                            <td>
                                 <small>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                             </td>
                             <td>
@@ -50,7 +41,7 @@
                                     {% if user.last_login %}
                                     {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
                                     {% else %}
-                                    -
+                                    <span class="text-muted">未ログイン</span>
                                     {% endif %}
                                 </small>
                             </td>
@@ -61,6 +52,11 @@
                                 {% endif %}
                                 {% if user.is_patreon %}
                                 <span class="badge bg-warning">Patreon</span>
+                                {% endif %}
+                                {% if user.auth_type == 'google' %}
+                                <span class="badge bg-info">Google</span>
+                                {% elif user.auth_type == 'guest' %}
+                                <span class="badge bg-secondary">Guest</span>
                                 {% endif %}
                             </td>
                         </tr>
