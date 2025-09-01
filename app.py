@@ -517,6 +517,66 @@ def about():
 def donation():
     return render_template(get_template("donation"))
 
+@app.route("/robots.txt")
+def robots_txt():
+    """robots.txtを返す"""
+    return app.send_static_file('robots.txt'), 200, {'Content-Type': 'text/plain'}
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    """サイトマップXMLを生成"""
+    from datetime import datetime
+    from flask import Response
+    
+    # 基本的なURL一覧
+    urls = [
+        {'url': url_for('home', _external=True), 'priority': '1.0', 'changefreq': 'daily'},
+        {'url': url_for('about', _external=True), 'priority': '0.8', 'changefreq': 'monthly'},
+        {'url': url_for('donation', _external=True), 'priority': '0.6', 'changefreq': 'monthly'},
+        {'url': url_for('grammar.grammar_index', _external=True), 'priority': '0.9', 'changefreq': 'weekly'},
+        {'url': url_for('vocab.vocab_index', _external=True), 'priority': '0.9', 'changefreq': 'weekly'},
+        {'url': url_for('flashcard.flashcard_index', _external=True), 'priority': '0.8', 'changefreq': 'weekly'},
+        {'url': url_for('youtube_listening.listening_levels', _external=True), 'priority': '0.9', 'changefreq': 'weekly'},
+        {'url': url_for('akinator.akinator_index', role='user', _external=True), 'priority': '0.7', 'changefreq': 'monthly'},
+        {'url': url_for('akinator.akinator_index', role='gpt', _external=True), 'priority': '0.7', 'changefreq': 'monthly'},
+        {'url': url_for('blog.blog_index', _external=True), 'priority': '0.8', 'changefreq': 'daily'},
+    ]
+    
+    # JLPT レベル別ページ
+    for level in ['N5', 'N4', 'N3', 'N2', 'N1']:
+        urls.append({
+            'url': url_for('grammar.grammar_quiz', level=level, _external=True),
+            'priority': '0.8',
+            'changefreq': 'weekly'
+        })
+        urls.append({
+            'url': url_for('vocab.vocab_quiz', level=level, _external=True),
+            'priority': '0.8',
+            'changefreq': 'weekly'
+        })
+        urls.append({
+            'url': url_for('flashcard.flashcard_quiz', level=level, _external=True),
+            'priority': '0.8',
+            'changefreq': 'weekly'
+        })
+    
+    # XMLを生成
+    xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'''
+    
+    for url_info in urls:
+        xml_content += f'''
+    <url>
+        <loc>{url_info['url']}</loc>
+        <changefreq>{url_info['changefreq']}</changefreq>
+        <priority>{url_info['priority']}</priority>
+        <lastmod>{datetime.utcnow().strftime('%Y-%m-%d')}</lastmod>
+    </url>'''
+    
+    xml_content += '\n</urlset>'
+    
+    return Response(xml_content, mimetype='application/xml')
+
 @app.route("/sitemap_data")
 def sitemap_data():
     """サイトマップ用のデータ取得"""

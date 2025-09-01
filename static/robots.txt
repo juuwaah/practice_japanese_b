@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+
+# Allow Google AdSense crawler specifically
+User-agent: Mediapartners-Google
+Allow: /
+
+# Allow Google AdSense crawler (alternative)
+User-agent: AdsBot-Google
+Allow: /
+
+# Sitemap location
+Sitemap: https://japanese-b.com/sitemap.xml
+
+# Allow all content for search engines
+Allow: /grammar/
+Allow: /vocab/
+Allow: /flashcard/
+Allow: /listening/
+Allow: /akinator/
+Allow: /blog/
+Allow: /about
+Allow: /donation
+
+# Disallow admin areas (but allow AdSense crawlers)
+User-agent: *
+Disallow: /admin/
+
+User-agent: Mediapartners-Google
+Allow: /admin/
+
+User-agent: AdsBot-Google
+Allow: /admin/
