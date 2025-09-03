@@ -334,7 +334,7 @@ TRANSLATIONS = {
         'youtube_disclaimer_terms': 'By using this site, you also agree to YouTube\'s Terms of Service and Privacy Policy. We comply with the YouTube API Developer Policies in implementing embedded content.',
         
         # Error Messages
-        'api_rate_limit_error': 'Too many requests. Please wait a moment and try again.',
+        'api_rate_limit_error': 'Too many requests in short time detected. Please wait for more than 2 seconds.',
         'api_connection_error': 'Connection error occurred. Please check your internet connection and try again.',
         'database_connection_error': 'Database connection failed. Please try again in a few moments.',
         'service_temporarily_unavailable': 'Service is temporarily unavailable due to high traffic. Please try again later.',
@@ -677,7 +677,7 @@ TRANSLATIONS = {
         'youtube_disclaimer_terms': '当サイトを使用することにより、ユーザーは YouTube の利用規約およびプライバシーポリシーに同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。',
         
         # エラーメッセージ
-        'api_rate_limit_error': 'リクエストが多すぎます。しばらく待ってから再度お試しください。',
+        'api_rate_limit_error': '文章の生成は最短2秒毎です。2秒以上待ってから再度生成してください。',
         'api_connection_error': '接続エラーが発生しました。インターネット接続を確認して再度お試しください。',
         'database_connection_error': 'データベース接続に失敗しました。しばらくしてから再度お試しください。',
         'service_temporarily_unavailable': 'アクセスが集中しているため、サービスが一時的に利用できません。後でもう一度お試しください。',
