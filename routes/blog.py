@@ -20,12 +20,20 @@ def api_latest_posts():
         # 必要な情報のみを含むレスポンス
         response_posts = []
         for post in latest_posts:
-            response_posts.append({
-                'document_id': post['id'],
-                'title': post['name'],
-                'created_time': post.get('createdTime', ''),
-                'modified_time': post.get('modifiedTime', '')
-            })
+            try:
+                # Handle different possible key names for title
+                title = post.get('name', post.get('title', 'Untitled'))
+                document_id = post.get('id', post.get('document_id', ''))
+                
+                response_posts.append({
+                    'document_id': document_id,
+                    'title': title,
+                    'created_time': post.get('createdTime', post.get('created_time', '')),
+                    'modified_time': post.get('modifiedTime', post.get('modified_time', ''))
+                })
+            except Exception as post_error:
+                print(f"Error processing blog post: {post_error}, post data: {post}")
+                continue
         
         return jsonify(response_posts)
     except Exception as e:

@@ -349,10 +349,12 @@ body {
   gap: 4px;
 }
 
-/* Main content wrapper with margins */
-.main-content-wrapper {
-  margin-left: 64px; /* Same as left tool palette + external links width */
-  margin-right: 64px; /* Same margin on right side */
+/* Main content wrapper with margins - desktop only */
+@media screen and (min-width: 769px) {
+  .main-content-wrapper {
+    margin-left: 64px !important; /* Same as left tool palette + external links width */
+    margin-right: 64px !important; /* Same margin on right side */
+  }
 }
 
 .external-link-btn {
@@ -2455,12 +2457,14 @@ body {
     gap: 16px !important;
     width: 100% !important;
     flex-wrap: nowrap !important;
+    margin-bottom: 12px !important;
   }
   
   .sidebar-layout > div:first-child {
     flex: 2 1 60% !important;
     min-width: 0 !important;
     display: block !important;
+    width: auto !important;
   }
   
   .sidebar-layout > div:last-child {
@@ -2468,6 +2472,13 @@ body {
     min-width: 250px !important;
     max-width: 350px !important;
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto !important;
+  }
+  
+  /* Force sidebar content to be visible */
+  .sidebar-layout > div:last-child * {
     visibility: visible !important;
     opacity: 1 !important;
   }

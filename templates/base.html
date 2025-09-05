@@ -65,12 +65,38 @@
     /* Override any mobile styles that might interfere */
     @media screen and (max-width: 768px) {
       .sidebar-layout {
-        flex-direction: row !important;
+        flex-direction: column !important;
       }
     }
     @media screen and (max-width: 480px) {
       .sidebar-layout {
+        flex-direction: column !important;
+      }
+    }
+    
+    /* DESKTOP: Force sidebar layout on large screens */
+    @media screen and (min-width: 769px) {
+      .sidebar-layout {
+        display: flex !important;
         flex-direction: row !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+        width: 100% !important;
+        flex-wrap: nowrap !important;
+        margin-bottom: 12px !important;
+      }
+      
+      .sidebar-layout > div:first-child {
+        flex: 2 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+      }
+      
+      .sidebar-layout > div:last-child {
+        flex: 0 0 250px !important;
+        min-width: 250px !important;
+        max-width: 350px !important;
+        width: auto !important;
       }
     }
     
@@ -397,7 +423,62 @@
           
           <!-- Right side - Sidebar -->
           <div style="flex: 1 !important; min-width: 200px !important; max-width: 300px !important;">
-            {% include 'sidebar.html' %}
+            <!-- Debug: Direct sidebar content instead of include -->
+            <!-- Recommended Practice Section -->
+            <div style="border: 1px solid #000; padding: 8px; background: #F8F8F8; margin-bottom: 12px;">
+              <h3 style="margin-bottom: 8px; font-size: 11px; text-align: center;">{{ _('recommended_practice') }}</h3>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <a href="{{ url_for('grammar.grammar_index') }}" 
+                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
+                  {{ _('grammar') }}
+                </a>
+                <a href="{{ url_for('youtube_listening.listening_levels') }}" 
+                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
+                  {{ _('youtube_listening') }}
+                </a>
+                <a href="{{ url_for('akinator.akinator_index', role='user') }}" 
+                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
+                  {{ _('akinator') }}
+                </a>
+              </div>
+            </div>
+            
+            <!-- Latest Blog Posts Section -->
+            <div style="border: 1px solid #000; padding: 8px; background: #F0F8F0;">
+              <h3 style="margin-bottom: 8px; font-size: 11px; text-align: center;">Latest Blog</h3>
+              <div style="display: flex; flex-direction: column; gap: 4px;" id="blog-posts-container">
+                <!-- Blog posts will be loaded via JavaScript -->
+                <div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">
+                  Loading blog posts...
+                </div>
+              </div>
+            </div>
+
+            <script>
+            // Load latest blog posts
+            fetch('/blog/api/latest')
+              .then(response => response.json())
+              .then(posts => {
+                const container = document.getElementById('blog-posts-container');
+                if (posts.length === 0) {
+                  container.innerHTML = '<div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">No blog posts available</div>';
+                  return;
+                }
+                
+                container.innerHTML = posts.map(post => 
+                  '<a href="/blog/post/' + post.document_id + '" ' +
+                     'style="display: block; padding: 4px; background: #E8E8E8; text-decoration: none; color: #000; font-size: 8px; text-align: left; border: 1px solid #CCC; line-height: 1.2;" ' +
+                     'title="' + post.title + '">' +
+                    (post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title) +
+                  '</a>'
+                ).join('');
+              })
+              .catch(error => {
+                console.log('Blog posts loading failed:', error);
+                const container = document.getElementById('blog-posts-container');
+                container.innerHTML = '<div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">Blog posts unavailable</div>';
+              });
+            </script>
           </div>
         </div>
       </div>
