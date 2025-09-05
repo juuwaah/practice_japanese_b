@@ -379,8 +379,8 @@
       <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="menu-item">{{ _('preply_coupon') }}</a>
     </div>
     
-    <!-- Tool buttons on the right -->
-    <div style="margin-left: auto; margin-right: 92px; display: flex; height: 100%;">
+    <!-- Tool buttons and capybara on the right -->
+    <div style="margin-left: auto; display: flex; height: 100%; align-items: center; gap: 4px;">
       <!-- Sitemap Tool -->
       <div class="menu-tool-btn" id="sitemap-tool" title="Sitemap" onclick="console.log('Sitemap clicked!'); loadSitemap();">
         🔍
@@ -391,6 +391,18 @@
         🖐️
       </div>
       {% endif %}
+      <!-- Capybara mascot -->
+      <div style="margin-left: 8px; display: flex; align-items: center; cursor: pointer;" onclick="window.location.href='{{ url_for('home') }}'" title="Home">
+        <svg width="50" height="32" viewBox="0 0 200 130" style="display: block;">
+          <path d="M30 50 Q20 30 40 25 Q60 20 80 25 Q100 30 120 40 Q160 50 170 70 Q180 90 175 100 Q170 110 160 115 L150 118 Q140 120 130 118 L120 115 Q100 112 80 115 Q60 118 40 115 Q25 110 20 95 Q15 80 20 65 Q25 55 30 50 Z" fill="none" stroke="black" stroke-width="2"/>
+          <circle cx="50" cy="45" r="4" fill="black"/>
+          <circle cx="65" cy="45" r="4" fill="black"/>
+          <path d="M45 55 Q50 60 55 55" fill="none" stroke="black" stroke-width="2"/>
+          <path d="M60 55 Q65 60 70 55" fill="none" stroke="black" stroke-width="2"/>
+          <rect x="75" y="80" width="50" height="8" rx="4" fill="none" stroke="black" stroke-width="2"/>
+          <text x="100" y="87" text-anchor="middle" font-family="Arial, sans-serif" font-size="8">がんばれ〜</text>
+        </svg>
+      </div>
     </div>
     
   </div>

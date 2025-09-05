@@ -250,11 +250,11 @@ body {
   background-color: #FFFFFF;
   border-bottom: 1px solid #000000;
   height: 40px;
-  margin-left: 92px; /* Align with main content */
-  margin-right: 92px; /* Same margin on both sides */
+  margin: 0; /* Full width background */
   display: flex;
   align-items: center;
-  padding: 0 4px;
+  padding-left: 92px; /* Content aligned with main content */
+  padding-right: 92px; /* Same padding on both sides */
   font-size: 9px;
   font-weight: bold;
   position: fixed !important;
