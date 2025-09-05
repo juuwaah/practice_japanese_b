@@ -6,6 +6,32 @@ from datetime import datetime
 
 blog_bp = Blueprint('blog', __name__, url_prefix='/blog')
 
+@blog_bp.route('/api/latest')
+def api_latest_posts():
+    """最新のブログ記事10件をJSON形式で返すAPI"""
+    try:
+        blog_posts = get_blog_documents()
+        if not blog_posts:
+            return jsonify([])
+        
+        # 最新10件に絞る
+        latest_posts = blog_posts[:10]
+        
+        # 必要な情報のみを含むレスポンス
+        response_posts = []
+        for post in latest_posts:
+            response_posts.append({
+                'document_id': post['id'],
+                'title': post['name'],
+                'created_time': post.get('createdTime', ''),
+                'modified_time': post.get('modifiedTime', '')
+            })
+        
+        return jsonify(response_posts)
+    except Exception as e:
+        print(f"Blog API error: {e}")
+        return jsonify([])
+
 @blog_bp.route('/')
 def blog_index():
     """ブログ記事一覧ページ"""

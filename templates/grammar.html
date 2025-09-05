@@ -9,21 +9,26 @@
 {% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: 12px;">
-  <h1>{{ _('translation_practice') }}</h1>
-  {% if current_user.is_authenticated %}
-    <div style="margin-top: 8px;">
-      <a href="{{ url_for('grammar.grammar_logs') }}" 
-         style="font-size: 9px; text-decoration: underline; color: #000;">
-        📊 {{ _('view_my_logs') }}
-      </a>
+    <!-- Educational description for AdSense compliance -->
+    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+      {{ _('grammar_quiz_description') }}
     </div>
-  {% else %}
-    <div style="margin-top: 8px; font-size: 8px; color: #666;">
-      {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}" style="text-decoration: underline; color: #0066CC;">{{ _('google_login_here') }}</a>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <h1>{{ _('translation_practice') }}</h1>
+      {% if current_user.is_authenticated %}
+        <div style="margin-top: 8px;">
+          <a href="{{ url_for('grammar.grammar_logs') }}" 
+             style="font-size: 9px; text-decoration: underline; color: #000;">
+            📊 {{ _('view_my_logs') }}
+          </a>
+        </div>
+      {% else %}
+        <div style="margin-top: 8px; font-size: 8px; color: #666;">
+          {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}" style="text-decoration: underline; color: #0066CC;">{{ _('google_login_here') }}</a>
+        </div>
+      {% endif %}
     </div>
-  {% endif %}
-</div>
 
 {% if message %}
   <div class="error-message">

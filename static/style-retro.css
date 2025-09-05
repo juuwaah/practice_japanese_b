@@ -210,9 +210,9 @@ body {
   line-height: var(--current-line-height);
   /* 1980s Adobe style: white background with dots creating gray appearance */
   background-color: #FFFFFF;
-  background-image: radial-gradient(circle, #C0C0C0 0.4px, transparent 0.4px);
-  background-size: 1.5px 1.5px;
-  background-position: 0 0, 0.75px 0.75px;
+  background-image: radial-gradient(circle, #C0C0C0 1.6px, transparent 1.6px);
+  background-size: 3px 3px;
+  background-position: 0 0, 1.5px 1.5px;
   background-attachment: fixed;
   color: #000000;
   image-rendering: -moz-crisp-edges;
@@ -347,6 +347,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* Main content wrapper with margins */
+.main-content-wrapper {
+  margin-left: 64px; /* Same as left tool palette + external links width */
+  margin-right: 64px; /* Same margin on right side */
 }
 
 .external-link-btn {
@@ -2425,16 +2431,45 @@ body {
     gap: 8px !important;
   }
   
-  /* Buttons stack vertically when space is limited */
-  div[style*="display: flex"] {
+  /* Buttons stack vertically when space is limited - exclude sidebar-layout */
+  div[style*="display: flex"]:not(.sidebar-layout) {
     flex-wrap: wrap !important;
     gap: 8px !important;
   }
+  
+  /* Protect sidebar-layout from mobile interference - mobile section only for exclusions */
   
   /* Full width buttons on small screens */
   button, input[type="submit"], .quiz-option-btn {
     width: 100% !important;
     max-width: none !important;
+  }
+}
+
+/* DESKTOP FORCE: Ensure sidebar-layout works correctly on desktop screens */
+@media screen and (min-width: 769px) {
+  .sidebar-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  .sidebar-layout > div:first-child {
+    flex: 2 1 60% !important;
+    min-width: 0 !important;
+    display: block !important;
+  }
+  
+  .sidebar-layout > div:last-child {
+    flex: 1 0 250px !important;
+    min-width: 250px !important;
+    max-width: 350px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 
@@ -2506,5 +2541,34 @@ body {
     padding: 4px !important;
     box-sizing: border-box !important;
     visibility: visible !important;
+  }
+}
+
+/* ======================================
+   DESKTOP LAYOUT PROTECTION
+   ====================================== */
+/* Ensure sidebar-layout works correctly on desktop screens */
+@media (min-width: 769px) {
+  .sidebar-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .sidebar-layout > div:first-child {
+    flex: 2 1 60% !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  
+  .sidebar-layout > div:last-child {
+    flex: 1 0 250px !important;
+    min-width: 250px !important;
+    max-width: 350px !important;
+    width: auto !important;
   }
 }

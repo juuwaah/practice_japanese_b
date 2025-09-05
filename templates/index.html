@@ -5,60 +5,72 @@
 {% block window_title %}{{ _('daily_onomatopoeia_challenge') }}{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: 12px;">
-  <h1>{{ _('todays_japanese_onomatopoeia') }}</h1>
-  <div style="text-align: right; margin-bottom: 8px;">
-  </div>
-</div>
-
-<div style="text-align: center; margin: 16px 0;">
-  <div style="font-size: 24px; font-weight: bold; padding: 8px; border: 2px solid #000; background: #F0F0F0; display: inline-block;">
-    {{ onomatope }}
-  </div>
-</div>
-
-<div style="text-align: center; margin-bottom: 16px;">
-  <p style="font-size: 10px; font-weight: bold;">{{ _('what_does_this_mean') }}</p>
-</div>
-
-<div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-  {% for opt in options %}
-    <form method="post" style="display: inline;">
-      <input type="hidden" name="selected" value="{{ opt }}">
-      <button type="submit" class="quiz-option-btn">{{ opt }}</button>
-    </form>
-  {% endfor %}
-</div>
-
-{% if answered %}
-  <div class="result-message {% if correct %}result-correct{% else %}result-incorrect{% endif %}">
-    {{ _('correct_well_done') if correct else _('incorrect_try_again') }}
-  </div>
-  
-  <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F8F8F8;">
-    <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px;">{{ _('example_sentences') }}:</div>
-    <ul style="text-align: left; margin-left: 16px;">
-      {% for jp, hiragana, en in example_pairs %}
-        <li style="margin-bottom: 6px;">
-          <div style="font-weight: bold;">{{ jp }}</div>
-          {% if hiragana %}
-          <div style="font-size: 9px; color: #666666; margin-top: 2px;">({{ hiragana }})</div>
-          {% endif %}
-          <div style="font-size: 8px; color: #404040; margin-top: 2px;">{{ en }}</div>
-        </li>
-      {% endfor %}
-    </ul>
+    <div style="text-align: center; margin-bottom: 12px;">
+      <h1>{{ _('todays_japanese_onomatopoeia') }}</h1>
+    </div>
     
-    <!-- Blog article link button -->
-    {% if blog_link and blog_title %}
-    <div style="margin-top: 12px; text-align: center; border-top: 1px dashed #999; padding-top: 8px;">
-      <div style="font-size: 9px; color: #666; margin-bottom: 4px;">{{ _('detailed_explanation') }}:</div>
-      <a href="{{ blog_link }}" target="_blank" class="blog-link-btn">
-        📝 {{ blog_title }}
-      </a>
+    <div style="text-align: center; margin: 16px 0;">
+      <div style="font-size: 24px; font-weight: bold; padding: 8px; border: 2px solid #000; background: #F0F0F0; display: inline-block;">
+        {{ onomatope }}
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 16px;">
+      <p style="font-size: 10px; font-weight: bold;">{{ _('what_does_this_mean') }}</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px;">
+      {% for opt in options %}
+        <form method="post" style="width: 100%; max-width: 400px;">
+          <input type="hidden" name="selected" value="{{ opt }}">
+          <button type="submit" class="quiz-option-btn" style="width: 100%; text-align: left; padding: 8px 12px;">
+            {{ loop.index }}. {{ opt }}
+          </button>
+        </form>
+      {% endfor %}
+    </div>
+
+    {% if answered %}
+      <div class="result-message {% if correct %}result-correct{% else %}result-incorrect{% endif %}">
+        {{ _('correct_well_done') if correct else _('incorrect_try_again') }}
+      </div>
+      
+      <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F8F8F8;">
+        <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px;">{{ _('example_sentences') }}:</div>
+        <ul style="text-align: left; margin-left: 16px;">
+          {% for jp, hiragana, en in example_pairs %}
+            <li style="margin-bottom: 6px;">
+              <div style="font-weight: bold;">{{ jp }}</div>
+              {% if hiragana %}
+              <div style="font-size: 9px; color: #666666; margin-top: 2px;">({{ hiragana }})</div>
+              {% endif %}
+              <div style="font-size: 8px; color: #404040; margin-top: 2px;">{{ en }}</div>
+            </li>
+          {% endfor %}
+        </ul>
+        
+        <!-- Blog article link button -->
+        {% if blog_link and blog_title %}
+        <div style="margin-top: 12px; text-align: center; border-top: 1px dashed #999; padding-top: 8px;">
+          <div style="font-size: 9px; color: #666; margin-bottom: 4px;">{{ _('detailed_explanation') }}:</div>
+          <a href="{{ blog_link }}" target="_blank" class="blog-link-btn">
+            📝 {{ blog_title }}
+          </a>
+        </div>
+        {% endif %}
+        
+        <!-- Educational description for AdSense compliance -->
+        <div style="margin-top: 12px; padding: 6px; border-top: 1px dashed #999; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333;">
+          {{ _('onomatopoeia_importance_text') }}
+        </div>
+      </div>
+      
+    {% endif %}
+
+    <!-- Educational description always visible for non-answered state -->
+    {% if not answered %}
+    <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+      {{ _('onomatopoeia_importance_text') }}
     </div>
     {% endif %}
-  </div>
-  
-{% endif %}
 {% endblock %}

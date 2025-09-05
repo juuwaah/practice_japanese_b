@@ -3,7 +3,6 @@
 {% block title %}{{ quiz.title }} - YouTube リスニングクイズ{% endblock %}
 
 {% block content %}
-<div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ quiz.title }}</h1>
         <a href="{{ url_for('youtube_listening.listening_quiz_list', level=quiz.level) }}" 

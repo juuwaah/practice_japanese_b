@@ -2,141 +2,7 @@
 
 {% block title %}YouTube Listening - JLPT Practice{% endblock %}
 
-{% block content %}
-<div class="main-content">
-    <h1>YouTube Listening Quiz</h1>
-    
-    <!-- Filters -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <label>Level Selection:</label>
-            <div class="filter-buttons">
-                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order, lang='en') }}" 
-                   class="filter-btn {% if selected_level == 'all' %}active{% endif %}">
-                    All ({{ level_counts.values() | sum }})
-                </a>
-                {% for level in ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'] %}
-                    {% if level in level_counts %}
-                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order, lang='en') }}" 
-                       class="filter-btn {% if selected_level == level %}active{% endif %}">
-                        {{ level }} ({{ level_counts[level] }})
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    
-    <!-- N0 Level Explanation -->
-    {% if 'N0' in level_counts %}
-    <div style="margin: 12px 0; padding: 8px; background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 4px; font-size: 9px; color: #856404;">
-        <strong>Note:</strong> N0 is an unofficial level that represents difficulty higher than N1.
-    </div>
-    {% endif %}
-    
-    <!-- Retro Table Quiz List -->
-    {% if quizzes %}
-    <div class="retro-table-container">
-        <table class="retro-table">
-            <thead>
-                <tr>
-                    <th class="col-level">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='level', order='asc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'level' and current_order == 'asc' %}active{% endif %}">
-                            Level ↑
-                        </a>
-                    </th>
-                    <th class="col-title">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='title', order='asc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'title' and current_order == 'asc' %}active{% endif %}">
-                            Title ↑
-                        </a>
-                    </th>
-                    <th class="col-duration">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='asc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'length' and current_order == 'asc' %}active{% endif %}">
-                            Duration ↑
-                        </a>
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='desc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'length' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
-                    </th>
-                    <th class="col-channel">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='asc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'channel' and current_order == 'asc' %}active{% endif %}">
-                            Video from ↑
-                        </a>
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='desc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'channel' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
-                    </th>
-                    <th class="col-played">
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='asc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'played' and current_order == 'asc' %}active{% endif %}">
-                            Played ↑
-                        </a>
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='desc', lang='en') }}" 
-                           class="sort-link {% if current_sort == 'played' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for quiz in quizzes %}
-                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id, lang='en') }}'">
-                    <td class="col-level">
-                        <span class="level-badge level-{{ quiz.level.lower() }}">{{ quiz.level }}</span>
-                    </td>
-                    <td class="col-title">{{ quiz.title }}</td>
-                    <td class="col-duration">{{ '%d:%02d'|format(quiz.duration//60, quiz.duration%60) }}</td>
-                    <td class="col-channel">
-                        {% if quiz.channel_name %}
-                            <div style="display: flex; align-items: center; gap: 4px;">
-                                {% if quiz.channel_icon %}
-                                <img src="{{ quiz.channel_icon }}" alt="Channel Icon" 
-                                     style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid #808080;">
-                                {% endif %}
-                                <span>{{ quiz.channel_name }}</span>
-                            </div>
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td class="col-played">
-                        {% if quiz.play_count > 0 %}
-                            {{ quiz.play_count }}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="no-quiz-message">
-        {% if selected_level == 'all' %}
-            No quizzes are currently available.
-        {% else %}
-            No {{ selected_level }} level quizzes found.
-        {% endif %}
-    </div>
-    {% endif %}
-    
-    <!-- YouTube Copyright Disclaimer -->
-    <div style="margin-top: 24px; padding: 12px; border: 1px solid #ccc; background: #f9f9f9; font-size: 11px; line-height: 1.4;">
-        <h4 style="font-size: 12px; margin-bottom: 8px; color: #333;">Disclaimer</h4>
-        
-        <p style="margin-bottom: 8px;">This page displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.</p>
-        
-        <p style="margin-bottom: 8px;">We use YouTube's official embedding functionality, and ownership and copyright of the videos belong to <strong>each video's creator or rights holder</strong>. This site does not modify video content or distribute it independently.</p>
-        
-        <p style="margin-bottom: 8px;">By using this site, you also agree to YouTube's <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.</p>
-    </div>
-</div>
-
+{% block extra_head %}
 <style>
 /* レトロ表形式スタイル */
 .filter-section {
@@ -359,4 +225,143 @@
     }
 }
 </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Educational description for AdSense compliance -->
+    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+      {{ _('youtube_listening_description') }}
+    </div>
+    
+    <h1>YouTube Listening Quiz</h1>
+    
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <label>Level Selection:</label>
+            <div class="filter-buttons">
+                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order, lang='en') }}" 
+                   class="filter-btn {% if selected_level == 'all' %}active{% endif %}">
+                    All ({{ level_counts.values() | sum }})
+                </a>
+                {% for level in ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'] %}
+                    {% if level in level_counts %}
+                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order, lang='en') }}" 
+                       class="filter-btn {% if selected_level == level %}active{% endif %}">
+                        {{ level }} ({{ level_counts[level] }})
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- N0 Level Explanation -->
+    {% if 'N0' in level_counts %}
+    <div style="margin: 12px 0; padding: 8px; background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 4px; font-size: 9px; color: #856404;">
+        <strong>Note:</strong> N0 is an unofficial level that represents difficulty higher than N1.
+    </div>
+    {% endif %}
+    
+    <!-- Retro Table Quiz List -->
+    {% if quizzes %}
+    <div class="retro-table-container">
+        <table class="retro-table">
+            <thead>
+                <tr>
+                    <th class="col-level">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='level', order='asc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'level' and current_order == 'asc' %}active{% endif %}">
+                            Level ↑
+                        </a>
+                    </th>
+                    <th class="col-title">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='title', order='asc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'title' and current_order == 'asc' %}active{% endif %}">
+                            Title ↑
+                        </a>
+                    </th>
+                    <th class="col-duration">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='asc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'length' and current_order == 'asc' %}active{% endif %}">
+                            Duration ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='desc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'length' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                    <th class="col-channel">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='asc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'channel' and current_order == 'asc' %}active{% endif %}">
+                            Video from ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='desc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'channel' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                    <th class="col-played">
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='asc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'played' and current_order == 'asc' %}active{% endif %}">
+                            Played ↑
+                        </a>
+                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='desc', lang='en') }}" 
+                           class="sort-link {% if current_sort == 'played' and current_order == 'desc' %}active{% endif %}">
+                            ↓
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id, lang='en') }}'">
+                    <td class="col-level">
+                        <span class="level-badge level-{{ quiz.level.lower() }}">{{ quiz.level }}</span>
+                    </td>
+                    <td class="col-title">{{ quiz.title }}</td>
+                    <td class="col-duration">{{ '%d:%02d'|format(quiz.duration//60, quiz.duration%60) }}</td>
+                    <td class="col-channel">
+                        {% if quiz.channel_name %}
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                {% if quiz.channel_icon %}
+                                <img src="{{ quiz.channel_icon }}" alt="Channel Icon" 
+                                     style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid #808080;">
+                                {% endif %}
+                                <span>{{ quiz.channel_name }}</span>
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="col-played">
+                        {% if quiz.play_count > 0 %}
+                            {{ quiz.play_count }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-quiz-message">
+        {% if selected_level == 'all' %}
+            No quizzes are currently available.
+        {% else %}
+            No {{ selected_level }} level quizzes found.
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- YouTube Copyright Disclaimer -->
+    <div style="margin-top: 24px; padding: 12px; border: 1px solid #ccc; background: #f9f9f9; font-size: 11px; line-height: 1.4;">
+        <h4 style="font-size: 12px; margin-bottom: 8px; color: #333;">Disclaimer</h4>
+        
+        <p style="margin-bottom: 8px;">This page displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.</p>
+        
+        <p style="margin-bottom: 8px;">We use YouTube's official embedding functionality, and ownership and copyright of the videos belong to <strong>each video's creator or rights holder</strong>. This site does not modify video content or distribute it independently.</p>
+        
+        <p style="margin-bottom: 8px;">By using this site, you also agree to YouTube's <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.</p>
+    </div>
 {% endblock %}

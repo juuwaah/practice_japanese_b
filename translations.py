@@ -113,6 +113,15 @@ TRANSLATIONS = {
         'reply': 'Reply',
         'try_another_quiz': 'Try Another Quiz',
         
+        # AdSense compliance - educational descriptions
+        'recommended_practice': 'Recommended Practice',
+        'onomatopoeia_importance_text': 'Onomatopoeia is a vital element of Japanese, frequently used in anime, manga, novels, and daily conversation. It appears in JLPT exams and is essential for natural Japanese expression. Practice daily with different onomatopoeia to improve your expressive skills.',
+        'grammar_quiz_description': 'Practice JLPT N5-N1 grammar patterns through translation exercises. Learn practical usage with AI-generated examples and progress systematically. Detailed explanations help deepen understanding of mistakes.',
+        'flashcard_description_detailed': 'An efficient spaced repetition system for memorizing JLPT vocabulary. Learned words automatically adjust review intervals for long-term retention. Systematic vocabulary acquisition by level is possible.',
+        'vocab_quiz_description_detailed': 'Learn important JLPT vocabulary through quiz format. Comprehensively understand meaning, pronunciation, and usage to build vocabulary skills for actual exams. Includes detailed explanations for deeper understanding.',
+        'youtube_listening_description': 'Listening practice using authentic YouTube videos to familiarize yourself with natural Japanese. Difficulty corresponds to each JLPT level, developing listening skills useful in real communication situations.',
+        'akinator_learning_purpose': 'Practice natural conversational expressions in Japanese through questions and answers. While enjoying the game format, become familiar with interrogative, affirmative, and negative sentence patterns, helping improve conversational skills.',
+        
         # Akinator game translations
         'akinator_game': 'Akinator Game',
         'word_akinator': 'Word Akinator',
@@ -456,6 +465,15 @@ TRANSLATIONS = {
         'reply': '返信',
         'try_another_quiz': '別のクイズを試す',
         
+        # AdSense compliance - educational descriptions
+        'recommended_practice': 'おすすめ練習',
+        'onomatopoeia_importance_text': 'オノマトペは日本語の重要な要素で、アニメ・マンガ・小説・日常会話で頻繁に使用されます。JLPT試験でも出題され、自然な日本語表現を身につけるために不可欠です。毎日異なるオノマトペで表現力を向上させましょう。',
+        'grammar_quiz_description': 'JLPT N5-N1レベルの文法構文を使って翻訳練習ができます。AIが生成する例文で実際の使用法を学び、段階的にレベルアップしていきましょう。間違いは詳しい解説で理解を深められます。',
+        'flashcard_description_detailed': 'JLPT語彙を効率的に記憶するための反復学習システムです。覚えた単語は自動的に復習間隔が調整され、長期記憶に定着させます。レベル別に体系的な語彙習得が可能です。',
+        'vocab_quiz_description_detailed': 'JLPT各レベルの重要語彙をクイズ形式で学習できます。意味・読み方・使い方を総合的に理解し、実際の試験に対応できる語彙力を身につけます。解説付きで理解が深まります。',
+        'youtube_listening_description': '本物のYouTube動画を使った聞き取り練習で、自然な日本語に慣れることができます。JLPT各レベルに対応した難易度で、実際のコミュニケーション場面で役立つリスニング力を養成します。',
+        'akinator_learning_purpose': '日本語で質問や回答をすることで、自然な会話表現を学習できます。ゲーム感覚で楽しみながら、疑問文・肯定文・否定文の使い方に慣れ、会話力向上に役立ちます。',
+        
         # Akinator game translations
         'akinator_game': 'アキネーターゲーム',
         'word_akinator': '単語アキネーター',
@@ -788,6 +806,15 @@ TRANSLATIONS = {
         'incorrect_try_again': 'Incorrecto. ¡Inténtalo de nuevo la próxima vez!',
         'example_sentences': 'Oraciones de ejemplo',
         'try_another_quiz': 'Probar otro quiz',
+        
+        # AdSense compliance - educational descriptions
+        'recommended_practice': 'Práctica Recomendada',
+        'onomatopoeia_importance_text': 'Las onomatopeyas son un elemento vital del japonés, usadas frecuentemente en anime, manga, novelas y conversación diaria. Aparecen en los exámenes JLPT y son esenciales para la expresión natural en japonés. Practica diariamente con diferentes onomatopeyas para mejorar tus habilidades expresivas.',
+        'grammar_quiz_description': 'Practica patrones de gramática JLPT N5-N1 a través de ejercicios de traducción. Aprende uso práctico con ejemplos generados por IA y progresa sistemáticamente. Las explicaciones detalladas ayudan a profundizar la comprensión de los errores.',
+        'flashcard_description_detailed': 'Un sistema eficiente de repetición espaciada para memorizar vocabulario JLPT. Las palabras aprendidas ajustan automáticamente los intervalos de repaso para retención a largo plazo. Es posible la adquisición sistemática de vocabulario por nivel.',
+        'vocab_quiz_description_detailed': 'Aprende vocabulario importante del JLPT a través de formato de quiz. Comprende integralmente significado, pronunciación y uso para desarrollar habilidades de vocabulario para exámenes reales. Incluye explicaciones detalladas para mayor comprensión.',
+        'youtube_listening_description': 'Práctica de listening usando videos auténticos de YouTube para familiarizarte con japonés natural. La dificultad corresponde a cada nivel JLPT, desarrollando habilidades de listening útiles en situaciones de comunicación real.',
+        'akinator_learning_purpose': 'Practica expresiones conversacionales naturales en japonés a través de preguntas y respuestas. Mientras disfrutas el formato de juego, familiarízate con patrones de oraciones interrogativas, afirmativas y negativas, ayudando a mejorar habilidades conversacionales.',
         
         # Akinator game translations
         'akinator_game': 'Juego Akinator',

@@ -3,7 +3,6 @@
 {% block title %}{{ base_quiz.title }} - YouTube リスニングクイズ{% endblock %}
 
 {% block content %}
-<div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ base_quiz.title }}</h1>
         <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level) }}" 
@@ -251,7 +250,6 @@
         </div>
     </div>
     {% endif %}
-</div>
 
 <style>
 /* 80年代ゲーム風レトロアイコン枠線 */

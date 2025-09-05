@@ -9,15 +9,15 @@
 {% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: 12px;">
-  <h1>{{ _('word_akinator') }}</h1>
-  <div style="text-align: right;">
-    <a href="{{ url_for('akinator.akinator_index') }}" 
-       style="font-size: 8px; background: #F0F0F0; border: 1px solid #000; padding: 2px 6px; text-decoration: none;">
-      {{ _('reset_change') }}
-    </a>
-  </div>
-</div>
+    <div style="text-align: center; margin-bottom: 12px;">
+      <h1>{{ _('word_akinator') }}</h1>
+      <div style="text-align: right;">
+        <a href="{{ url_for('akinator.akinator_index') }}" 
+           style="font-size: 8px; background: #F0F0F0; border: 1px solid #000; padding: 2px 6px; text-decoration: none;">
+          {{ _('reset_change') }}
+        </a>
+      </div>
+    </div>
 
 <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #F8F8F8; 
             min-height: 120px; max-height: 180px; overflow-y: auto;">
@@ -137,7 +137,7 @@
   {% endif %}
   
 {% else %}
-  <div style="border: 2px solid #000; padding: 12px; background: #FFFFFF; text-align: center;">
+  <div class="akinator-game-over" style="border: 2px solid #000; padding: 12px; background: #FFFFFF; text-align: center;">
     <div style="font-size: 10px; font-weight: bold; margin-bottom: 8px;">
       {{ _('game_over') }}
     </div>
@@ -167,8 +167,14 @@
       {{ _('think_of_jlpt_word') | replace('{level}', session.level or 'N5') }}
     {% endif %}
   </div>
-</div>
+  
+    <!-- Educational description for AdSense compliance -->
+    <div style="margin-top: 12px; padding: 6px; border: 1px solid #999; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+      {{ _('akinator_learning_purpose') }}
+    </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 // Auto-scroll to bottom
 function scrollToBottom() {
@@ -343,8 +349,9 @@ document.getElementById('giveup-btn')?.addEventListener('click', function() {
     margin-bottom: 16px !important;
   }
   
-  /* Flex containers for buttons */
-  div[style*="display: flex"] {
+  /* Flex containers for buttons only - more specific selectors */
+  form[method="post"] > div[style*="display: flex"],
+  .akinator-game-over div[style*="display: flex"] {
     gap: 8px !important;
     flex-wrap: wrap;
   }
@@ -372,20 +379,20 @@ document.getElementById('giveup-btn')?.addEventListener('click', function() {
     max-height: 300px !important;
   }
   
-  /* Adjust button sizes for small screens */
-  div[style*="display: flex"] button {
+  /* Adjust button sizes for small screens - specific to form containers */
+  form[method="post"] > div[style*="display: flex"] button {
     flex: 1;
     min-width: 0;
     word-wrap: break-word;
   }
   
   /* Stack game over buttons vertically on very small screens */
-  div[style*="display: flex; gap: 8px; justify-content: center"] {
+  .akinator-game-over div[style*="display: flex; gap: 8px; justify-content: center"] {
     flex-direction: column !important;
     align-items: stretch !important;
   }
   
-  div[style*="display: flex; gap: 8px; justify-content: center"] a {
+  .akinator-game-over div[style*="display: flex; gap: 8px; justify-content: center"] a {
     text-align: center !important;
   }
 }

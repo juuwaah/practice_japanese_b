@@ -18,6 +18,71 @@
     <!-- Extra head content for specific pages -->
     {% block extra_head %}{% endblock %}
     
+    <!-- Sidebar layout override CSS v4.0 ULTIMATE -->
+    <style>
+    /* Ultimate nuclear option: Override everything with absolutely maximum specificity */
+    html body .main-content .sidebar-layout,
+    html body div.main-content div.sidebar-layout,
+    html body div.window div.main-content div.sidebar-layout,
+    html body div.main-content-wrapper div.window div.main-content div.sidebar-layout,
+    body div.main-content div.sidebar-layout,
+    div.main-content div.sidebar-layout,
+    .main-content .sidebar-layout,
+    .sidebar-layout,
+    * .sidebar-layout {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: flex-start !important;
+      gap: 16px !important;
+      margin-bottom: 12px !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+      box-sizing: border-box !important;
+      position: relative !important;
+      clear: both !important;
+    }
+    
+    html body .main-content .sidebar-layout > div:first-child,
+    html body div.main-content div.sidebar-layout > div:first-child,
+    * .sidebar-layout > div:first-child {
+      flex: 2 1 60% !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      width: auto !important;
+      box-sizing: border-box !important;
+    }
+    
+    html body .main-content .sidebar-layout > div:last-child,
+    html body div.main-content div.sidebar-layout > div:last-child, 
+    * .sidebar-layout > div:last-child {
+      flex: 1 0 250px !important;
+      min-width: 250px !important;
+      max-width: 350px !important;
+      width: auto !important;
+      box-sizing: border-box !important;
+    }
+    
+    /* Override any mobile styles that might interfere */
+    @media screen and (max-width: 768px) {
+      .sidebar-layout {
+        flex-direction: row !important;
+      }
+    }
+    @media screen and (max-width: 480px) {
+      .sidebar-layout {
+        flex-direction: row !important;
+      }
+    }
+    
+    
+    /* Emergency override - kill any column direction */
+    .sidebar-layout {
+      flex-direction: row !important;
+    }
+    
+    </style>
+    
+    
     <!-- Mobile responsive styles moved to style-retro.css -->
     <!-- <style>
     /* Mobile responsive menu - only apply on small screens with strict conditions */
@@ -324,7 +389,17 @@
         {% block window_title %}{{ _('japanese_learning_app') }}{% endblock %}
       </div>
       <div class="main-content">
-        {% block content %}{% endblock %}
+        <div class="sidebar-layout" style="display: flex !important; flex-direction: row !important; align-items: flex-start !important; gap: 16px; margin-bottom: 12px; width: 100% !important;">
+          <!-- Left side - Main content -->
+          <div style="flex: 2 !important; min-width: 0 !important;">
+            {% block content %}{% endblock %}
+          </div>
+          
+          <!-- Right side - Sidebar -->
+          <div style="flex: 1 !important; min-width: 200px !important; max-width: 300px !important;">
+            {% include 'sidebar.html' %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -535,23 +610,15 @@
           const feedbackModal = document.getElementById('feedback-modal');
           if (feedbackModal) {
             feedbackModal.classList.add('modal-show');
-            console.log('🖐️ Feedback modal displayed');
           } else {
-            console.error('❌ Feedback modal not found');
           }
           return;
         }
         
         // Special handling for mobile sitemap tool
         if (this.id === 'mobile-sitemap-tool') {
-          console.log('🔍 Mobile sitemap button clicked');
           e.stopPropagation();
-          try {
-            loadSitemap();
-            console.log('✅ loadSitemap() called successfully');
-          } catch (error) {
-            console.error('❌ Error calling loadSitemap():', error);
-          }
+          loadSitemap();
           return;
         }
         
@@ -583,12 +650,8 @@
         }
         
         // For dropdown buttons, show corresponding menu from desktop version
-        // Debug logging
-        console.log('Mobile menu clicked:', this.id, this.textContent);
-        
         let targetMenu = null;
         const allMenus = document.querySelectorAll('.menu-bar > .menu-dropdown');
-        console.log('Found menus:', allMenus.length);
         
         // Map by button text to menu content
         if (this.id === 'mobile-file-menu') {
@@ -605,9 +668,7 @@
           targetMenu = allMenus[3]?.querySelector('.menu-content');
         }
         
-        console.log('Target menu found:', !!targetMenu);
         if (targetMenu) {
-          console.log('Target menu content:', targetMenu.innerHTML.substring(0, 100));
           showMobileDropdown(null, this, targetMenu);
         }
       });
@@ -632,18 +693,14 @@
       // Re-attach event listeners for copied elements
       const copiedSettingsLink = dropdown.querySelector('#settings-menu-link');
       if (copiedSettingsLink) {
-        console.log('🔄 Re-attaching settings link listener to mobile dropdown');
         copiedSettingsLink.addEventListener('click', function(e) {
-          console.log('🖱️ Mobile settings menu link clicked!');
           e.preventDefault();
           // Close the mobile dropdown first
           dropdown.remove();
           // Open settings modal directly
           const settingsModal = document.getElementById('settings-modal');
           if (settingsModal) {
-            console.log('⚙️ Opening settings modal from mobile dropdown');
             settingsModal.classList.add('modal-show');
-            console.log('⚙️ Settings modal class added from mobile');
           }
         });
       }
@@ -687,8 +744,6 @@
       const bottomToolbar = document.querySelector('.mobile-bottom-toolbar');
       const topMenu = document.querySelector('.mobile-top-menu');
       
-      // Debug logging
-      console.log('📱 Screen width:', screenWidth, 'Mobile UA:', isMobileUA, 'Touch:', isTouchDevice, 'Final mobile:', isMobile);
       
       // Only show on actual mobile devices
       if (isMobile) {
@@ -720,12 +775,9 @@
               box-shadow: 0 -1px 2px rgba(0,0,0,0.2) !important;
               gap: 2px !important;
             `;
-            console.log('✅ Mobile bottom toolbar forced visible');
           } catch (e) {
-            console.error('❌ Error styling bottom toolbar:', e);
           }
         } else {
-          console.error('❌ Bottom toolbar element not found');
         }
         
         if (topMenu) {
@@ -753,16 +805,12 @@
               gap: 2px !important;
               box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
             `;
-            console.log('✅ Mobile top menu forced visible');
           } catch (e) {
-            console.error('❌ Error styling top menu:', e);
           }
         } else {
-          console.error('❌ Top menu element not found');
         }
       } else {
         // Force hide on non-mobile devices (PC/Desktop)
-        console.log('💻 Desktop detected - aggressively hiding mobile toolbars');
         if (bottomToolbar) {
           bottomToolbar.style.cssText = `
             display: none !important;
@@ -963,37 +1011,23 @@
       const settingsCloseBtn = document.getElementById('settings-close');
       const settingsMenuLink = document.getElementById('settings-menu-link');
       
-      // Debug: Check if elements exist
-      console.log('🔍 Settings debug:', {
-        settingsModal: !!settingsModal,
-        settingsCloseBtn: !!settingsCloseBtn, 
-        settingsMenuLink: !!settingsMenuLink,
-        settingsMenuLinkElement: settingsMenuLink
-      });
       
       // Open settings modal function  
       function openSettingsModal() {
-        console.log('⚙️ Opening settings modal');
         settingsModal.classList.add('modal-show');
-        console.log('⚙️ Settings modal class added');
       }
       
       // Close settings modal function
       function closeSettingsModal() {
         settingsModal.classList.remove('modal-show');
-        console.log('⚙️ Settings modal closed');
       }
       
       // Add event listener only if element exists
       if (settingsMenuLink) {
-        console.log('✅ Adding click listener to settings menu link');
         settingsMenuLink.addEventListener('click', function(e) {
-          console.log('🖱️ Settings menu link clicked!');
           e.preventDefault();
           openSettingsModal();
         });
-      } else {
-        console.error('❌ Settings menu link not found!');
       }
       
       settingsCloseBtn.addEventListener('click', closeSettingsModal);
@@ -1011,15 +1045,11 @@
     
     // Load sitemap data
     function loadSitemap() {
-      console.log('🔍 loadSitemap() function started');
       const modal = document.getElementById('sitemap-modal');
       const loading = document.getElementById('sitemap-loading');
       const dataDiv = document.getElementById('sitemap-data');
       
-      console.log('🔍 Elements found:', { modal, loading, dataDiv });
-      
       if (!modal) {
-        console.error('❌ Sitemap modal not found');
         return;
       }
       
@@ -1028,8 +1058,6 @@
       
       if (loading) loading.style.display = 'block';
       if (dataDiv) dataDiv.style.display = 'none';
-      
-      console.log('🔍 Modal force displayed with high priority styles');
       
       fetch('/sitemap_data')
         .then(response => response.json())

@@ -5,9 +5,14 @@
 {% block window_title %}{{ _('vocabulary_quiz') }}{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: 12px;">
-  <h1>{{ _('vocabulary_quiz') }}</h1>
-</div>
+    <!-- Educational description for AdSense compliance -->
+    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+      {{ _('vocab_quiz_description_detailed') }}
+    </div>
+
+    <div style="text-align: center; margin-bottom: 12px;">
+      <h1>{{ _('vocabulary_quiz') }}</h1>
+    </div>
 
 {% if message %}
   <div class="error-message">
