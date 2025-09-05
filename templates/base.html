@@ -404,15 +404,6 @@
   </div>
 
 
-  <!-- Left Tool Palette -->
-  <div class="tool-palette">
-    <div class="tool-icon" id="language-tool" title="{{ _('language_selection') }}">🌐</div>
-    <div class="tool-icon" id="font-tool" title="{{ _('select_font') }}">A</div>
-    {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-    <div class="tool-icon" id="feedback-tool" title="{{ _('feedback_tool') }}">✋</div>
-    {% endif %}
-    <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-  </div>
 
 
     </div> <!-- Close left-sidebar -->
@@ -635,67 +626,6 @@
   {% block scripts %}{% endblock %}
 
   <script>
-    // Simple tool palette interaction (desktop)
-    document.querySelectorAll('.tool-icon').forEach(tool => {
-      tool.addEventListener('click', function() {
-        // Special handling for feedback tool
-        if (this.id === 'feedback-tool') {
-          // Check if user is logged in by looking for login/logout links in menu
-          const loginLink = document.querySelector('a[href*="login"]');
-          const logoutLink = document.querySelector('a[href*="logout"]');
-          const isLoggedIn = !loginLink || logoutLink;
-          
-          if (!isLoggedIn) {
-            alert('フィードバック、感想を送るにはログインしてください');
-            window.location.href = '/login';
-            return;
-          }
-          const feedbackModal = document.getElementById('feedback-modal');
-          feedbackModal.classList.add('modal-show');
-          return;
-        }
-        
-        // Special handling for sitemap tool
-        if (this.id === 'sitemap-tool') {
-          loadSitemap();
-          return;
-        }
-        
-        // Special handling for language tool
-        if (this.id === 'language-tool') {
-          showLanguageMenu(this);
-          return;
-        }
-        
-        // Special handling for font tool
-        if (this.id === 'font-tool') {
-          showFontMenu(this);
-          return;
-        }
-        
-        // Special handling for sitemap tool
-        if (this.id === 'sitemap-tool') {
-          loadSitemap();
-          return;
-        }
-        
-        // Special handling for feedback tool
-        if (this.id === 'feedback-tool') {
-          const feedbackModal = document.getElementById('feedback-modal');
-          feedbackModal.classList.add('modal-show');
-          return;
-        }
-        
-        
-        document.querySelectorAll('.tool-icon').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-      });
-    });
-    
-    // Set selection tool as default active
-    if (document.querySelector('.tool-icon')) {
-      document.querySelector('.tool-icon').classList.add('active');
-    }
 
 
     // Mobile tool palette interaction
