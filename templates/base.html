@@ -311,6 +311,7 @@
     <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
     <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
     <a href="{{ url_for('blog.blog_index') }}" class="mobile-menu-btn" id="mobile-blog-menu">Blog</a>
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-menu-btn" id="mobile-preply-menu">{{ _('preply_coupon') }}</a>
   </div>
 
   <!-- Mobile container wrapper -->
@@ -319,6 +320,14 @@
     <div class="left-sidebar">
   <!-- Top Menu Bar (like Adobe Illustrator 1987) -->
   <div class="menu-bar">
+    <!-- Site Logo -->
+    <div style="margin-right: 8px; display: flex; align-items: center;">
+      <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" 
+           alt="Japanese with B" 
+           style="height: 32px; width: auto; cursor: pointer;" 
+           onclick="window.location.href='{{ url_for('home') }}'">
+    </div>
+    
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('file') }}</span>
       <div class="menu-content">
@@ -337,8 +346,8 @@
         <a href="{{ url_for('grammar.grammar_index') }}">{{ _('grammar') }}</a>
         <a href="{{ url_for('vocab.vocab_index') }}">{{ _('vocabulary') }}</a>
         <a href="{{ url_for('flashcard.flashcard_index') }}">{{ _('flashcards') }}</a>
-        <div class="menu-dropdown" style="position: relative;">
-          <a href="#" style="display: block; padding: 2px 8px; color: #000000; text-decoration: none; font-size: 9px; border-bottom: 1px dotted #C0C0C0;">{{ _('akinator') }}</a>
+        <div class="menu-dropdown" style="position: relative; height: 100%;">
+          <a href="#" class="menu-item" style="border-bottom: 1px dotted #C0C0C0;">{{ _('akinator') }}</a>
           <div class="menu-content" style="position: absolute; left: 100%; top: 0; margin-left: 2px; display: none;">
             <a href="{{ url_for('akinator.akinator_index') }}?role=user">{{ _('you_are_akinator') }}</a>
             <a href="{{ url_for('akinator.akinator_index') }}?role=gpt">{{ _('ai_is_akinator') }}</a>
@@ -352,11 +361,14 @@
       <span class="menu-item">{{ _('help') }}</span>
       <div class="menu-content">
         <a href="{{ url_for('about') }}">{{ _('about') }}</a>
-        <a href="#" id="settings-menu-link">{{ _('settings') }}</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
         <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
         {% endif %}
       </div>
+    </div>
+    
+    <div class="menu-dropdown">
+      <span class="menu-item" id="settings-menu-direct" onclick="openSettingsModal(); return false;" style="cursor: pointer;">{{ _('settings') }}</span>
     </div>
     
     <div class="menu-dropdown">
@@ -369,6 +381,24 @@
     
     <div class="menu-dropdown">
       <a href="{{ url_for('blog.blog_index') }}" class="menu-item">{{ _('blog') }}</a>
+    </div>
+    
+    <div class="menu-dropdown">
+      <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="menu-item">{{ _('preply_coupon') }}</a>
+    </div>
+    
+    <!-- Tool buttons on the right -->
+    <div style="margin-left: auto; margin-right: 92px; display: flex; height: 100%;">
+      <!-- Sitemap Tool -->
+      <div class="menu-tool-btn" id="sitemap-tool" title="Sitemap" onclick="console.log('Sitemap clicked!'); loadSitemap();">
+        🔍
+      </div>
+      <!-- Feedback Tool (only when logged in) -->
+      {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
+      <div class="menu-tool-btn" id="feedback-tool" title="Feedback" onclick="console.log('Feedback clicked!'); document.getElementById('feedback-modal').classList.add('modal-show');">
+        🖐️
+      </div>
+      {% endif %}
     </div>
     
   </div>
@@ -384,24 +414,6 @@
     <div class="tool-icon" id="sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
   </div>
 
-  <!-- External Links Section Below Tool Palette -->
-  <div class="external-links-section">
-    <!-- Preply Button -->
-    <div class="external-link-container">
-      <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="external-link-btn preply-btn">
-        <div class="btn-text">Preply</div>
-      </a>
-      <div class="btn-description">Get 30% off coupon for the trial lesson!</div>
-    </div>
-    
-    <!-- Patreon Button -->
-    <div class="external-link-container">
-      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="external-link-btn patreon-btn">
-        <div class="btn-text">Patreon</div>
-      </a>
-      <div class="btn-description">Support ongoing development</div>
-    </div>
-  </div>
 
     </div> <!-- Close left-sidebar -->
     
@@ -419,6 +431,12 @@
           <!-- Left side - Main content -->
           <div style="flex: 2 !important; min-width: 0 !important;">
             {% block content %}{% endblock %}
+            
+            <!-- Contact Information -->
+            <div style="text-align: center; margin-top: 24px; padding: 8px; 
+                        border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
+              Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
+            </div>
           </div>
           
           <!-- Right side - Sidebar -->
@@ -443,6 +461,16 @@
               </div>
             </div>
             
+            <!-- Patreon Support Section -->
+            <div style="border: 1px solid #000; padding: 12px; background: #FFE4B5; margin-bottom: 8px; text-align: center;">
+              <h3 style="margin-bottom: 8px; font-size: 10px; color: #FF6B35;">Support Our Work</h3>
+              <a href="https://www.patreon.com/japanesewithb" target="_blank" 
+                 style="display: inline-block; padding: 8px 16px; background: #FF424D; color: white; 
+                        text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px;">
+                Join the Patreon
+              </a>
+            </div>
+
             <!-- Latest Blog Posts Section -->
             <div style="border: 1px solid #000; padding: 8px; background: #F0F8F0;">
               <h3 style="margin-bottom: 8px; font-size: 11px; text-align: center;">Latest Blog</h3>
@@ -524,10 +552,6 @@
     {% endif %}
     <!-- Sitemap Tool -->
     <div class="mobile-tool-btn" id="mobile-sitemap-tool" title="{{ _('sitemap_tool') }}">🔍</div>
-    <!-- Preply Button -->
-    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Preply">Preply</a>
-    <!-- Patreon Button -->
-    <a href="https://www.patreon.com/japanesewithb" target="_blank" class="mobile-tool-btn mobile-text-btn" title="Patreon">Patreon</a>
   </div>
 
   <!-- Global Popup Modals (Outside all containers for proper z-index) -->
@@ -602,10 +626,6 @@
             </div>
           </div>
           
-          <!-- Toolbar Note -->
-          <div style="margin-top: 16px; padding: 6px; background: #F0F0F0; border: 1px solid #808080; font-size: 8px; color: #404040;">
-            💡 {{ _('settings_toolbar_note') }}
-          </div>
         </div>
       </div>
     </div>
@@ -653,6 +673,19 @@
           return;
         }
         
+        // Special handling for sitemap tool
+        if (this.id === 'sitemap-tool') {
+          loadSitemap();
+          return;
+        }
+        
+        // Special handling for feedback tool
+        if (this.id === 'feedback-tool') {
+          const feedbackModal = document.getElementById('feedback-modal');
+          feedbackModal.classList.add('modal-show');
+          return;
+        }
+        
         
         document.querySelectorAll('.tool-icon').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
@@ -664,10 +697,11 @@
       document.querySelector('.tool-icon').classList.add('active');
     }
 
+
     // Mobile tool palette interaction
     document.querySelectorAll('.mobile-tool-btn').forEach(tool => {
       tool.addEventListener('click', function(e) {
-        // Don't prevent default for link buttons (Preply, Patreon)
+        // Don't prevent default for link buttons
         if (this.tagName.toLowerCase() === 'a') {
           return; // Let the link work normally
         }
@@ -718,7 +752,7 @@
         }
         
         
-        // For link buttons (Preply, Patreon), don't prevent default to allow navigation
+        // For link buttons, don't prevent default to allow navigation
       });
     });
 
@@ -1103,10 +1137,21 @@
         settingsModal.classList.remove('modal-show');
       }
       
-      // Add event listener only if element exists
+      // Add event listener only if element exists (old settings link)
       if (settingsMenuLink) {
         settingsMenuLink.addEventListener('click', function(e) {
           e.preventDefault();
+          openSettingsModal();
+        });
+      }
+      
+      // Add event listener for direct settings menu
+      const settingsMenuDirect = document.getElementById('settings-menu-direct');
+      if (settingsMenuDirect) {
+        settingsMenuDirect.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Direct settings clicked');
           openSettingsModal();
         });
       }
@@ -1125,7 +1170,7 @@
     });
     
     // Load sitemap data
-    function loadSitemap() {
+    window.loadSitemap = function() {
       const modal = document.getElementById('sitemap-modal');
       const loading = document.getElementById('sitemap-loading');
       const dataDiv = document.getElementById('sitemap-data');
@@ -1183,7 +1228,7 @@
     // Language menu functionality
     let languageMenuOpen = false;
     
-    function showLanguageMenu(toolElement) {
+    window.showLanguageMenu = function(toolElement) {
       // Remove any existing language menu
       const existingMenu = document.querySelector('.language-menu');
       if (existingMenu) {
@@ -1257,7 +1302,7 @@
     // Font menu functionality
     let fontMenuOpen = false;
     
-    function showFontMenu(toolElement) {
+    window.showFontMenu = function(toolElement) {
       // Remove any existing font menu
       const existingMenu = document.querySelector('.font-menu');
       if (existingMenu) {
@@ -1342,6 +1387,56 @@
       loadingEl.style.display = 'none';
     };
     
+    // Menu tool palette interaction
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait for all functions to be defined
+      setTimeout(() => {
+        document.querySelectorAll('.menu-tool-btn').forEach(tool => {
+          tool.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Menu tool clicked:', this.id);
+            
+            // Special handling for language tool
+            if (this.id === 'language-tool') {
+              console.log('Language tool clicked');
+              if (typeof showLanguageMenu === 'function') {
+                showLanguageMenu(this);
+              } else {
+                console.error('showLanguageMenu function not found');
+              }
+              return;
+            }
+            
+            // Special handling for font tool
+            if (this.id === 'font-tool') {
+              console.log('Font tool clicked');
+              if (typeof showFontMenu === 'function') {
+                showFontMenu(this);
+              } else {
+                console.error('showFontMenu function not found');
+              }
+              return;
+            }
+            
+            // Special handling for sitemap tool
+            if (this.id === 'sitemap-tool') {
+              loadSitemap();
+              return;
+            }
+            
+            // Special handling for feedback tool
+            if (this.id === 'feedback-tool') {
+              const feedbackModal = document.getElementById('feedback-modal');
+              feedbackModal.classList.add('modal-show');
+              return;
+            }
+          });
+        });
+      }, 100);
+    });
+
     // Auto-show loading for form submissions and page navigation
     document.addEventListener('DOMContentLoaded', function() {
       const forms = document.querySelectorAll('form');
@@ -1508,5 +1603,7 @@
       color: #FFFFFF;
     }
   </style>
+
+
 </body>
 </html>

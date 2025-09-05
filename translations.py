@@ -78,7 +78,6 @@ TRANSLATIONS = {
         'feedback_tool': 'Feedback',
         'sitemap_tool': 'Sitemap',
         'language_selection': 'Language Selection',
-        'settings_toolbar_note': 'Tip: Use the "🌐" or "A" icons on the left to make the same changes',
         
         # Additional page-specific translations
         'japanese_learning_app': 'Japanese Learning App',
@@ -146,6 +145,8 @@ TRANSLATIONS = {
         'game_over': 'Game Over!',
         'play_again': 'Play Again',
         'change_settings': 'Change Settings',
+        'other_settings': 'Other Settings',
+        'settings': 'Settings',
         'instructions': 'Instructions',
         'ask_questions_about_ai_word': 'Ask questions about the AI\'s word to figure out what it is thinking of.',
         'think_of_jlpt_word': 'Think of a JLPT {level} word and answer the AI\'s questions.',
@@ -169,6 +170,7 @@ TRANSLATIONS = {
         'liked_this_app': 'Did you like this app?<br>Support the developer on Patreon to get access to more advanced grammar expressions, JLPT-level practice exercises, and other interesting Japanese language content.',
         'support_on_patreon': '🎯 Support on Patreon',
         'patreon_support': 'Patreon',
+        'preply_coupon': 'Preply 30% Off Coupon',
         'donation_page': 'Donation (PayPal / Buy me a coffee)',
         'donation_support': 'Support Development',
         'support_development': 'Support Development',
@@ -430,7 +432,6 @@ TRANSLATIONS = {
         'feedback_tool': 'フィードバック',
         'sitemap_tool': 'サイトマップ',
         'language_selection': '言語選択',
-        'settings_toolbar_note': 'ヒント: 画面左の"🌐"マークや"A"マークで同じ変更ができます',
         
         # Additional page-specific translations
         'japanese_learning_app': '日本語学習アプリ',
@@ -498,6 +499,8 @@ TRANSLATIONS = {
         'game_over': 'ゲーム終了！',
         'play_again': 'もう一度プレイ',
         'change_settings': '設定変更',
+        'other_settings': 'その他の設定',
+        'settings': '設定',
         'instructions': '説明',
         'ask_questions_about_ai_word': 'AIの単語について質問して、何を考えているか当ててください。',
         'think_of_jlpt_word': 'JLPT {level}の単語を思い浮かべて、AIの質問に答えてください。',
@@ -521,6 +524,7 @@ TRANSLATIONS = {
         'liked_this_app': 'このアプリを気に入っていただけましたか？<br>Patreonで開発者をサポートすると、より難易度の高い文法表現、JLPTレベルに沿った練習問題などのコンテンツ、その他日本語のおもしろい話などにアクセスできます。',
         'support_on_patreon': '🎯 Patreonでサポート',
         'patreon_support': 'Patreon',
+        'preply_coupon': 'Preply30%オフクーポン',
         'donation_page': 'ドネーション (PayPal / Buy me a coffee)',
         'donation_support': '開発をサポート',
         'support_development': '開発をサポート',
@@ -781,7 +785,6 @@ TRANSLATIONS = {
         'feedback_tool': 'Comentarios',
         'sitemap_tool': 'Mapa del sitio',
         'language_selection': 'Selección de idioma',
-        'settings_toolbar_note': 'Consejo: Usa los iconos "🌐" o "A" en la izquierda para hacer los mismos cambios',
         
         # Additional page-specific translations
         'japanese_learning_app': 'App de Aprendizaje de Japonés',
@@ -840,6 +843,8 @@ TRANSLATIONS = {
         'game_over': '¡Juego terminado!',
         'play_again': 'Jugar de nuevo',
         'change_settings': 'Cambiar configuración',
+        'other_settings': 'Otras configuraciones',
+        'settings': 'Configuración',
         'instructions': 'Instrucciones',
         'ask_questions_about_ai_word': 'Haz preguntas sobre la palabra de la IA para descubrir en qué está pensando.',
         'think_of_jlpt_word': 'Piensa en una palabra JLPT {level} y responde las preguntas de la IA.',
@@ -863,6 +868,7 @@ TRANSLATIONS = {
         'liked_this_app': '¿Te gustó esta app?<br>Apoya al desarrollador en Patreon para obtener acceso a expresiones gramaticales más avanzadas, ejercicios de práctica de nivel JLPT y otro contenido interesante sobre el idioma japonés.',
         'support_on_patreon': '🎯 Apoyar en Patreon',
         'patreon_support': 'Patreon',
+        'preply_coupon': 'Cupón Preply 30% Descuento',
         'donation_page': 'Donación (PayPal / Buy me a coffee)',
         'donation_support': 'Apoyar desarrollo',
         'support_development': 'Apoyar desarrollo',

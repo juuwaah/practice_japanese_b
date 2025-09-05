@@ -249,10 +249,13 @@ body {
 .menu-bar {
   background-color: #FFFFFF;
   border-bottom: 1px solid #000000;
-  height: 20px;
+  height: 40px; /* Previous height */
+  margin-left: 0; /* Full width background */
   display: flex;
   align-items: center;
-  padding: 0 4px;
+  padding-left: 92px; /* Content aligned with main content */
+  padding-right: 4px;
+  width: 100%; /* Full width background */
   font-size: 9px;
   font-weight: bold;
   position: fixed !important;
@@ -264,26 +267,61 @@ body {
 }
 
 .menu-item {
-  padding: 2px 8px;
-  cursor: pointer;
-  position: relative;
-  color: #000000;
-  text-decoration: none;
-  border: none;
-  background: none;
-  font-family: inherit;
-  font-size: inherit;
+  padding: 0 12px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  height: 100% !important;
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  color: #000000 !important;
+  text-decoration: none !important;
+  border: none !important;
+  background: none !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  line-height: normal !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
-.menu-item:hover {
-  background-color: #000000;
-  color: #FFFFFF;
+.menu-item:hover,
+.menu-item:hover *,
+span.menu-item:hover,
+a.menu-item:hover {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 /* Dropdown menus */
 .menu-dropdown {
-  position: relative;
-  display: inline-block;
+  position: relative !important;
+  display: flex !important;
+  height: 100% !important;
+  align-items: stretch !important;
+  min-height: 40px !important;
+  box-sizing: border-box !important;
+}
+
+/* Menu tool buttons */
+.menu-tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  background: none;
+  border: none;
+  color: #000;
+}
+
+.menu-tool-btn:hover {
+  background-color: #000000;
+  color: #FFFFFF;
 }
 
 .menu-content {
@@ -302,6 +340,7 @@ body {
   display: block;
 }
 
+
 .menu-content a {
   display: block;
   padding: 2px 8px;
@@ -316,25 +355,44 @@ body {
   color: #FFFFFF;
 }
 
+/* Fix for nested menu dropdown (Akinator) */
+.menu-content .menu-dropdown {
+  height: auto !important;
+  min-height: auto !important;
+  position: relative !important;
+  display: block !important;
+}
+
+.menu-content .menu-dropdown .menu-item {
+  height: auto !important;
+  min-height: auto !important;
+  padding: 2px 8px !important;
+  display: block !important;
+  align-items: initial !important;
+  border-bottom: 1px dotted #C0C0C0 !important;
+  font-size: 9px !important;
+  line-height: normal !important;
+}
+
+.menu-content .menu-dropdown .menu-content {
+  position: absolute !important;
+  left: 100% !important;
+  top: 0 !important;
+  margin-left: 2px !important;
+  display: none !important;
+}
+
+.menu-content .menu-dropdown:hover .menu-content {
+  display: block !important;
+}
+
 .menu-content a:last-child {
   border-bottom: none;
 }
 
 /* Left tool palette */
 .tool-palette {
-  position: fixed;
-  left: 8px;
-  top: 28px;
-  width: 48px;
-  background-color: #F0F0F0;
-  border: 1px solid #000000;
-  box-shadow: 1px 1px 0px #808080;
-  padding: 4px;
-  z-index: 10000;
-  /* Prevent movement during zoom */
-  transform-origin: top left;
-  max-height: calc(50vh - 30px);
-  overflow-y: auto;
+  display: none !important;
 }
 
 /* External Links Section Below Tool Palette */
@@ -352,8 +410,8 @@ body {
 /* Main content wrapper with margins - desktop only */
 @media screen and (min-width: 769px) {
   .main-content-wrapper {
-    margin-left: 64px !important; /* Same as left tool palette + external links width */
-    margin-right: 64px !important; /* Same margin on right side */
+    margin-left: 92px !important; /* Increased space for AdSense ads */
+    margin-right: 92px !important; /* Same margin on right side */
   }
 }
 
@@ -462,7 +520,7 @@ body {
 .main-content-wrapper {
   margin-left: 68px; /* Space for tool palette */
   padding: 8px;
-  margin-top: 20px; /* Space for fixed menu bar */
+  margin-top: 50px; /* Increased space between menu bar and main content (20px * 2.5) */
 }
 
 .main-content {
