@@ -308,7 +308,6 @@
   <div class="mobile-top-menu">
     <div class="mobile-menu-btn" id="mobile-file-menu">File</div>
     <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
-    <div class="mobile-menu-btn" id="mobile-help-menu">Help</div>
     <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
     <a href="{{ url_for('blog.blog_index') }}" class="mobile-menu-btn" id="mobile-blog-menu">Blog</a>
     <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-menu-btn" id="mobile-preply-menu">{{ _('preply_coupon') }}</a>
@@ -358,23 +357,16 @@
     </div>
     
     <div class="menu-dropdown">
-      <span class="menu-item">{{ _('help') }}</span>
-      <div class="menu-content">
-        <a href="{{ url_for('about') }}">{{ _('about') }}</a>
-        {% if current_user.is_authenticated and current_user.is_admin %}
-        <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
-        {% endif %}
-      </div>
-    </div>
-    
-    <div class="menu-dropdown">
       <span class="menu-item" id="settings-menu-direct" onclick="openSettingsModal(); return false;" style="cursor: pointer;">{{ _('settings') }}</span>
     </div>
     
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('support_menu') }}</span>
       <div class="menu-content">
-        <a href="https://www.patreon.com/japanesewithb" target="_blank">{{ _('patreon_support') }}</a>
+        <a href="{{ url_for('about') }}">{{ _('about') }}</a>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
+        {% endif %}
         <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
       </div>
     </div>
@@ -705,12 +697,9 @@
         } else if (this.id === 'mobile-quiz-menu') {
           // Find Quiz menu - second menu dropdown  
           targetMenu = allMenus[1]?.querySelector('.menu-content');
-        } else if (this.id === 'mobile-help-menu') {
-          // Find Help menu - third menu dropdown
-          targetMenu = allMenus[2]?.querySelector('.menu-content');
         } else if (this.id === 'mobile-support-menu') {
-          // Find Support menu - fourth menu dropdown
-          targetMenu = allMenus[3]?.querySelector('.menu-content');
+          // Find Support menu - third menu dropdown (help removed, so support is now 3rd)
+          targetMenu = allMenus[2]?.querySelector('.menu-content');
         }
         
         if (targetMenu) {
