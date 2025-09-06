@@ -323,8 +323,7 @@
     <div style="margin-right: 8px; display: flex; align-items: center;">
       <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" 
            alt="Japanese with B" 
-           style="height: 32px; width: auto; cursor: pointer;" 
-           onclick="window.location.href='{{ url_for('home') }}'">
+           style="height: 32px; width: auto;">
     </div>
     
     <div class="menu-dropdown">
@@ -392,7 +391,7 @@
       </div>
       {% endif %}
       <!-- Capybara mascot -->
-      <div style="margin-left: 8px; display: flex; align-items: center; cursor: pointer;" onclick="window.location.href='{{ url_for('home') }}'" title="Home">
+      <div style="margin-left: 8px; display: flex; align-items: center;" title="Capybara mascot">
         <img src="{{ url_for('static', filename='favicon1_io/logo2.png') }}?v=2" 
              alt="Capybara mascot" 
              style="height: 32px; width: auto;">
