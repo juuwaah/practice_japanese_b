@@ -253,7 +253,8 @@ body {
   margin: 0; /* Full width background */
   display: flex;
   align-items: center;
-  padding: 0; /* No padding - handled by inner container */
+  padding-left: 92px; /* Align content with main content area */
+  padding-right: 92px; /* Same padding on both sides */
   font-size: 9px;
   font-weight: bold;
   position: fixed !important;

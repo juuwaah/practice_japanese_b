@@ -319,15 +319,13 @@
     <div class="left-sidebar">
   <!-- Top Menu Bar (like Adobe Illustrator 1987) -->
   <div class="menu-bar">
-    <!-- Content container aligned with main content -->
-    <div style="width: 100%; max-width: none; margin-left: -92px; padding-left: 92px; padding-right: 92px; display: flex; align-items: center;">
-      <!-- Site Logo -->
-      <div style="margin-right: 8px; display: flex; align-items: center;">
-        <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" 
-             alt="Japanese with B" 
-             style="height: 32px; width: auto; cursor: pointer;" 
-             onclick="window.location.href='{{ url_for('home') }}'">
-      </div>
+    <!-- Site Logo -->
+    <div style="margin-right: 8px; display: flex; align-items: center;">
+      <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" 
+           alt="Japanese with B" 
+           style="height: 32px; width: auto; cursor: pointer;" 
+           onclick="window.location.href='{{ url_for('home') }}'">
+    </div>
     
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('file') }}</span>
@@ -395,12 +393,11 @@
       {% endif %}
       <!-- Capybara mascot -->
       <div style="margin-left: 8px; display: flex; align-items: center; cursor: pointer;" onclick="window.location.href='{{ url_for('home') }}'" title="Home">
-        <img src="{{ url_for('static', filename='favicon1_io/logo2.png') }}" 
+        <img src="{{ url_for('static', filename='favicon1_io/logo2.png') }}?v=2" 
              alt="Capybara mascot" 
              style="height: 32px; width: auto;">
       </div>
     </div>
-    </div> <!-- Close content container -->
   </div>
 
 
