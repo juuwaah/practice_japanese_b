@@ -480,6 +480,32 @@ def clear_cache():
     except Exception as e:
         return f"Error clearing cache: {e}"
 
+@app.route("/admin/debug-quiz")
+def debug_quiz():
+    """管理者用：現在のクイズデータをデバッグ表示"""
+    try:
+        quiz = get_today_quiz()
+        # オノマトペデータも取得
+        from onomatopoeia_data import get_onomatopoeia_data
+        onomatopoeia_data = get_onomatopoeia_data()
+        today = dt.datetime.now().date()
+        today_index = (today.toordinal() - dt.date(2023, 1, 1).toordinal()) % len(onomatopoeia_data)
+        selected_onomatope = onomatopoeia_data[today_index]
+        
+        debug_info = {
+            'has_image_url': 'image_url' in quiz,
+            'image_url': quiz.get('image_url', 'None'),
+            'onomatope': quiz.get('onomatope', 'None'),
+            'selected_onomatope_keys': list(selected_onomatope.keys()),
+            'selected_onomatope_image': selected_onomatope.get('image', 'None'),
+            'google_api_available': 'GOOGLE_APIS_AVAILABLE' in globals() and GOOGLE_APIS_AVAILABLE,
+            'has_env_var': bool(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')),
+            'quiz_keys': list(quiz.keys())
+        }
+        return f"<pre>{json.dumps(debug_info, indent=2, ensure_ascii=False)}</pre>"
+    except Exception as e:
+        return f"Error debugging quiz: {e}"
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     # フラッシュメッセージにPatreon関連のメッセージがある場合は、ログインページを表示
