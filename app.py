@@ -216,6 +216,20 @@ def get_current_font():
     """Get current user font"""
     return get_user_font()
 
+@app.template_global()
+def get_latest_blog_posts():
+    """Get latest blog posts for sidebar"""
+    try:
+        from google_drive_helper import get_blog_documents
+        blog_posts = get_blog_documents()
+        if not blog_posts:
+            return []
+        # Return latest 5 posts
+        return blog_posts[:5]
+    except Exception as e:
+        print(f"Error getting latest blog posts: {e}")
+        return []
+
 def get_template(base_name):
     """Always return base template name since retro is now the only design"""
     return f"{base_name}.html"

@@ -71,4 +71,33 @@
     </div>
 </div>
 </div>
+
+<script>
+// DEBUG UI - Compare with working template
+console.log('=== WORKING TEMPLATE DEBUG ===');
+console.log('Page class wrapper exists:', document.querySelector('.youtube-listening-page') !== null);
+console.log('Sidebar layout exists:', document.querySelector('.sidebar-layout') !== null);
+console.log('Sidebar last child exists:', document.querySelector('.sidebar-layout > div:last-child') !== null);
+
+// Check computed styles
+const workingSidebarLastChild = document.querySelector('.sidebar-layout > div:last-child');
+if (workingSidebarLastChild) {
+    const computedStyle = window.getComputedStyle(workingSidebarLastChild);
+    console.log('WORKING sidebar last child display:', computedStyle.display);
+    console.log('WORKING sidebar last child visibility:', computedStyle.visibility);
+}
+
+// Add visual debug indicator for working template
+const workingDebugIndicator = document.createElement('div');
+workingDebugIndicator.innerHTML = `
+<div style="position: fixed; top: 10px; right: 200px; background: green; color: white; padding: 10px; z-index: 9999; font-size: 12px;">
+  WORKING TEMPLATE DEBUG<br>
+  Page Class: ${document.querySelector('.youtube-listening-page') ? '✓' : '✗'}<br>
+  Sidebar Layout: ${document.querySelector('.sidebar-layout') ? '✓' : '✗'}<br>
+  Last Child: ${document.querySelector('.sidebar-layout > div:last-child') ? '✓' : '✗'}<br>
+  Display: ${workingSidebarLastChild ? window.getComputedStyle(workingSidebarLastChild).display : 'N/A'}<br>
+  CSS Rule Active: ${document.querySelector('.youtube-listening-page .sidebar-layout > div:last-child') ? '✓' : '✗'}
+</div>`;
+document.body.appendChild(workingDebugIndicator);
+</script>
 {% endblock %}

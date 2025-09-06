@@ -1,3 +1,4 @@
+{% set hide_sidebar = true %}
 {% extends "base.html" %}
 
 {% block title %}{{ _('blog') }} - {{ _('japanese_learning_app') }}{% endblock %}
@@ -6,219 +7,116 @@
 
 {% block head %}
 <style>
-/* Blog Page Optimization */
-body.blog-page .sidebar-layout > div:last-child {
-    display: none !important;
-}
-
-body.blog-page .sidebar-layout > div:first-child {
-    flex: 1 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-}
-
-/* 2-Column Tile Display */
-.blog-posts-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+/* Simple Blog List Styling */
+.blog-list-container {
     max-width: 800px;
     margin: 0 auto;
+    padding: 16px;
 }
 
-.blog-post-tile {
-    border: 2px solid #000;
-    padding: 12px;
-    background: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    height: 200px;
+.blog-post-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #E0E0E0;
+    transition: background-color 0.2s ease;
 }
 
-.blog-post-tile h2 {
-    margin: 0 0 8px 0;
-    font-size: 11px;
-    line-height: 1.3;
-    flex-shrink: 0;
+.blog-post-item:hover {
+    background-color: #F8F8F8;
 }
 
-.blog-post-tile .post-meta {
-    font-size: 8px;
-    color: #666;
-    margin-bottom: 8px;
-    flex-shrink: 0;
+.blog-post-item:last-child {
+    border-bottom: none;
 }
 
-.blog-post-tile .post-content {
-    flex: 1;
-    overflow: hidden;
+.blog-post-item h2 {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: normal;
 }
 
-.blog-post-tile .post-footer {
-    margin-top: auto;
-    text-align: right;
-    flex-shrink: 0;
+.blog-post-item h2 a {
+    color: #000;
+    text-decoration: none;
+}
+
+.blog-post-item h2 a:hover {
+    color: #333;
+    text-decoration: underline;
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-    .blog-posts-container {
-        grid-template-columns: 1fr;
-        max-width: calc(100% - 16px);
-        margin: 0 8px;
+    .blog-list-container {
+        padding: 8px;
     }
     
-    .blog-post-tile {
-        height: auto;
-        min-height: 150px;
+    .blog-post-item {
+        padding: 10px 12px;
+    }
+    
+    .blog-post-item h2 {
+        font-size: 13px;
     }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
-  <h1>📝 {{ _('blog') }}</h1>
-  <div style="font-size: 9px; color: #666; margin-top: 4px;">
-    {{ _('blog_description') }}
-  </div>
-</div>
-
-<!-- 検索フォーム -->
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 16px; background: #F0F0F0; max-width: 400px; margin-left: auto; margin-right: auto;">
-  <form method="GET" action="{{ url_for('blog.blog_index') }}">
-    <div style="display: flex; gap: 4px;">
-      <input type="text" name="q" value="{{ search_query }}" placeholder="{{ _('search_blog_posts') }}" 
-             style="flex: 1; padding: 4px; font-size: 9px; border: 1px solid #000;">
-      <button type="submit" style="padding: 4px 8px; font-size: 9px; background: #FFFFFF; border: 1px solid #000;">
-        🔍 {{ _('search') }}
-      </button>
+<div class="blog-page">
+<div class="blog-list-container">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="margin: 0 0 8px 0; font-size: 18px;">📝 {{ _('blog') }}</h1>
+    <div style="font-size: 10px; color: #666;">
+      {{ _('blog_description') }}
     </div>
-  </form>
-</div>
+  </div>
 
-{% if search_query %}
-<div style="text-align: center; margin-bottom: 12px; font-size: 9px; color: #666;">
-  "{{ search_query }}" {{ _('search_results') }}: {{ blog_posts|length }} {{ _('articles_found') }}
-  <a href="{{ url_for('blog.blog_index') }}" style="margin-left: 8px; text-decoration: underline;">{{ _('show_all_articles') }}</a>
-</div>
-{% endif %}
+  <!-- 検索フォーム -->
+  <div style="max-width: 400px; margin: 0 auto 20px auto; padding: 12px; background: #F8F8F8; border: 1px solid #DDD;">
+    <form method="GET" action="{{ url_for('blog.blog_index') }}">
+      <div style="display: flex; gap: 8px;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="{{ _('search_blog_posts') }}" 
+               style="flex: 1; padding: 6px; font-size: 10px; border: 1px solid #CCC;">
+        <button type="submit" style="padding: 6px 12px; font-size: 10px; background: #FFF; border: 1px solid #CCC;">
+          🔍 {{ _('search') }}
+        </button>
+      </div>
+    </form>
+  </div>
 
-<!-- タグフィルター -->
-{% if all_tags %}
-<div class="blog-tag-filter" style="max-width: 600px; margin: 0 auto 16px auto;">
-  <h4>📂 Tags:</h4>
-  <div>
-    <a href="{{ url_for('blog.blog_index') }}" class="blog-tag {% if not tag_filter %}active{% endif %}">
-      All
-    </a>
-    {% for tag in all_tags %}
-      <a href="{{ url_for('blog.blog_index', tag=tag) }}" 
-         class="blog-tag {% if tag_filter == tag %}active{% endif %}">
-        {{ tag }}
-      </a>
+  {% if search_query %}
+  <div style="text-align: center; margin-bottom: 16px; font-size: 10px; color: #666;">
+    "{{ search_query }}" {{ _('search_results') }}: {{ blog_posts|length }} {{ _('articles_found') }}
+    <a href="{{ url_for('blog.blog_index') }}" style="margin-left: 8px; color: #0066CC;">{{ _('show_all_articles') }}</a>
+  </div>
+  {% endif %}
+
+  <!-- シンプルなブログ記事一覧 -->
+  {% if blog_posts %}
+  <div class="blog-list">
+    {% for post in blog_posts %}
+    <div class="blog-post-item">
+      <h2>
+        <a href="{{ url_for('blog.blog_post', document_id=post.id) }}">
+          {{ post.title }}
+        </a>
+      </h2>
+    </div>
     {% endfor %}
   </div>
-</div>
-{% endif %}
-
-{% if tag_filter %}
-<div style="text-align: center; margin-bottom: 12px; font-size: 9px; color: #666;">
-  Tag "{{ tag_filter }}": {{ blog_posts|length }} {{ _('articles_found') }}
-  <a href="{{ url_for('blog.blog_index') }}" style="margin-left: 8px; text-decoration: underline;">{{ _('show_all_articles') }}</a>
-</div>
-{% endif %}
-
-<!-- ブログ記事一覧 (2-Column Tile Display) -->
-{% if blog_posts %}
-<div class="blog-posts-container">
-  {% for post in blog_posts %}
-  <div class="blog-post-tile">
-    <h2>
-      <a href="{{ url_for('blog.blog_post', document_id=post.id) }}" 
-         style="color: #000; text-decoration: none;">
-        {{ post.title }}
-      </a>
-    </h2>
-    <div class="post-meta">
-      📅 {{ _('published') }}: {{ post.created_date }}
-      {% if post.modified_date != post.created_date %}
-        | ✏️ {{ _('updated') }}: {{ post.modified_date }}
-      {% endif %}
-    </div>
-    
-    <div class="post-content">
-      <!-- タグ表示 -->
-      {% if post.tags %}
-      <div style="margin-bottom: 8px;">
-        {% for tag in post.tags %}
-          <a href="{{ url_for('blog.blog_index', tag=tag) }}" class="blog-tag">
-            {{ tag }}
-          </a>
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
-    
-    <div class="post-footer">
-      <a href="{{ url_for('blog.blog_post', document_id=post.id) }}" 
-         style="font-size: 9px; background: #F0F0F0; border: 1px solid #000; padding: 4px 8px; 
-                text-decoration: none; color: #000;">
-        {{ _('read_more') }} →
-      </a>
-    </div>
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0; max-width: 400px; margin: 0 auto;">
-  <div style="font-size: 12px; margin-bottom: 8px;">📖</div>
-  {% if search_query %}
-    <div style="font-size: 10px;">{{ _('no_articles_found') }}</div>
-    <div style="font-size: 8px; color: #666; margin-top: 4px;">{{ _('try_different_search') }}</div>
   {% else %}
-    <div style="font-size: 10px;">{{ _('no_blog_posts_yet') }}</div>
-    <div style="font-size: 8px; color: #666; margin-top: 4px;">{{ _('check_back_later') }}</div>
+  <div style="text-align: center; padding: 40px 20px; color: #666; border: 1px solid #E0E0E0; background: #F9F9F9;">
+    <div style="font-size: 14px; margin-bottom: 8px;">📖</div>
+    {% if search_query %}
+      <div style="font-size: 12px;">{{ _('no_articles_found') }}</div>
+      <div style="font-size: 10px; color: #999; margin-top: 4px;">{{ _('try_different_search') }}</div>
+    {% else %}
+      <div style="font-size: 12px;">{{ _('no_blog_posts_yet') }}</div>
+      <div style="font-size: 10px; color: #999; margin-top: 4px;">{{ _('check_back_later') }}</div>
+    {% endif %}
+  </div>
   {% endif %}
 </div>
-{% endif %}
-
-<style>
-/* ブログ記事リンクのホバー効果 */
-.blog-post-link:hover {
-  background: #F8F8F8 !important;
-}
-
-/* モバイル対応 */
-@media (max-width: 768px) {
-  div[style*="max-width: 600px"] {
-    max-width: 100% !important;
-    margin: 0 8px !important;
-  }
-  
-  div[style*="max-width: 400px"] {
-    max-width: calc(100% - 16px) !important;
-    margin-left: 8px !important;
-    margin-right: 8px !important;
-  }
-  
-  h2 {
-    font-size: 11px !important;
-    line-height: 1.4 !important;
-  }
-  
-  div[style*="font-size: 8px"] {
-    font-size: 9px !important;
-  }
-  
-  div[style*="font-size: 9px"] {
-    font-size: 10px !important;
-  }
-}
-</style>
-
-<script>
-// Apply blog page styling
-document.body.classList.add('blog-page');
-</script>
+</div>
 {% endblock %}

@@ -1,3 +1,4 @@
+{% set hide_sidebar = true %}
 {% extends "base.html" %}
 
 {% block title %}YouTube Listening - JLPT Practice{% endblock %}
@@ -41,15 +42,31 @@ body.youtube-listening-page .quiz-meta {
     padding-right: 0 !important;
 }
 
-/* Hide sidebar for full-width display */
+/* Hide sidebar for full-width display - NUCLEAR OPTION with maximum specificity */
+html body.youtube-listening-page .main-content .sidebar-layout > div:last-child,
+html body.youtube-listening-page div.main-content div.sidebar-layout > div:last-child,
+html body.youtube-listening-page div.window div.main-content div.sidebar-layout > div:last-child,
+body.youtube-listening-page .main-content .sidebar-layout > div:last-child,
 body.youtube-listening-page .sidebar-layout > div:last-child {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
 }
 
+html body.youtube-listening-page .main-content .sidebar-layout > div:first-child,
+html body.youtube-listening-page div.main-content div.sidebar-layout > div:first-child,
+html body.youtube-listening-page div.window div.main-content div.sidebar-layout > div:first-child,
+body.youtube-listening-page .main-content .sidebar-layout > div:first-child,
 body.youtube-listening-page .sidebar-layout > div:first-child {
     flex: 1 !important;
     max-width: 100% !important;
     width: 100% !important;
+    min-width: 0 !important;
 }
 
 /* レトロ表形式スタイル */

@@ -18,95 +18,76 @@
     <!-- Extra head content for specific pages -->
     {% block extra_head %}{% endblock %}
     
-    <!-- Sidebar layout override CSS v4.0 ULTIMATE -->
+    <!-- Force sidebar width v3 - Cache busting -->
     <style>
-    /* Ultimate nuclear option: Override everything with absolutely maximum specificity */
-    html body .main-content .sidebar-layout,
-    html body div.main-content div.sidebar-layout,
-    html body div.window div.main-content div.sidebar-layout,
-    html body div.main-content-wrapper div.window div.main-content div.sidebar-layout,
-    body div.main-content div.sidebar-layout,
-    div.main-content div.sidebar-layout,
-    .main-content .sidebar-layout,
-    .sidebar-layout,
-    * .sidebar-layout {
-      display: flex !important;
-      flex-direction: row !important;
-      align-items: flex-start !important;
-      gap: 16px !important;
-      margin-bottom: 12px !important;
-      width: 100% !important;
-      flex-wrap: nowrap !important;
-      box-sizing: border-box !important;
-      position: relative !important;
-      clear: both !important;
-    }
-    
-    html body .main-content .sidebar-layout > div:first-child,
-    html body div.main-content div.sidebar-layout > div:first-child,
-    * .sidebar-layout > div:first-child {
-      flex: 2 1 60% !important;
-      min-width: 0 !important;
-      max-width: none !important;
-      width: auto !important;
-      box-sizing: border-box !important;
-    }
-    
-    html body .main-content .sidebar-layout > div:last-child,
-    html body div.main-content div.sidebar-layout > div:last-child, 
-    * .sidebar-layout > div:last-child {
-      flex: 1 0 250px !important;
-      min-width: 250px !important;
-      max-width: 350px !important;
-      width: auto !important;
-      box-sizing: border-box !important;
-    }
-    
-    /* Override any mobile styles that might interfere */
-    @media screen and (max-width: 768px) {
-      .sidebar-layout {
-        flex-direction: column !important;
-      }
-    }
-    @media screen and (max-width: 480px) {
-      .sidebar-layout {
-        flex-direction: column !important;
-      }
-    }
-    
-    /* DESKTOP: Force sidebar layout on large screens */
-    @media screen and (min-width: 769px) {
-      .sidebar-layout {
+    /* Sidebar layout forcing - v3 with cache busting */
+    body div.sidebar-layout {
         display: flex !important;
-        flex-direction: row !important;
-        align-items: flex-start !important;
-        gap: 16px !important;
+        gap: 10px !important;
         width: 100% !important;
-        flex-wrap: nowrap !important;
-        margin-bottom: 12px !important;
-      }
-      
-      .sidebar-layout > div:first-child {
-        flex: 2 1 auto !important;
-        min-width: 0 !important;
-        width: auto !important;
-      }
-      
-      .sidebar-layout > div:last-child {
-        flex: 0 0 250px !important;
-        min-width: 250px !important;
-        max-width: 350px !important;
-        width: auto !important;
-      }
+        overflow-x: hidden !important;
+        padding-right: 8px !important;
     }
     
-    
-    /* Emergency override - kill any column direction */
-    .sidebar-layout {
-      flex-direction: row !important;
+    body div.sidebar-layout div.main-content-column {
+        flex: 0 0 66.67% !important;
+        width: 66.67% !important;
+        max-width: 66.67% !important;
+        box-sizing: border-box !important;
+        margin-right: 8px !important;
     }
     
+    body div.sidebar-layout div.right-sidebar {
+        flex: 0 0 33.33% !important;
+        width: 33.33% !important;
+        min-width: 200px !important;
+        box-sizing: border-box !important;
+        font-size: 0.75em !important;
+        overflow-x: hidden !important;
+        position: relative !important;
+        left: -20px !important;
+        margin-left: 0px !important;
+        margin-right: 20px !important;
+        padding-right: 10px !important;
+        padding-left: 16px !important;
+        transform: scale(0.9) !important;
+        transform-origin: top left !important;
+    }
+    
+    /* Sidebar content adjustments */
+    div.right-sidebar .sidebar-section {
+        padding: 8px !important;
+        margin-bottom: 15px !important;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.2) !important;
+    }
+    
+    div.right-sidebar .sidebar-section h3 {
+        font-size: 12px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    div.right-sidebar .sidebar-section div,
+    div.right-sidebar .sidebar-section p,
+    div.right-sidebar .sidebar-section a {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        div.sidebar-layout {
+            flex-direction: column !important;
+        }
+        div.sidebar-layout div.main-content-column,
+        div.sidebar-layout div.right-sidebar {
+            flex: 1 1 auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
     </style>
+    
+    <!-- Sidebar removed - clean full-width layout -->
     
     
     <!-- Mobile responsive styles moved to style-retro.css -->
@@ -414,88 +395,130 @@
         {% block window_title %}{{ _('japanese_learning_app') }}{% endblock %}
       </div>
       <div class="main-content">
-        <div class="sidebar-layout" style="display: flex !important; flex-direction: row !important; align-items: flex-start !important; gap: 16px; margin-bottom: 12px; width: 100% !important;">
-          <!-- Left side - Main content -->
-          <div style="flex: 2 !important; min-width: 0 !important;">
+        {% if hide_sidebar %}
+          <!-- Full-width layout for specific pages -->
+          <div style="width: 100%; margin-bottom: 12px;">
             {% block content %}{% endblock %}
             
-            <!-- Contact Information -->
+            <!-- Contact Information for full-width pages -->
             <div style="text-align: center; margin-top: 24px; padding: 8px; 
                         border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
               Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
             </div>
           </div>
-          
-          <!-- Right side - Sidebar -->
-          <div style="flex: 1 !important; min-width: 200px !important; max-width: 300px !important;">
-            <!-- Debug: Direct sidebar content instead of include -->
-            <!-- Recommended Practice Section -->
-            <div style="border: 1px solid #000; padding: 8px; background: #F8F8F8; margin-bottom: 12px;">
-              <h3 style="margin-bottom: 8px; font-size: 11px; text-align: center;">{{ _('recommended_practice') }}</h3>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <a href="{{ url_for('grammar.grammar_index') }}" 
-                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
-                  {{ _('grammar') }}
-                </a>
-                <a href="{{ url_for('youtube_listening.listening_levels') }}" 
-                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
-                  {{ _('youtube_listening') }}
-                </a>
-                <a href="{{ url_for('akinator.akinator_index', role='user') }}" 
-                   style="display: block; padding: 6px; background: #E0E0E0; text-decoration: none; color: #000; font-size: 9px; text-align: center; border: 1px solid #999;">
-                  {{ _('akinator') }}
-                </a>
+        {% else %}
+          <!-- Two-column layout with sidebar -->
+          <div class="sidebar-layout sidebar-v3" id="sidebar-{{ range(1000, 9999) | random }}" style="display: flex !important; gap: 10px !important; margin-bottom: 12px !important; width: 100% !important; overflow-x: hidden !important; padding-right: 8px !important;">
+            <!-- Main Content (2/3 width) -->
+            <div class="main-content-column sidebar-main-v3" style="flex: 0 0 66.67% !important; width: 66.67% !important; min-width: 0 !important; max-width: 66.67% !important; box-sizing: border-box !important; margin-right: 8px !important;">
+              {{ self.content() }}
+              
+              <!-- Contact Information -->
+              <div style="text-align: center; margin-top: 24px; padding: 8px; 
+                          border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
+                Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
               </div>
             </div>
             
-            <!-- Patreon Support Section -->
-            <div style="border: 1px solid #000; padding: 12px; background: #FFE4B5; margin-bottom: 8px; text-align: center;">
-              <h3 style="margin-bottom: 8px; font-size: 10px; color: #FF6B35;">Support Our Work</h3>
-              <a href="https://www.patreon.com/japanesewithb" target="_blank" 
-                 style="display: inline-block; padding: 8px 16px; background: #FF424D; color: white; 
-                        text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px;">
-                Join the Patreon
-              </a>
-            </div>
-
-            <!-- Latest Blog Posts Section -->
-            <div style="border: 1px solid #000; padding: 8px; background: #F0F8F0;">
-              <h3 style="margin-bottom: 8px; font-size: 11px; text-align: center;">Latest Blog</h3>
-              <div style="display: flex; flex-direction: column; gap: 4px;" id="blog-posts-container">
-                <!-- Blog posts will be loaded via JavaScript -->
-                <div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">
-                  Loading blog posts...
+            <!-- Right Sidebar (1/3 width) -->
+            <div class="right-sidebar sidebar-right-v3" style="flex: 0 0 33.33% !important; width: 33.33% !important; min-width: 200px !important; box-sizing: border-box !important; font-size: 0.75em !important; overflow-x: hidden !important; position: relative !important; left: -20px !important; margin-right: 20px !important; padding-right: 10px !important; padding-left: 16px !important; transform: scale(0.9) !important; transform-origin: top left !important;">
+              
+              <!-- Recommended Practice Section -->
+              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
+                          background: #F8F8F8; border: 2px solid #C0C0C0; 
+                          box-shadow: 2px 2px 0px #808080;">
+                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
+                           border-bottom: 1px solid #C0C0C0; color: #000;">
+                  📚 Recommended Practice
+                </h3>
+                <div style="font-size: 12px; line-height: 1.4;">
+                  <div style="margin-bottom: 8px;">
+                    <a href="{{ url_for('grammar.grammar_index') }}" 
+                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
+                      Grammar Quiz
+                    </a>
+                  </div>
+                  <div style="margin-bottom: 8px;">
+                    <a href="{{ url_for('vocab.vocab_index') }}" 
+                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
+                      Vocabulary Quiz
+                    </a>
+                  </div>
+                  <div style="margin-bottom: 8px;">
+                    <a href="{{ url_for('flashcard.flashcard_index') }}" 
+                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
+                      Flashcards
+                    </a>
+                  </div>
+                  <div>
+                    <a href="{{ url_for('youtube_listening.listening_levels') }}" 
+                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
+                      YouTube Listening
+                    </a>
+                  </div>
                 </div>
               </div>
+              
+              <!-- Patreon Support Section -->
+              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
+                          background: #F0F0F0; border: 2px solid #808080; 
+                          box-shadow: 2px 2px 0px #404040;">
+                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
+                           border-bottom: 1px solid #808080; color: #000;">
+                  Support Development
+                </h3>
+                <div style="font-size: 12px; line-height: 1.4; text-align: center;">
+                  <p style="margin-bottom: 12px; color: #333;">
+                    Support us on Patreon to keep this site free and improve features.
+                  </p>
+                  <a href="https://www.patreon.com/japanesewithb" target="_blank"
+                     style="display: inline-block; background: #E0E0E0; color: black; 
+                            padding: 8px 16px; text-decoration: none; font-weight: bold; 
+                            border: 2px solid #808080; box-shadow: 2px 2px 0px #404040;">
+                    Support on Patreon
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Latest Blog Posts Section -->
+              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
+                          background: #F0F0F0; border: 2px solid #808080; 
+                          box-shadow: 2px 2px 0px #404040;">
+                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
+                           border-bottom: 1px solid #808080; color: #000;">
+                  📰 Latest Blog Posts
+                </h3>
+                <div style="font-size: 11px; line-height: 1.3;">
+                  {% set latest_posts = get_latest_blog_posts() %}
+                  {% if latest_posts %}
+                    {% for post in latest_posts %}
+                    <div style="margin-bottom: 6px;">
+                      <a href="{{ url_for('blog.blog_post', document_id=post.get('id', post.get('document_id', ''))) }}" 
+                         style="color: #000; text-decoration: underline; font-weight: normal; font-size: 10px;">
+                        • {{ post.get('name', post.get('title', 'Untitled'))[:40] }}{% if (post.get('name', post.get('title', ''))|length) > 40 %}...{% endif %}
+                      </a>
+                    </div>
+                    {% endfor %}
+                  {% else %}
+                    <div style="font-size: 10px; color: #666;">
+                      No blog posts available
+                    </div>
+                  {% endif %}
+                  
+                  <div style="text-align: center; margin-top: 12px;">
+                    <a href="{{ url_for('blog.blog_index') }}" 
+                       style="display: inline-block; background: #E0E0E0; color: black; 
+                              padding: 4px 8px; text-decoration: none; font-weight: bold; 
+                              border: 2px solid #808080; box-shadow: 2px 2px 0px #404040; font-size: 10px;">
+                      View All Posts
+                    </a>
+                  </div>
+                </div>
+              </div>
+              
             </div>
-
-            <script>
-            // Load latest blog posts
-            fetch('/blog/api/latest')
-              .then(response => response.json())
-              .then(posts => {
-                const container = document.getElementById('blog-posts-container');
-                if (posts.length === 0) {
-                  container.innerHTML = '<div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">No blog posts available</div>';
-                  return;
-                }
-                
-                container.innerHTML = posts.map(post => 
-                  '<a href="/blog/post/' + post.document_id + '" ' +
-                     'style="display: block; padding: 4px; background: #E8E8E8; text-decoration: none; color: #000; font-size: 8px; text-align: left; border: 1px solid #CCC; line-height: 1.2;" ' +
-                     'title="' + post.title + '">' +
-                    (post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title) +
-                  '</a>'
-                ).join('');
-              })
-              .catch(error => {
-                console.log('Blog posts loading failed:', error);
-                const container = document.getElementById('blog-posts-container');
-                container.innerHTML = '<div style="font-size: 8px; color: #666; text-align: center; padding: 4px;">Blog posts unavailable</div>';
-              });
-            </script>
           </div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -1546,16 +1569,6 @@
 
     /* Mobile-specific fixes */
     @media (max-width: 768px) {
-      /* Hide all right sidebars on mobile */
-      body .sidebar-layout > div:last-child {
-        display: none !important;
-      }
-      
-      body .sidebar-layout > div:first-child {
-        flex: 1 !important;
-        max-width: 100% !important;
-        width: 100% !important;
-      }
       
       /* Fix Preply button overflow on mobile */
       #mobile-preply-menu {
@@ -1597,6 +1610,7 @@
         border-left: 2px solid #C0C0C0 !important;
       }
     }
+    
   </style>
 
 

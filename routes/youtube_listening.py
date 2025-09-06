@@ -114,6 +114,31 @@ def get_quiz_data():
     data = load_youtube_listening_data_from_sheets(SHEET_ID, SHEET_NAME)
     return data or []
 
+def get_quiz_data_lightweight():
+    """リスニングクイズデータを軽量化して取得（選択画面用）"""
+    data = load_youtube_listening_data_from_sheets(SHEET_ID, SHEET_NAME)
+    if not data:
+        return []
+    
+    # 選択画面に必要な項目のみ抽出
+    lightweight_data = []
+    for quiz in data:
+        lightweight_quiz = {
+            'id': quiz.get('id'),
+            'quiz_num': quiz.get('quiz_num'), 
+            'title': quiz.get('title'),
+            'level': quiz.get('level'),
+            'video_id': quiz.get('video_id'),
+            'start': quiz.get('start'),
+            'end': quiz.get('end'),
+            'channel_link': quiz.get('channel_link'),
+            'youtube_channel_page': quiz.get('youtube_channel_page')
+            # 問題文、選択肢、正解、解説は除外
+        }
+        lightweight_data.append(lightweight_quiz)
+    
+    return lightweight_data
+
 def get_user_play_counts(user_id):
     """ユーザーのプレイ回数を取得"""
     if not user_id:
@@ -149,8 +174,8 @@ def record_quiz_play(user_id, quiz_id):
 
 @youtube_listening_bp.route('/')
 def listening_levels():
-    """YouTubeリスニングクイズ一覧ページ（全レベル統合）"""
-    quiz_data = get_quiz_data()
+    """YouTubeリスニングクイズ一覧ページ（全レベル統合・軽量化版）"""
+    quiz_data = get_quiz_data_lightweight()
     
     # レベルフィルタ
     selected_level = request.args.get('level', 'all')

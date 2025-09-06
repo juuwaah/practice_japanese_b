@@ -1,36 +1,31 @@
+{% set hide_sidebar = true %}
 {% extends "base.html" %}
 
 {% block title %}{{ quiz.title }} - YouTube リスニングクイズ{% endblock %}
 
 {% block head %}
 <style>
-/* YouTube Quiz Page Optimization */
-body.youtube-quiz-page {
+/* YouTube Quiz Page Optimization - PC and Mobile unified */
+.youtube-quiz-page {
     font-size: 0.75em; /* 75% of base font size for better readability */
 }
 
-/* Hide sidebar for full-width display */
-body.youtube-quiz-page .sidebar-layout > div:last-child {
-    display: none !important;
-}
-
-body.youtube-quiz-page .sidebar-layout > div:first-child {
-    flex: 1 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-}
+/* Sidebar removed - clean layout */
 
 /* Question numbers with underline */
-body.youtube-quiz-page .question-number,
-body.youtube-quiz-page h3:contains('Question'),
-body.youtube-quiz-page h4:contains('Question') {
+.youtube-quiz-page .question-number,
+.youtube-quiz-page h3:contains('Question'),
+.youtube-quiz-page h4:contains('Question') {
     text-decoration: underline !important;
 }
+
+/* Clean YouTube Quiz Layout */
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="youtube-quiz-page">
+<div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ quiz.title }}</h1>
         <a href="{{ url_for('youtube_listening.listening_quiz_list', level=quiz.level) }}" 
@@ -330,7 +325,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Apply YouTube quiz page styling
-document.body.classList.add('youtube-quiz-page');
+// Clean YouTube quiz page - sidebar removed
+
+// Clean code - debug and sidebar handling removed
 </script>
+</div>
+</div>
 {% endblock %}
