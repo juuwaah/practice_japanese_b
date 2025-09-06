@@ -409,6 +409,22 @@ def get_today_quiz():
         if blog_title:
             quiz["blog_title"] = blog_title
     
+    # 画像URLを追加（image列が存在する場合）
+    onomatope_image = selected_onomatope.get("image", "")
+    if onomatope_image:
+        # 開発環境では固定のテスト画像を使用（API問題回避）
+        # 本番環境では実際のGoogle Drive APIを使用
+        if os.getenv('FLASK_ENV') == 'development' or not os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'):
+            # テスト用の固定画像URL（開発用）
+            quiz["image_url"] = f"https://via.placeholder.com/200x150/F0F0F0/000000?text={selected_onomatope['word']}"
+            print(f"開発環境：テスト画像を使用 - {onomatope_image}")
+        else:
+            # 本番環境：実際のGoogle Drive API使用
+            from google_drive_helper import get_onomatopoeia_image_url
+            image_url = get_onomatopoeia_image_url(onomatope_image)
+            if image_url:
+                quiz["image_url"] = image_url
+    
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
         json.dump({"date": today_str, "quiz": quiz}, f, ensure_ascii=False)
@@ -439,6 +455,7 @@ def home():
     template = 'index.html'
     
     return render_template(template,
+        quiz=quiz,
         onomatope=quiz['onomatope'],
         options=options,
         answered=answered,

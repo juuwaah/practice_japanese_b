@@ -30,6 +30,7 @@ except Exception as e:
 
 # Google Drive設定
 BLOG_FOLDER_ID = '1dm9jGD2qXzLVcW7JbOnjL_tg9eqM6PZS'
+ONOMATOPOEIA_IMAGES_FOLDER_ID = '1CJllmtcGjqck2S4f1dMcfViMQPwLHgNv'  # オノマトペ画像フォルダ
 SERVICE_ACCOUNT_FILE = 'japaneseapp-466108-327bc89dfc8e.json'  # 既存のサービスアカウントファイル
 
 def get_drive_service():
@@ -610,3 +611,32 @@ def search_blog_posts(query: str) -> List[Dict]:
     ]
     
     return filtered_posts
+
+def get_onomatopoeia_image_url(filename: str) -> Optional[str]:
+    """オノマトペ画像のGoogle Drive公開URLを取得"""
+    if not filename or not GOOGLE_APIS_AVAILABLE:
+        return None
+    
+    try:
+        drive_service = get_drive_service()
+        if not drive_service:
+            return None
+        
+        # オノマトペ画像フォルダ内のファイルを検索
+        results = drive_service.files().list(
+            q=f"name='{filename}' and parents in '{ONOMATOPOEIA_IMAGES_FOLDER_ID}' and trashed=false",
+            fields='files(id, name, webViewLink)'
+        ).execute()
+        
+        files = results.get('files', [])
+        if files:
+            file_id = files[0]['id']
+            # 直接表示用のURLを生成（Google Drive画像の直接リンク）
+            return f"https://drive.google.com/uc?id={file_id}"
+        else:
+            print(f"オノマトペ画像が見つかりません: {filename}")
+            return None
+            
+    except Exception as e:
+        print(f"オノマトペ画像URL取得エラー: {e}")
+        return None

@@ -183,6 +183,11 @@ def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
                 ref_link = record.get('ref_link', '').strip()
                 if ref_link:
                     onomatopoeia_item['ref_link'] = ref_link
+                
+                # image列が存在する場合は追加
+                image = record.get('image', '').strip()
+                if image:
+                    onomatopoeia_item['image'] = image
                     
                 onomatopoeia_list.append(onomatopoeia_item)
         
