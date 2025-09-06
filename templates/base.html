@@ -694,16 +694,34 @@
         let targetMenu = null;
         const allMenus = document.querySelectorAll('.menu-bar > .menu-dropdown');
         
-        // Map by button text to menu content
+        // Map by button text to menu content - search by actual menu text content
         if (this.id === 'mobile-file-menu') {
-          // Find File menu - first menu dropdown
-          targetMenu = allMenus[0]?.querySelector('.menu-content');
+          // Find File menu by looking for menu containing "Home" or file-related links
+          for (let menu of allMenus) {
+            const menuContent = menu.querySelector('.menu-content');
+            if (menuContent && (menuContent.innerHTML.includes('home') || menuContent.innerHTML.includes('logout') || menuContent.innerHTML.includes('login'))) {
+              targetMenu = menuContent;
+              break;
+            }
+          }
         } else if (this.id === 'mobile-quiz-menu') {
-          // Find Quiz menu - second menu dropdown  
-          targetMenu = allMenus[1]?.querySelector('.menu-content');
+          // Find Quiz menu by looking for menu containing grammar/vocab/flashcard links
+          for (let menu of allMenus) {
+            const menuContent = menu.querySelector('.menu-content');
+            if (menuContent && (menuContent.innerHTML.includes('grammar') || menuContent.innerHTML.includes('vocab') || menuContent.innerHTML.includes('akinator'))) {
+              targetMenu = menuContent;
+              break;
+            }
+          }
         } else if (this.id === 'mobile-support-menu') {
-          // Find Support menu - third menu dropdown (help removed, so support is now 3rd)
-          targetMenu = allMenus[2]?.querySelector('.menu-content');
+          // Find Support menu by looking for menu containing "about" or support-related links
+          for (let menu of allMenus) {
+            const menuContent = menu.querySelector('.menu-content');
+            if (menuContent && (menuContent.innerHTML.includes('about') || menuContent.innerHTML.includes('admin') || menuContent.innerHTML.includes('support'))) {
+              targetMenu = menuContent;
+              break;
+            }
+          }
         }
         
         if (targetMenu) {
@@ -1524,6 +1542,60 @@
     .menu-content .menu-dropdown > a[href="#"]:hover {
       background-color: #000000;
       color: #FFFFFF;
+    }
+
+    /* Mobile-specific fixes */
+    @media (max-width: 768px) {
+      /* Hide all right sidebars on mobile */
+      body .sidebar-layout > div:last-child {
+        display: none !important;
+      }
+      
+      body .sidebar-layout > div:first-child {
+        flex: 1 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      
+      /* Fix Preply button overflow on mobile */
+      #mobile-preply-menu {
+        font-size: 8px !important;
+        padding: 4px 2px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        min-width: 0 !important;
+        max-width: 80px !important;
+      }
+      
+      /* Ensure mobile dropdown menus copy nested content properly */
+      .mobile-dropdown-menu .menu-dropdown {
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      .mobile-dropdown-menu .menu-dropdown > a {
+        padding: 6px 12px !important;
+        display: block !important;
+        border-bottom: 1px solid #808080 !important;
+        background: #E8E8E8 !important;
+        font-weight: bold !important;
+      }
+      
+      .mobile-dropdown-menu .menu-dropdown .menu-content {
+        position: static !important;
+        display: block !important;
+        margin: 0 !important;
+        background: #F0F0F0 !important;
+      }
+      
+      .mobile-dropdown-menu .menu-dropdown .menu-content a {
+        padding: 4px 20px !important;
+        font-size: 11px !important;
+        background: #F8F8F8 !important;
+        border-left: 2px solid #C0C0C0 !important;
+      }
     }
   </style>
 

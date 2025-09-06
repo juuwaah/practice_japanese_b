@@ -4,6 +4,21 @@
 
 {% block window_title %}{{ title }}{% endblock %}
 
+{% block head %}
+<style>
+/* Blog Post Page Optimization */
+body.blog-post-page .sidebar-layout > div:last-child {
+    display: none !important;
+}
+
+body.blog-post-page .sidebar-layout > div:first-child {
+    flex: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div style="max-width: 700px; margin: 0 auto;">
   <!-- ナビゲーション -->
@@ -316,4 +331,9 @@
   }
 }
 </style>
+
+<script>
+// Apply blog post page styling
+document.body.classList.add('blog-post-page');
+</script>
 {% endblock %}

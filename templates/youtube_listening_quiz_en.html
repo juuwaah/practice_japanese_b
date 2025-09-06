@@ -2,6 +2,34 @@
 
 {% block title %}{{ quiz.title }} - YouTube Listening Quiz{% endblock %}
 
+{% block head %}
+<style>
+/* YouTube Quiz Page Optimization */
+body.youtube-quiz-page {
+    font-size: 0.75em; /* 75% of base font size for better readability */
+}
+
+/* Hide sidebar for full-width display */
+body.youtube-quiz-page .sidebar-layout > div:last-child {
+    display: none !important;
+}
+
+body.youtube-quiz-page .sidebar-layout > div:first-child {
+    flex: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Question numbers with underline */
+body.youtube-quiz-page .question-number,
+body.youtube-quiz-page h3:contains('Question'),
+body.youtube-quiz-page h4:contains('Question'),
+body.youtube-quiz-page h5:contains('Question') {
+    text-decoration: underline !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ quiz.title }}</h1>
@@ -265,6 +293,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Apply YouTube quiz page styling
+document.body.classList.add('youtube-quiz-page');
 </script>
 
 <style>
