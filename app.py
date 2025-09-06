@@ -427,14 +427,20 @@ def get_today_quiz():
             else:
                 raise Exception("Google API利用不可")
         except Exception as e:
-            # フォールバック：テスト用画像を表示
-            print(f"Google Drive API失敗 ({e})、プレースホルダー画像使用: {onomatope_image}")
-            # URLセーフなテキストでプレースホルダー画像を生成
-            import urllib.parse
-            safe_text = urllib.parse.quote(selected_onomatope['word'])
-            quiz["image_url"] = f"https://via.placeholder.com/200x150/F8F8F8/333333?text={safe_text}"
-            print(f"プレースホルダー画像URL: {quiz['image_url']}")
-            # 将来的にはstaticフォルダやCDNにアップロードした画像を使用予定
+            # フォールバック：staticフォルダの画像またはプレースホルダーを使用
+            print(f"Google Drive API失敗 ({e})、フォールバック画像使用: {onomatope_image}")
+            
+            # まずstaticフォルダに画像があるかチェック
+            static_image_path = f"static/images/onomatopoeia/{onomatope_image}"
+            if os.path.exists(static_image_path):
+                quiz["image_url"] = url_for('static', filename=f'images/onomatopoeia/{onomatope_image}')
+                print(f"Staticフォルダの画像使用: {quiz['image_url']}")
+            else:
+                # staticフォルダにない場合はプレースホルダー使用
+                import urllib.parse
+                safe_text = urllib.parse.quote(selected_onomatope['word'])
+                quiz["image_url"] = f"https://via.placeholder.com/200x150/F8F8F8/333333?text={safe_text}"
+                print(f"プレースホルダー画像URL: {quiz['image_url']}（Static画像なし: {onomatope_image}）")
     
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
