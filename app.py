@@ -468,6 +468,18 @@ def home():
         blog_title=quiz.get('blog_title')
     )
 
+@app.route("/admin/clear-cache")
+def clear_cache():
+    """管理者用：オノマトペクイズのキャッシュをクリア"""
+    try:
+        if os.path.exists(CACHE_FILE):
+            os.remove(CACHE_FILE)
+            return "Cache cleared successfully. Refresh the homepage to see the new quiz with image support."
+        else:
+            return "No cache file found."
+    except Exception as e:
+        return f"Error clearing cache: {e}"
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     # フラッシュメッセージにPatreon関連のメッセージがある場合は、ログインページを表示
