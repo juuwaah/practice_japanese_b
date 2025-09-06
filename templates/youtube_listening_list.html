@@ -2,7 +2,35 @@
 
 {% block title %}{{ level }} YouTube リスニングクイズ一覧{% endblock %}
 
+{% block head %}
+<style>
+/* YouTube Listening List Page Styles */
+.youtube-listening-page {
+    font-size: 0.75em; /* 75% of base font size */
+}
+
+.youtube-listening-page .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Hide sidebar for full-width display */
+.youtube-listening-page .sidebar-layout > div:last-child {
+    display: none !important;
+}
+
+.youtube-listening-page .sidebar-layout > div:first-child {
+    flex: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="youtube-listening-page">
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ level }} YouTube リスニングクイズ</h1>
@@ -60,5 +88,6 @@
         
         <p style="margin-bottom: 8px;">また、当サイトを使用することにより、ユーザーは YouTube の<a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">利用規約</a>および<a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">プライバシーポリシー</a>に同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。</p>
     </div>
+</div>
 </div>
 {% endblock %}

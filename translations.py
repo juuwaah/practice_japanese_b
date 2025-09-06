@@ -342,7 +342,6 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_1': 'This application\'s YouTube listening quiz feature displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.',
         'youtube_disclaimer_text_2': 'We use YouTube\'s official embedding functionality, and ownership and copyright of the videos belong to <strong>each video\'s creator or rights holder</strong>. This site does not modify video content or distribute it independently.',
         'youtube_disclaimer_text_3': 'By using this site, you also agree to YouTube\'s <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.',
-        'youtube_disclaimer_terms': 'By using this site, you also agree to YouTube\'s Terms of Service and Privacy Policy. We comply with the YouTube API Developer Policies in implementing embedded content.',
         
         # Error Messages
         'api_rate_limit_error': 'Too many requests in short time detected. Please wait for more than 2 seconds.',
@@ -696,7 +695,6 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_1': '本アプリケーションのYouTubeリスニングクイズ機能では、YouTube API を使用して埋め込まれた動画を表示しています。埋め込みプレーヤーを通じて視聴される動画の再生回数や視聴データは、元の YouTube 動画に直接加算されます。',
         'youtube_disclaimer_text_2': '本サイトでは、YouTube 公式の埋め込み機能を利用しており、動画の所有権や著作権は<strong>各動画の制作者または権利者</strong>に帰属します。当サイトは動画の内容を変更したり、独自配信しているものではありません。',
         'youtube_disclaimer_text_3': 'また、当サイトを使用することにより、ユーザーは YouTube の<a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">利用規約</a>および<a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">プライバシーポリシー</a>に同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。',
-        'youtube_disclaimer_terms': '当サイトを使用することにより、ユーザーは YouTube の利用規約およびプライバシーポリシーに同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。',
         
         # エラーメッセージ
         'api_rate_limit_error': '文章の生成は最短2秒毎です。2秒以上待ってから再度生成してください。',
@@ -1042,7 +1040,6 @@ TRANSLATIONS = {
         'youtube_disclaimer_text_1': 'La función de prueba de escucha de YouTube de esta aplicación muestra videos incrustados utilizando la API de YouTube. Los recuentos de visualizaciones y los datos de visualización del reproductor incrustado se agregan directamente a los videos originales de YouTube.',
         'youtube_disclaimer_text_2': 'Utilizamos la funcionalidad oficial de incrustación de YouTube, y la propiedad y los derechos de autor de los videos pertenecen a <strong>cada creador o titular de derechos del video</strong>. Este sitio no modifica el contenido del video ni lo distribuye de forma independiente.',
         'youtube_disclaimer_text_3': 'Al usar este sitio, también aceptas los <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2; text-decoration: underline;">Términos de servicio</a> y la <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2; text-decoration: underline;">Política de privacidad</a> de YouTube. Cumplimos con las Políticas para desarrolladores de la API de YouTube en la implementación de contenido incrustado.',
-        'youtube_disclaimer_terms': 'Al usar este sitio, también aceptas los Términos de servicio y la Política de privacidad de YouTube. Cumplimos con las Políticas para desarrolladores de la API de YouTube en la implementación de contenido incrustado.',
         
         # Mensajes de Error
         'api_rate_limit_error': 'Demasiadas solicitudes. Espere un momento e inténtelo de nuevo.',

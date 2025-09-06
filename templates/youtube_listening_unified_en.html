@@ -4,6 +4,54 @@
 
 {% block extra_head %}
 <style>
+/* YouTube Listening Page Optimization */
+body.youtube-listening-page {
+    font-size: 8px !important; /* Very small but readable fixed size */
+}
+
+body.youtube-listening-page * {
+    font-size: inherit !important;
+}
+
+/* Override specific elements that might have fixed font sizes */
+body.youtube-listening-page h1,
+body.youtube-listening-page h2,
+body.youtube-listening-page h3,
+body.youtube-listening-page h4,
+body.youtube-listening-page h5,
+body.youtube-listening-page h6,
+body.youtube-listening-page p,
+body.youtube-listening-page span,
+body.youtube-listening-page div,
+body.youtube-listening-page a,
+body.youtube-listening-page button,
+body.youtube-listening-page .card-title,
+body.youtube-listening-page .card-text,
+body.youtube-listening-page .btn,
+body.youtube-listening-page .quiz-card,
+body.youtube-listening-page .quiz-title,
+body.youtube-listening-page .quiz-meta {
+    font-size: 8px !important;
+}
+
+.youtube-listening-page .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Hide sidebar for full-width display */
+body.youtube-listening-page .sidebar-layout > div:last-child {
+    display: none !important;
+}
+
+body.youtube-listening-page .sidebar-layout > div:first-child {
+    flex: 1 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
 /* レトロ表形式スタイル */
 .filter-section {
     margin-bottom: 12px;
@@ -355,8 +403,8 @@
     {% endif %}
     
     <!-- YouTube Copyright Disclaimer -->
-    <div style="margin-top: 24px; padding: 12px; border: 1px solid #ccc; background: #f9f9f9; font-size: 11px; line-height: 1.4;">
-        <h4 style="font-size: 12px; margin-bottom: 8px; color: #333;">Disclaimer</h4>
+    <div style="margin-top: 24px; padding: 12px; border: 1px solid #ccc; background: #f9f9f9; font-size: 8px; line-height: 1.4;">
+        <h4 style="font-size: 10px; margin-bottom: 8px; color: #333;">Disclaimer</h4>
         
         <p style="margin-bottom: 8px;">This page displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.</p>
         
@@ -364,4 +412,9 @@
         
         <p style="margin-bottom: 8px;">By using this site, you also agree to YouTube's <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.</p>
     </div>
+
+<script>
+// Apply YouTube listening page styling
+document.body.classList.add('youtube-listening-page');
+</script>
 {% endblock %}
