@@ -486,8 +486,8 @@ def debug_quiz():
     try:
         quiz = get_today_quiz()
         # オノマトペデータも取得
-        from onomatopoeia_data import get_onomatopoeia_data
-        onomatopoeia_data = get_onomatopoeia_data()
+        from onomatopoeia_data import get_onomatopoeia_list
+        onomatopoeia_data = get_onomatopoeia_list()
         today = dt.datetime.now().date()
         today_index = (today.toordinal() - dt.date(2023, 1, 1).toordinal()) % len(onomatopoeia_data)
         selected_onomatope = onomatopoeia_data[today_index]
