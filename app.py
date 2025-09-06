@@ -429,8 +429,11 @@ def get_today_quiz():
         except Exception as e:
             # フォールバック：テスト用画像を表示
             print(f"Google Drive API失敗 ({e})、プレースホルダー画像使用: {onomatope_image}")
-            # まずはテスト用のプレースホルダー画像で動作確認
-            quiz["image_url"] = f"https://via.placeholder.com/200x150/F8F8F8/333333?text={selected_onomatope['word']}"
+            # URLセーフなテキストでプレースホルダー画像を生成
+            import urllib.parse
+            safe_text = urllib.parse.quote(selected_onomatope['word'])
+            quiz["image_url"] = f"https://via.placeholder.com/200x150/F8F8F8/333333?text={safe_text}"
+            print(f"プレースホルダー画像URL: {quiz['image_url']}")
             # 将来的にはstaticフォルダやCDNにアップロードした画像を使用予定
     
     # Save to cache
