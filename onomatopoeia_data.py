@@ -14,9 +14,9 @@ _cache_timestamp = None
 
 # フォールバック用のローカルデータ（最小限）
 ONOMATOPOEIA_LIST_FALLBACK = [
-    {"word": "ワクワク", "meaning": "excited, thrilled", "category": "擬情語"},
-    {"word": "キラキラ", "meaning": "sparkling, glittering", "category": "擬態語"},
-    {"word": "ゴロゴロ", "meaning": "rumbling, rolling", "category": "擬音語"}
+    {"word": "ワクワク", "meaning": "excited, thrilled", "category": "擬情語", "image": "present_tanoshimi.png"},
+    {"word": "キラキラ", "meaning": "sparkling, glittering", "category": "擬態語", "image": "pose_shock_girl.png"},
+    {"word": "ゴロゴロ", "meaning": "rumbling, rolling", "category": "擬音語", "image": "kotatsu_animal.png"}
 ]
 
 def get_onomatopoeia_list():

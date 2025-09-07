@@ -412,35 +412,14 @@ def get_today_quiz():
     # 画像URLを追加（image列が存在する場合）
     onomatope_image = selected_onomatope.get("image", "")
     if onomatope_image:
-        # Google Drive API問題が本番環境でも発生しているため、
-        # 直接Google Driveの共有URLを構築する方式に変更
-        try:
-            # まずGoogle Drive API試行
-            from google_drive_helper import get_onomatopoeia_image_url, GOOGLE_APIS_AVAILABLE
-            if GOOGLE_APIS_AVAILABLE and os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'):
-                image_url = get_onomatopoeia_image_url(onomatope_image)
-                if image_url:
-                    quiz["image_url"] = image_url
-                    print(f"Google Drive API成功: {onomatope_image} -> {image_url}")
-                else:
-                    raise Exception("API経由で画像URL取得失敗")
-            else:
-                raise Exception("Google API利用不可")
-        except Exception as e:
-            # フォールバック：staticフォルダの画像またはプレースホルダーを使用
-            print(f"Google Drive API失敗 ({e})、フォールバック画像使用: {onomatope_image}")
-            
-            # まずstaticフォルダに画像があるかチェック
-            static_image_path = f"static/images/onomatopoeia/{onomatope_image}"
-            if os.path.exists(static_image_path):
-                quiz["image_url"] = url_for('static', filename=f'images/onomatopoeia/{onomatope_image}')
-                print(f"Staticフォルダの画像使用: {quiz['image_url']}")
-            else:
-                # staticフォルダにない場合はプレースホルダー使用
-                import urllib.parse
-                safe_text = urllib.parse.quote(selected_onomatope['word'])
-                quiz["image_url"] = f"https://via.placeholder.com/200x150/F8F8F8/333333?text={safe_text}"
-                print(f"プレースホルダー画像URL: {quiz['image_url']}（Static画像なし: {onomatope_image}）")
+        # database/imagesフォルダの画像をstaticとして配信するためのルートを作成
+        database_image_path = f"database/images/{onomatope_image}"
+        if os.path.exists(database_image_path):
+            # database/imagesにアクセスするための特別なルートを使用
+            quiz["image_url"] = f"/database-image/{onomatope_image}"
+            print(f"オノマトペ画像使用: {onomatope_image} -> {quiz['image_url']}")
+        else:
+            print(f"画像が見つかりません: {onomatope_image} (パス: {database_image_path})")
     
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
@@ -485,43 +464,11 @@ def home():
         blog_title=quiz.get('blog_title')
     )
 
-@app.route("/admin/clear-cache")
-def clear_cache():
-    """管理者用：オノマトペクイズのキャッシュをクリア"""
-    try:
-        if os.path.exists(CACHE_FILE):
-            os.remove(CACHE_FILE)
-            return "Cache cleared successfully. Refresh the homepage to see the new quiz with image support."
-        else:
-            return "No cache file found."
-    except Exception as e:
-        return f"Error clearing cache: {e}"
-
-@app.route("/admin/debug-quiz")
-def debug_quiz():
-    """管理者用：現在のクイズデータをデバッグ表示"""
-    try:
-        quiz = get_today_quiz()
-        # オノマトペデータも取得
-        from onomatopoeia_data import get_onomatopoeia_list
-        onomatopoeia_data = get_onomatopoeia_list()
-        today = dt.datetime.now().date()
-        today_index = (today.toordinal() - dt.date(2023, 1, 1).toordinal()) % len(onomatopoeia_data)
-        selected_onomatope = onomatopoeia_data[today_index]
-        
-        debug_info = {
-            'has_image_url': 'image_url' in quiz,
-            'image_url': quiz.get('image_url', 'None'),
-            'onomatope': quiz.get('onomatope', 'None'),
-            'selected_onomatope_keys': list(selected_onomatope.keys()),
-            'selected_onomatope_image': selected_onomatope.get('image', 'None'),
-            'google_api_available': 'GOOGLE_APIS_AVAILABLE' in globals() and GOOGLE_APIS_AVAILABLE,
-            'has_env_var': bool(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')),
-            'quiz_keys': list(quiz.keys())
-        }
-        return f"<pre>{json.dumps(debug_info, indent=2, ensure_ascii=False)}</pre>"
-    except Exception as e:
-        return f"Error debugging quiz: {e}"
+@app.route("/database-image/<filename>")
+def database_image(filename):
+    """database/imagesフォルダの画像を配信"""
+    from flask import send_from_directory
+    return send_from_directory('database/images', filename)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():

@@ -52,7 +52,6 @@
         <!-- Onomatopoeia image display -->
         {% if quiz.get('image_url') %}
         <div style="margin-top: 12px; text-align: center; padding: 8px; border: 2px solid #000; background: #FFFFFF;">
-          <div style="font-size: 9px; color: #666; margin-bottom: 6px;">{{ _('visual_example') }}:</div>
           <img src="{{ quiz['image_url'] }}" 
                alt="{{ onomatope }} example" 
                style="max-width: 200px; max-height: 150px; border: 1px solid #808080; image-rendering: pixelated;">
