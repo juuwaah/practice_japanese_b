@@ -36,11 +36,15 @@
       </div>
       
       <!-- Onomatopoeia image display -->
-      {% if quiz.get('image_url') %}
+      {% if quiz.get('image_urls') %}
       <div style="margin-top: 16px; text-align: center; padding: 8px; border: 2px solid #000; background: #FFFFFF;">
-        <img src="{{ quiz['image_url'] }}" 
-             alt="{{ onomatope }} example" 
-             style="max-width: 200px; max-height: 150px; border: 1px solid #808080; image-rendering: pixelated;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+          {% for image_url in quiz['image_urls'] %}
+          <img src="{{ image_url }}" 
+               alt="{{ onomatope }} example" 
+               style="max-width: 150px; max-height: 120px; border: 1px solid #808080; image-rendering: pixelated;">
+          {% endfor %}
+        </div>
       </div>
       {% endif %}
       

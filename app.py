@@ -412,14 +412,21 @@ def get_today_quiz():
     # 画像URLを追加（image列が存在する場合）
     onomatope_image = selected_onomatope.get("image", "")
     if onomatope_image:
-        # database/imagesフォルダの画像をstaticとして配信するためのルートを作成
-        database_image_path = f"database/images/{onomatope_image}"
-        if os.path.exists(database_image_path):
-            # database/imagesにアクセスするための特別なルートを使用
-            quiz["image_url"] = f"/database-image/{onomatope_image}"
-            print(f"オノマトペ画像使用: {onomatope_image} -> {quiz['image_url']}")
-        else:
-            print(f"画像が見つかりません: {onomatope_image} (パス: {database_image_path})")
+        # スラッシュで区切られた複数の画像に対応
+        image_files = [img.strip() for img in onomatope_image.split('/') if img.strip()]
+        image_urls = []
+        
+        for image_file in image_files:
+            database_image_path = f"database/images/{image_file}"
+            if os.path.exists(database_image_path):
+                image_urls.append(f"/database-image/{image_file}")
+                print(f"オノマトペ画像追加: {image_file}")
+            else:
+                print(f"画像が見つかりません: {image_file} (パス: {database_image_path})")
+        
+        if image_urls:
+            quiz["image_urls"] = image_urls
+            print(f"オノマトペ画像URL一覧: {image_urls}")
     
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
