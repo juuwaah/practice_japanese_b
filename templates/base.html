@@ -18,74 +18,6 @@
     <!-- Extra head content for specific pages -->
     {% block extra_head %}{% endblock %}
     
-    <!-- Force sidebar width v3 - Cache busting -->
-    <style>
-    /* Sidebar layout forcing - v3 with cache busting */
-    body div.sidebar-layout {
-        display: flex !important;
-        gap: 10px !important;
-        width: 100% !important;
-        overflow-x: hidden !important;
-        padding-right: 8px !important;
-    }
-    
-    body div.sidebar-layout div.main-content-column {
-        flex: 0 0 66.67% !important;
-        width: 66.67% !important;
-        max-width: 66.67% !important;
-        box-sizing: border-box !important;
-        margin-right: 8px !important;
-    }
-    
-    body div.sidebar-layout div.right-sidebar {
-        flex: 0 0 33.33% !important;
-        width: 33.33% !important;
-        min-width: 200px !important;
-        box-sizing: border-box !important;
-        font-size: 0.75em !important;
-        overflow-x: hidden !important;
-        position: relative !important;
-        left: -20px !important;
-        margin-left: 0px !important;
-        margin-right: 20px !important;
-        padding-right: 10px !important;
-        padding-left: 16px !important;
-        transform: scale(0.9) !important;
-        transform-origin: top left !important;
-    }
-    
-    /* Sidebar content adjustments */
-    div.right-sidebar .sidebar-section {
-        padding: 8px !important;
-        margin-bottom: 15px !important;
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.2) !important;
-    }
-    
-    div.right-sidebar .sidebar-section h3 {
-        font-size: 12px !important;
-        margin-bottom: 8px !important;
-    }
-    
-    div.right-sidebar .sidebar-section div,
-    div.right-sidebar .sidebar-section p,
-    div.right-sidebar .sidebar-section a {
-        font-size: 10px !important;
-        line-height: 1.2 !important;
-    }
-    
-    /* Mobile responsive */
-    @media (max-width: 768px) {
-        div.sidebar-layout {
-            flex-direction: column !important;
-        }
-        div.sidebar-layout div.main-content-column,
-        div.sidebar-layout div.right-sidebar {
-            flex: 1 1 auto !important;
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-    }
-    </style>
     
     <!-- Sidebar removed - clean full-width layout -->
     
@@ -401,7 +333,7 @@
             {% block content %}{% endblock %}
             
             <!-- Contact Information for full-width pages -->
-            <div style="text-align: center; margin-top: 24px; padding: 8px; 
+            <div class="desktop-contact-section" style="text-align: center; margin-top: 24px; padding: 8px; 
                         border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
               Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
             </div>
@@ -414,7 +346,7 @@
               {{ self.content() }}
               
               <!-- Contact Information -->
-              <div style="text-align: center; margin-top: 24px; padding: 8px; 
+              <div class="desktop-contact-section" style="text-align: center; margin-top: 24px; padding: 8px; 
                           border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
                 Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
               </div>
@@ -549,6 +481,11 @@
   </div>
     </div> <!-- Close content-wrapper -->
   </div> <!-- Close mobile-container -->
+
+  <!-- Mobile Contact Section (positioned above bottom toolbar) -->
+  <div class="mobile-contact-section">
+    Contact: <a href="mailto:jpn.with.b@gmail.com">jpn.with.b@gmail.com</a>
+  </div>
 
   <!-- Mobile Bottom Toolbar (positioned outside containers to avoid hiding) -->
   <div class="mobile-bottom-toolbar">

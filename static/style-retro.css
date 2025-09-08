@@ -412,8 +412,8 @@ a.menu-item:hover {
 /* Main content wrapper with margins - desktop only */
 @media screen and (min-width: 769px) {
   .main-content-wrapper {
-    margin-left: 92px !important; /* Increased space for AdSense ads */
-    margin-right: 92px !important; /* Same margin on right side */
+    margin-left: 92px;
+    margin-right: 92px;
   }
 }
 
@@ -815,10 +815,11 @@ li {
   overflow: hidden !important;
 }*/
 
-/* Desktop screens - ensure mobile toolbars stay hidden */
-/*@media (min-width: 769px) {
+/* Desktop screens - ensure mobile elements stay hidden */
+@media (min-width: 769px) {
   .mobile-bottom-toolbar,
-  .mobile-top-menu {
+  .mobile-top-menu,
+  .mobile-contact-section {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -829,7 +830,7 @@ li {
     height: 0 !important;
     z-index: -1 !important;
     overflow: hidden !important;
-  }*/
+  }
 }
 
 /* Force hide mobile toolbars by default - TEMPORARILY DISABLED for testing */
@@ -1509,9 +1510,9 @@ body {
   /* Main content area - override margins */
   .main-content {
     flex: 1 !important;
-    width: 88% !important;
+    width: 100% !important;
     padding: 8px !important;
-    margin: 8px 8px 8px 4px !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
     min-width: 0 !important;
     margin-top: 8px !important; /* Override any top margin */
@@ -1527,6 +1528,7 @@ body {
   .main-content-wrapper {
     margin-left: 0 !important;
     margin-top: 0 !important;
+    margin-right: 0 !important;
   }
   
   /* Menu items */
@@ -1614,26 +1616,27 @@ body {
   }
 
   .mobile-menu-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex: 1 !important;  /* 均等分割 */
-    min-width: 0 !important; /* flexboxでの縮小を許可 */
-    height: 40px !important;
-    background: #E0E0E0 !important;
-    border: 2px outset #C0C0C0 !important;
-    font-size: 10px !important;  /* フォントサイズを小さく */
-    font-weight: bold !important;
-    color: #000 !important;
-    cursor: pointer !important;
-    touch-action: manipulation !important;
-    padding: 0 4px !important;  /* パディングを小さく */
-    box-sizing: border-box !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    text-decoration: none !important; /* リンク要素用 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    background: #E0E0E0;
+    border: 2px outset #C0C0C0;
+    font-size: 9px;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    touch-action: manipulation;
+    padding: 2px 3px;
+    box-sizing: border-box;
+    text-align: center;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.0;
+    text-decoration: none;
   }
 
   /* Link menu buttons (like Blog) - same styles as regular buttons */
@@ -1696,27 +1699,28 @@ body {
 
   /* Text buttons for Preply/Patreon - same size as tool icons */
   .mobile-text-btn {
-    font-size: 10px !important;
-    font-weight: bold !important;
-    flex: 1 !important;  /* 均等分割 */
-    min-width: 0 !important; /* flexboxでの縮小を許可 */
-    max-width: none !important;
-    height: 48px !important;
-    word-wrap: break-word !important;
-    line-height: 1.1 !important;
-    /* Link-specific properties to match tool buttons */
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #E0E0E0 !important;
-    border: 2px outset #C0C0C0 !important;
-    text-decoration: none !important;
-    color: #000 !important;
-    border-radius: 0 !important;
-    cursor: pointer !important;
-    touch-action: manipulation !important;
-    box-sizing: border-box !important;
+    font-size: 9px;
+    font-weight: bold;
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    line-height: 1.0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #E0E0E0;
+    border: 2px outset #C0C0C0;
+    text-decoration: none;
+    color: #000;
+    cursor: pointer;
+    touch-action: manipulation;
+    box-sizing: border-box;
+    padding: 2px 4px;
+    text-align: center;
   }
 
   /* Link button hover and active states */
@@ -1736,7 +1740,7 @@ body {
   /* Adjust main content to avoid toolbar overlap */
   .content-wrapper {
     margin-top: 60px !important; /* Space for top menu */
-    margin-bottom: 80px !important; /* Space for bottom toolbar */
+    margin-bottom: 140px !important; /* Space for bottom toolbar and contact section */
     width: 100% !important; /* Full width without sidebar */
     padding: 8px !important;
     padding-bottom: 20px !important; /* Extra padding for bottom toolbar */
@@ -1817,6 +1821,33 @@ body {
   .status-bar {
     display: none !important;
   }
+
+  /* Mobile contact section - positioned above bottom toolbar */
+  .mobile-contact-section {
+    position: fixed !important;
+    bottom: 60px !important; /* Just above bottom toolbar */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background: #F0F0F0 !important;
+    border-top: 1px solid #C0C0C0 !important;
+    padding: 8px !important;
+    text-align: center !important;
+    font-size: 10px !important;
+    color: #666 !important;
+    z-index: 9998 !important; /* Just below bottom toolbar */
+    box-sizing: border-box !important;
+  }
+
+  .mobile-contact-section a {
+    color: #0066CC !important;
+    text-decoration: underline !important;
+  }
+
+  /* Hide desktop contact sections on mobile */
+  .desktop-contact-section {
+    display: none !important;
+  }
 }
 
 /* Mobile container and content wrapper */
@@ -1849,13 +1880,103 @@ body {
   }
 }
 
+/* ======================================
+   SIDEBAR LAYOUT - CLEAN AND SIMPLE
+   ====================================== */
+
+/* Desktop sidebar layout */
+.sidebar-layout {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  overflow-x: hidden;
+  padding-right: 8px;
+  margin-bottom: 12px;
+}
+
+.main-content-column {
+  flex: 0 0 66.67%;
+  box-sizing: border-box;
+  margin-right: 8px;
+}
+
+.right-sidebar {
+  flex: 0 0 33.33%;
+  min-width: 200px;
+  box-sizing: border-box;
+  font-size: 0.75em;
+  overflow-x: hidden;
+  position: relative;
+  left: -20px;
+  margin-right: 20px;
+  padding: 0 10px 0 16px;
+  transform: scale(0.9);
+  transform-origin: top left;
+}
+
+/* Sidebar content styling */
+.right-sidebar .sidebar-section {
+  padding: 8px;
+  margin-bottom: 15px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.right-sidebar .sidebar-section h3 {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.right-sidebar .sidebar-section div,
+.right-sidebar .sidebar-section p,
+.right-sidebar .sidebar-section a {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* Mobile sidebar layout */
+@media (max-width: 768px) {
+  .sidebar-layout {
+    gap: 6px;
+    padding-right: 4px;
+  }
+  
+  .main-content-column {
+    flex: 0 0 62%;
+    margin-right: 4px;
+  }
+  
+  .right-sidebar {
+    flex: 0 0 38%;
+    min-width: 150px;
+    transform: scale(0.85);
+    left: -10px;
+    padding-left: 8px;
+  }
+  
+  .right-sidebar .sidebar-section {
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+  
+  .right-sidebar .sidebar-section h3 {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+  
+  .right-sidebar .sidebar-section div,
+  .right-sidebar .sidebar-section p,
+  .right-sidebar .sidebar-section a {
+    font-size: 8px;
+    line-height: 1.1;
+  }
+}
+
 /* Clean modal system - show/hide with simple class toggle */
-/* All modals are hidden by default and shown with .modal-show class */
 .feedback-modal.modal-show,
 .sitemap-modal.modal-show, 
 .settings-modal.modal-show,
 .donation-modal.modal-show {
-  display: flex !important;
+  display: flex;
 }
 
 /* Blog link button - レトロデザイン */
@@ -2148,56 +2269,48 @@ body {
 }
 
 /* ======================================
-   MOBILE RESPONSIVE IMPROVEMENTS 
+   MOBILE RESPONSIVE LAYOUT
    ====================================== */
 
-/* Mobile: Reset zoom to 100% and adjust font sizes - ULTRA HIGH PRIORITY */
 @media screen and (max-width: 768px) {
   
-  /* FIRST: Kill all desktop margins with nuclear force */
+  /* Reset margins and padding for mobile */
   html, body, 
   .main-content-wrapper, 
   .main-content,
-  .content-area,
-  .window,
-  div[class*="content"],
-  div[class*="wrapper"],
-  div[class*="main"] {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  .window {
+    margin: 0;
+    padding: 0;
   }
   
   body {
-    zoom: 1.0 !important; /* Mobile uses 100% instead of 200% */
-    font-size: 16px !important; /* Base mobile font size */
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100vw !important;
-    overflow-x: hidden !important; /* Prevent horizontal scroll */
+    zoom: 1.0;
+    font-size: 16px;
+    width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
   
   html {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
+    width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
   
-  /* Top menu bar improvements - prevent overflow */
+  /* Mobile menu adjustments */
   .menu-bar {
-    height: 36px !important; /* Slightly taller for touch targets */
-    font-size: 12px !important;
-    padding: 0 2px !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
+    height: 36px;
+    font-size: 12px;
+    padding: 0 2px;
+    overflow-x: auto;
+    white-space: nowrap;
   }
   
   .menu-item {
-    padding: 2px 6px !important; /* Smaller padding to fit more items */
-    font-size: 11px !important;
-    min-width: auto !important;
-    flex-shrink: 0 !important;
+    padding: 2px 6px;
+    font-size: 11px;
+    min-width: auto;
+    flex-shrink: 0;
   }
   
   /* Left sidebar - minimal size but keep external links */
@@ -2348,27 +2461,35 @@ body {
     box-sizing: border-box !important;
     position: relative !important;
     left: 0 !important; /* Force position to left edge */
+    transform: translateX(0) !important; /* Reset any transforms */
   }
   
   .main-content {
-    padding: 8px 8px 70px 8px !important; /* Add bottom padding for button bar */
+    padding: 8px 4px 70px 4px !important; /* Add bottom padding for button bar, minimal side padding */
     font-size: 16px !important;
     margin: 0 !important;
-    width: 100% !important;
+    width: 100vw !important; /* Full viewport width */
     max-width: none !important;
     box-sizing: border-box !important;
     border: none !important; /* Remove decorative borders on mobile */
     box-shadow: none !important; /* Remove shadows for clean mobile look */
     background: #FFFFFF !important;
     min-height: calc(100vh - 70px) !important; /* Full height minus button bar */
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
   }
   
   /* Override any container restrictions */
   .window, .content-area, .container {
-    width: 100% !important;
+    width: 100vw !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 8px !important;
+    padding: 4px !important;
+    border: none !important;
+    box-shadow: none !important;
+    position: relative !important;
+    left: 0 !important;
   }
   
   /* Grammar quiz text boxes */
@@ -2508,138 +2629,5 @@ body {
   }
 }
 
-/* DESKTOP FORCE: Ensure sidebar-layout works correctly on desktop screens */
-@media screen and (min-width: 769px) {
-  .sidebar-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    gap: 16px !important;
-    width: 100% !important;
-    flex-wrap: nowrap !important;
-    margin-bottom: 12px !important;
-  }
-  
-  .sidebar-layout > div:first-child {
-    flex: 2 1 60% !important;
-    min-width: 0 !important;
-    display: block !important;
-    width: auto !important;
-  }
-  
-  .sidebar-layout > div:last-child {
-    flex: 1 0 250px !important;
-    min-width: 250px !important;
-    max-width: 350px !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: auto !important;
-  }
-  
-  /* Force sidebar content to be visible */
-  .sidebar-layout > div:last-child * {
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-}
 
-/* NUCLEAR OPTION: Force mobile layout with highest specificity */
-@media screen and (max-width: 768px) {
-  body.mobile-detected .main-content-wrapper,
-  html body .main-content-wrapper,
-  * .main-content-wrapper {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    width: 100vw !important;
-    left: 0 !important;
-    position: relative !important;
-  }
-  
-  /* SUPER NUCLEAR: Force external links to bottom with all possible selectors */
-  .external-links-section,
-  div[class*="external"],
-  .left-sidebar .external-links-section,
-  body .external-links-section,
-  html .external-links-section {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100vw !important;
-    height: 60px !important;
-    background: #C0C0C0 !important;
-    border-top: 2px solid #808080 !important;
-    display: flex !important;
-    justify-content: stretch !important;
-    align-items: center !important;
-    z-index: 9999 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    gap: 0 !important;
-    visibility: visible !important;
-  }
-  
-  .external-link-container,
-  div[class*="external-link-container"],
-  .left-sidebar .external-link-container {
-    flex: 1 !important;
-    height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border-right: 1px solid #808080 !important;
-    display: block !important;
-    visibility: visible !important;
-  }
-  
-  .external-link-btn,
-  a[class*="external-link"],
-  .preply-btn,
-  .patreon-btn,
-  a[href*="preply"],
-  a[href*="patreon"] {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    text-decoration: none !important;
-    color: #000 !important;
-    background: #E0E0E0 !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 4px !important;
-    box-sizing: border-box !important;
-    visibility: visible !important;
-  }
-}
 
-/* ======================================
-   DESKTOP LAYOUT PROTECTION
-   ====================================== */
-/* Ensure sidebar-layout works correctly on desktop screens */
-@media (min-width: 769px) {
-  .sidebar-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    gap: 16px !important;
-    width: 100% !important;
-    flex-wrap: nowrap !important;
-    margin-bottom: 12px !important;
-  }
-  
-  .sidebar-layout > div:first-child {
-    flex: 2 1 60% !important;
-    min-width: 0 !important;
-    width: auto !important;
-  }
-  
-  .sidebar-layout > div:last-child {
-    flex: 1 0 250px !important;
-    min-width: 250px !important;
-    max-width: 350px !important;
-    width: auto !important;
-  }
-}

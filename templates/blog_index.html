@@ -77,8 +77,8 @@
     <form method="GET" action="{{ url_for('blog.blog_index') }}">
       <div style="display: flex; gap: 8px;">
         <input type="text" name="q" value="{{ search_query }}" placeholder="{{ _('search_blog_posts') }}" 
-               style="flex: 1; padding: 6px; font-size: 10px; border: 1px solid #CCC;">
-        <button type="submit" style="padding: 6px 12px; font-size: 10px; background: #FFF; border: 1px solid #CCC;">
+               style="flex: 1; padding: 6px; font-size: 10px; border: 1px solid #CCC; max-width: calc(100% - 100px);">
+        <button type="submit" style="padding: 6px 12px; font-size: 10px; background: #FFF; border: 1px solid #CCC; flex: 0 0 auto; min-width: 90px;">
           🔍 {{ _('search') }}
         </button>
       </div>
