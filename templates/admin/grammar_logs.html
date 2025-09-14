@@ -140,11 +140,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                {% if log.parsed_model_answer %}
+                                                {% if log.parsed_model_answer and log.parsed_model_answer|length > 0 %}
                                                 <strong>GPT Model Answer:</strong>
                                                 <div class="border p-2 mb-3" style="background-color: #e8f5e8;">
                                                     {% for answer in log.parsed_model_answer %}
-                                                    <div>• {{ answer }}</div>
+                                                    <div>• {{ answer|e }}</div>
                                                     {% endfor %}
                                                 </div>
                                                 {% endif %}

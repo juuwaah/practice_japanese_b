@@ -87,12 +87,12 @@
                 </div>
               </div>
               
-              {% if log.parsed_model_answer %}
+              {% if log.parsed_model_answer and log.parsed_model_answer|length > 0 %}
               <div style="margin-bottom: 8px;">
                 <strong>模範解答 (GPT):</strong>
                 <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #E8F5E8;">
                   {% for answer in log.parsed_model_answer %}
-                  <div style="margin-bottom: 2px;">• {{ answer }}</div>
+                  <div style="margin-bottom: 2px;">• {{ answer|e }}</div>
                   {% endfor %}
                 </div>
               </div>

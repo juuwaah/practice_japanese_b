@@ -201,12 +201,13 @@ def grammar_logs():
     
     # ログのmodel_answerをJSONからリストに変換
     for log in logs.items:
-        if log.model_answer:
-            try:
+        try:
+            if hasattr(log, 'model_answer') and log.model_answer:
                 log.parsed_model_answer = json.loads(log.model_answer)
-            except:
+            else:
                 log.parsed_model_answer = []
-        else:
+        except (json.JSONDecodeError, AttributeError) as e:
+            print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
             log.parsed_model_answer = []
     
     # フィルタオプション用のデータ

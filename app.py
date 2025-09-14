@@ -939,6 +939,21 @@ try:
             print(f"DEBUG: SQLite directory ensured: {db_dir}")
         
         db.create_all()
+        
+        # GrammarQuizLogテーブルにmodel_answer列を安全に追加
+        try:
+            inspector = db.inspect(db.engine)
+            columns = [col['name'] for col in inspector.get_columns('grammar_quiz_log')]
+            
+            if 'model_answer' not in columns:
+                print("DEBUG: Adding model_answer column to GrammarQuizLog table")
+                db.engine.execute('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT')
+                print("DEBUG: model_answer column added successfully")
+            else:
+                print("DEBUG: model_answer column already exists")
+        except Exception as migration_error:
+            print(f"DEBUG: Database migration error (non-fatal): {migration_error}")
+            
         print("DEBUG: Database tables created successfully")
 except Exception as e:
     print(f"DEBUG: Database table creation error: {e}")
