@@ -208,6 +208,16 @@ def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
                 translation_example2 = record.get('translation_example2', '').strip()
                 if translation_example2:
                     onomatopoeia_item['translation_example2'] = translation_example2
+                
+                # furigana_example1列が存在する場合は追加
+                furigana_example1 = record.get('furigana_example1', '').strip()
+                if furigana_example1:
+                    onomatopoeia_item['furigana_example1'] = furigana_example1
+                
+                # furigana_example2列が存在する場合は追加
+                furigana_example2 = record.get('furigana_example2', '').strip()
+                if furigana_example2:
+                    onomatopoeia_item['furigana_example2'] = furigana_example2
                     
                 onomatopoeia_list.append(onomatopoeia_item)
         

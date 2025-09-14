@@ -295,6 +295,7 @@ def get_today_quiz():
     # Step 3: スプレッドシートから例文データを取得
     examples = []
     examples_en = []
+    examples_furigana = []
     
     # デバッグ: selected_onomatopeの内容を出力
     print(f"DEBUG: selected_onomatope keys: {list(selected_onomatope.keys())}")
@@ -304,12 +305,24 @@ def get_today_quiz():
     if "example1" in selected_onomatope and selected_onomatope["example1"]:
         examples.append(selected_onomatope["example1"])
         print(f"DEBUG: Added example1: {selected_onomatope['example1']}")
+        
+        # furigana_example1も取得
+        furigana1 = selected_onomatope.get("furigana_example1", "").strip()
+        examples_furigana.append(furigana1)
+        if furigana1:
+            print(f"DEBUG: Added furigana_example1: {furigana1}")
     else:
         print(f"DEBUG: example1 not found or empty")
     
     if "example2" in selected_onomatope and selected_onomatope["example2"]:
         examples.append(selected_onomatope["example2"])
         print(f"DEBUG: Added example2: {selected_onomatope['example2']}")
+        
+        # furigana_example2も取得
+        furigana2 = selected_onomatope.get("furigana_example2", "").strip()
+        examples_furigana.append(furigana2)
+        if furigana2:
+            print(f"DEBUG: Added furigana_example2: {furigana2}")
     else:
         print(f"DEBUG: example2 not found or empty")
     
@@ -332,8 +345,10 @@ def get_today_quiz():
             f"この{onomatope_word}という音が好きです。",
             f"{onomatope_word}とした気持ちになりました。"
         ]
+        examples_furigana = ["", ""]  # デフォルト例文にはふりがななし
     elif len(examples) == 1:
         examples.append(f"{onomatope_word}とした気持ちになりました。")
+        examples_furigana.append("")  # 追加例文にはふりがななし
     
     if not examples_en:
         examples_en = [
@@ -342,6 +357,10 @@ def get_today_quiz():
         ]
     elif len(examples_en) == 1:
         examples_en.append(f"I felt {onomatope_meaning}.")
+        
+    # ふりがなリストの長さを例文リストに合わせる
+    while len(examples_furigana) < len(examples):
+        examples_furigana.append("")
     
     # クイズデータを直接作成（OpenAI APIを使用しない）
     quiz = {
@@ -349,12 +368,14 @@ def get_today_quiz():
         "correct_meaning_en": onomatope_meaning,
         "distractors_en": distractors,
         "examples": examples,
-        "examples_en": examples_en
+        "examples_en": examples_en,
+        "examples_furigana": examples_furigana
     }
     
     # デバッグ: 最終的な例文データを出力
     print(f"DEBUG: Final examples: {examples}")
     print(f"DEBUG: Final examples_en: {examples_en}")
+    print(f"DEBUG: Final examples_furigana: {examples_furigana}")
     
     # 最終チェック：正解が確実にデータベースの値と一致するように
     if quiz.get("correct_meaning_en") != onomatope_meaning:
@@ -418,7 +439,7 @@ def home():
     template = 'index.html'
     
     # デバッグ: example_pairsの内容を確認
-    example_pairs_debug = list(zip(quiz['examples'], [''] * len(quiz['examples']), quiz.get('examples_en', [])))
+    example_pairs_debug = list(zip(quiz['examples'], quiz.get('examples_furigana', []), quiz.get('examples_en', [])))
     print(f"DEBUG: example_pairs content: {example_pairs_debug}")
     print(f"DEBUG: answered: {answered}")
     
@@ -429,9 +450,9 @@ def home():
         answered=answered,
         correct=correct,
         examples=quiz['examples'],
-        examples_hiragana=quiz.get('examples_hiragana', []),
+        examples_hiragana=quiz.get('examples_furigana', []),
         examples_en=quiz.get('examples_en', []),
-        example_pairs=list(zip(quiz['examples'], [''] * len(quiz['examples']), quiz.get('examples_en', []))),
+        example_pairs=list(zip(quiz['examples'], quiz.get('examples_furigana', []), quiz.get('examples_en', []))),
         blog_link=quiz.get('ref_link'),
         blog_title=quiz.get('blog_title')
     )
