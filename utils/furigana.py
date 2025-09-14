@@ -3,9 +3,9 @@ import os
 import time
 from error_handler import safe_openai_request
 
-# GPTを使用してふりがなを生成
+# GPTを使用してひらがな読みを生成
 FURIGANA_AVAILABLE = True
-print("DEBUG: Using GPT-based furigana generation")
+print("DEBUG: Using GPT-based hiragana reading generation")
 
 # キャッシュとレート制限対策
 _furigana_cache = {}
@@ -13,7 +13,8 @@ _last_request_time = 0
 
 def text_to_ruby_html(text):
     """
-    Convert Japanese text to HTML with <ruby> tags using OpenAI GPT for furigana generation.
+    Convert Japanese text with hiragana reading in parentheses using OpenAI GPT.
+    Format: 元の文（ひらがなのよみ）
     """
     global _last_request_time
     print(f"DEBUG: GPT text_to_ruby_html called with: '{text}'")
@@ -35,32 +36,26 @@ def text_to_ruby_html(text):
             sleep_time = 3 - time_since_last
             print(f"DEBUG: Rate limiting - sleeping for {sleep_time:.1f} seconds")
             time.sleep(sleep_time)
-        # GPTプロンプト（よりシンプルで明確に）
-        prompt = f"""以下の日本語文にふりがなを付けて、HTML ruby形式で返してください。
+        # GPTプロンプト（括弧形式でシンプルに）
+        prompt = f"""以下の日本語文の後に、全体をひらがなに直したものを括弧内に追加してください。
 
 文: {text}
 
-ルール:
-1. 漢字にのみ<ruby>漢字<rt>ひらがな</rt></ruby>形式を適用
-2. ひらがな・カタカナ・記号は変更しない
-3. 変換結果のみ返す（説明不要）
+形式: 元の文（ひらがなの読み）
 
 例:
 入力: 彼は学校で勉強した。
-出力: <ruby>彼<rt>かれ</rt></ruby>は<ruby>学校<rt>がっこう</rt></ruby>で<ruby>勉強<rt>べんきょう</rt></ruby>した。
+出力: 彼は学校で勉強した。（かれはがっこうでべんきょうした。）
 
-出力:"""
+変換結果のみ返してください:"""
 
         def make_furigana_request():
             client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             response = client.chat.completions.create(
-                model="gpt-4o",  # より高性能なモデルを使用
-                messages=[
-                    {"role": "system", "content": "あなたは日本語の漢字にひらがなの読みを付ける専門家です。正確なふりがなをHTML ruby形式で出力してください。"},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.0,  # 完全に一貫性を保つ
-                max_tokens=1000
+                model="gpt-4o-mini",  # シンプルなタスクなので安価なモデル
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,  # 一貫性を保つ
+                max_tokens=300
             )
             return response.choices[0].message.content.strip()
         
@@ -78,9 +73,12 @@ def text_to_ruby_html(text):
         if result:
             # 先頭・末尾の空白や改行を除去
             result = result.strip()
-            # 「出力:」などの余計な文字を除去
-            if result.startswith("出力:"):
-                result = result[3:].strip()
+            # 「出力:」や「変換結果:」などの余計な文字を除去
+            prefixes_to_remove = ["出力:", "変換結果:", "結果:", "答え:"]
+            for prefix in prefixes_to_remove:
+                if result.startswith(prefix):
+                    result = result[len(prefix):].strip()
+                    break
             # バッククォートで囲まれている場合は除去
             if result.startswith("```") and result.endswith("```"):
                 result = result[3:-3].strip()
