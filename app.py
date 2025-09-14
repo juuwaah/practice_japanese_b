@@ -839,8 +839,28 @@ def admin_user_detail(user_id):
     # ユーザー情報を取得
     user = User.query.get_or_404(user_id)
     
-    # 文法クイズログを取得
-    grammar_logs = GrammarQuizLog.query.filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
+    # 文法クイズログを取得（model_answer列がない場合に備えて安全に取得）
+    try:
+        grammar_logs = GrammarQuizLog.query.filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
+    except Exception as grammar_log_error:
+        print(f"DEBUG: Grammar logs query error for user {user_id}: {grammar_log_error}")
+        # model_answer列がない場合は、基本的なクエリのみ実行
+        try:
+            grammar_logs = GrammarQuizLog.query.with_entities(
+                GrammarQuizLog.id,
+                GrammarQuizLog.user_id,
+                GrammarQuizLog.original_sentence,
+                GrammarQuizLog.user_translation,
+                GrammarQuizLog.jlpt_level,
+                GrammarQuizLog.direction,
+                GrammarQuizLog.score,
+                GrammarQuizLog.feedback,
+                GrammarQuizLog.created_at
+            ).filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
+            print(f"DEBUG: Fallback grammar logs query successful for user {user_id}")
+        except Exception as fallback_error:
+            print(f"DEBUG: Fallback grammar logs query also failed: {fallback_error}")
+            grammar_logs = []
     
     # フラッシュカードログを取得
     flashcard_logs = FlashcardLog.query.filter_by(user_id=user_id).order_by(FlashcardLog.created_at.desc()).limit(50).all()
@@ -942,7 +962,7 @@ try:
         
         # GrammarQuizLogテーブルにmodel_answer列を安全に追加
         try:
-            from sqlalchemy import inspect
+            from sqlalchemy import inspect, text
             inspector = inspect(db.engine)
             
             # テーブルが存在するかチェック
@@ -952,10 +972,19 @@ try:
                 
                 if 'model_answer' not in columns:
                     print("DEBUG: Adding model_answer column to GrammarQuizLog table")
-                    with db.engine.connect() as conn:
-                        conn.execute('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT')
-                        conn.commit()
-                    print("DEBUG: model_answer column added successfully")
+                    
+                    # PostgreSQLとSQLiteの両方に対応
+                    try:
+                        with db.engine.connect() as conn:
+                            # PostgreSQL/SQLiteで動作するSQL
+                            conn.execute(text('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT'))
+                            conn.commit()
+                        print("DEBUG: model_answer column added successfully")
+                    except Exception as sql_error:
+                        print(f"DEBUG: SQL execution error: {sql_error}")
+                        # 手動でcreate_allを再実行してテーブル構造を更新
+                        print("DEBUG: Attempting to recreate tables...")
+                        db.create_all()
                 else:
                     print("DEBUG: model_answer column already exists")
             else:

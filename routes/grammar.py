@@ -337,11 +337,29 @@ def grammar_logs():
         per_page = 20
         
         print("DEBUG: About to query grammar logs...")
-        # 現在のユーザーのログのみを取得
-        logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
-                                 .order_by(GrammarQuizLog.created_at.desc())\
-                                 .paginate(page=page, per_page=per_page, error_out=False)
-        print(f"DEBUG: Found {len(logs.items)} logs for user {current_user.id}")
+        try:
+            # 現在のユーザーのログのみを取得
+            logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
+                                     .order_by(GrammarQuizLog.created_at.desc())\
+                                     .paginate(page=page, per_page=per_page, error_out=False)
+            print(f"DEBUG: Found {len(logs.items)} logs for user {current_user.id}")
+        except Exception as query_error:
+            print(f"DEBUG: Grammar logs query error for user {current_user.id}: {query_error}")
+            # model_answer列がない場合は、基本的なクエリのみ実行
+            logs = GrammarQuizLog.query.with_entities(
+                GrammarQuizLog.id,
+                GrammarQuizLog.user_id,
+                GrammarQuizLog.original_sentence,
+                GrammarQuizLog.user_translation,
+                GrammarQuizLog.jlpt_level,
+                GrammarQuizLog.direction,
+                GrammarQuizLog.score,
+                GrammarQuizLog.feedback,
+                GrammarQuizLog.created_at
+            ).filter_by(user_id=current_user.id)\
+             .order_by(GrammarQuizLog.created_at.desc())\
+             .paginate(page=page, per_page=per_page, error_out=False)
+            print(f"DEBUG: Fallback query found {len(logs.items)} logs for user {current_user.id}")
         
         # ログのmodel_answerをJSONからリストに変換
         for log in logs.items:

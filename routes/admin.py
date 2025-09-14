@@ -200,10 +200,28 @@ def grammar_logs():
             query = query.filter(GrammarQuizLog.direction == direction)
         
         print("DEBUG: About to execute query...")
-        logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
-            page=page, per_page=per_page, error_out=False
-        )
-        print(f"DEBUG: Query executed, found {len(logs.items)} logs")
+        try:
+            logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
+                page=page, per_page=per_page, error_out=False
+            )
+            print(f"DEBUG: Query executed, found {len(logs.items)} logs")
+        except Exception as query_error:
+            print(f"DEBUG: Query error: {query_error}")
+            # model_answer列がない場合は、基本的なクエリのみ実行
+            logs = GrammarQuizLog.query.with_entities(
+                GrammarQuizLog.id,
+                GrammarQuizLog.user_id,
+                GrammarQuizLog.original_sentence,
+                GrammarQuizLog.user_translation,
+                GrammarQuizLog.jlpt_level,
+                GrammarQuizLog.direction,
+                GrammarQuizLog.score,
+                GrammarQuizLog.feedback,
+                GrammarQuizLog.created_at
+            ).order_by(desc(GrammarQuizLog.created_at)).paginate(
+                page=page, per_page=per_page, error_out=False
+            )
+            print(f"DEBUG: Fallback query executed, found {len(logs.items)} logs")
         
         # ログのmodel_answerをJSONからリストに変換
         for log in logs.items:
