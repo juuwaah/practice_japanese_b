@@ -394,16 +394,44 @@ def grammar_logs():
                 
                 logs = FakePagination(page=page, per_page=per_page, total=0, items=[])
         
-        # ログのmodel_answerをJSONからリストに変換
+        # ログのmodel_answerをJSONからリストに変換（安全な方法）
+        processed_logs = []
         for log in logs.items:
             try:
-                if hasattr(log, 'model_answer') and log.model_answer:
-                    log.parsed_model_answer = json.loads(log.model_answer)
+                # logを辞書形式に変換して新しい属性を安全に追加
+                log_dict = {}
+                
+                # SQLAlchemy objectの属性をコピー
+                for attr in ['id', 'user_id', 'original_sentence', 'user_translation', 
+                           'jlpt_level', 'direction', 'score', 'feedback', 'created_at']:
+                    if hasattr(log, attr):
+                        log_dict[attr] = getattr(log, attr)
+                
+                # model_answerを処理
+                if hasattr(log, 'model_answer') and getattr(log, 'model_answer'):
+                    try:
+                        log_dict['parsed_model_answer'] = json.loads(getattr(log, 'model_answer'))
+                    except json.JSONDecodeError:
+                        log_dict['parsed_model_answer'] = []
                 else:
-                    log.parsed_model_answer = []
-            except (json.JSONDecodeError, AttributeError) as e:
-                print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
-                log.parsed_model_answer = []
+                    log_dict['parsed_model_answer'] = []
+                
+                # 辞書を簡単なオブジェクトに変換
+                class LogObject:
+                    def __init__(self, data):
+                        for key, value in data.items():
+                            setattr(self, key, value)
+                
+                processed_logs.append(LogObject(log_dict))
+                
+            except Exception as e:
+                print(f"DEBUG: Error processing log: {e}")
+                # エラーが発生したログはスキップ
+                continue
+        
+        # logs.itemsを処理済みのリストに置き換え
+        logs.items = processed_logs
+        print(f"DEBUG: Successfully processed {len(processed_logs)} logs")
         
         print("DEBUG: About to render grammar_logs template...")
         return render_template('grammar_logs.html', logs=logs)
