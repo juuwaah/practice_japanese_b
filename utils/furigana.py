@@ -32,8 +32,10 @@ def text_to_ruby_html(text):
         return text
     
     try:
+        print(f"DEBUG: Processing with tagger type: {type(tagger)}")
         # Check if it's fugashi tagger by checking module type
         if str(type(tagger)).find('fugashi') != -1:  # fugashi tagger
+            print("DEBUG: Using fugashi tagger")
             tokens = tagger(text)
             result = []
             for token in tokens:
@@ -63,8 +65,11 @@ def text_to_ruby_html(text):
                     result.append(f'<ruby>{surface}<rt>{hira}</rt></ruby>')
                 else:
                     result.append(surface)
-            return ''.join(result)
+            result_text = ''.join(result)
+            print(f"DEBUG: Fugashi processing complete: {result_text}")
+            return result_text
         else:  # MeCab tagger with unidic-lite
+            print("DEBUG: Using MeCab tagger")
             parsed = tagger.parse(text)
             result = []
             lines = parsed.split('\n')
@@ -89,7 +94,12 @@ def text_to_ruby_html(text):
                     result.append(f'<ruby>{surface}<rt>{hira}</rt></ruby>')
                 else:
                     result.append(surface)
-            return ''.join(result)
-    except Exception:
+            result_text = ''.join(result)
+            print(f"DEBUG: MeCab processing complete: {result_text}")
+            return result_text
+    except Exception as e:
         # Return original text if processing fails
+        print(f"DEBUG: Exception in text_to_ruby_html: {e}")
+        import traceback
+        traceback.print_exc()
         return text 

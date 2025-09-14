@@ -377,8 +377,22 @@ def grammar_logs():
             except Exception as fallback_error:
                 print(f"DEBUG: Fallback query also failed: {fallback_error}")
                 # 空のページネーションオブジェクトを作成
-                from flask_sqlalchemy import Pagination
-                logs = Pagination(page=page, per_page=per_page, total=0, items=[], error_out=False)
+                class FakePagination:
+                    def __init__(self, page, per_page, total, items):
+                        self.page = page
+                        self.per_page = per_page
+                        self.total = total
+                        self.items = items
+                        self.pages = 1
+                        self.has_prev = False
+                        self.has_next = False
+                        self.prev_num = None
+                        self.next_num = None
+                    
+                    def iter_pages(self):
+                        return []
+                
+                logs = FakePagination(page=page, per_page=per_page, total=0, items=[])
         
         # ログのmodel_answerをJSONからリストに変換
         for log in logs.items:
