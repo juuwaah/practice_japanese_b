@@ -24,8 +24,8 @@ def get_onomatopoeia_list():
     import time
     global _onomatopoeia_cache, _cache_timestamp
     
-    # キャッシュの有効期限（30秒）
-    CACHE_DURATION = 30
+    # キャッシュの有効期限（10秒に短縮してデバッグ）
+    CACHE_DURATION = 10
     current_time = time.time()
     
     # デバッグログ

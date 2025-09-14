@@ -296,17 +296,35 @@ def get_today_quiz():
     examples = []
     examples_en = []
     
+    # デバッグ: selected_onomatopeの内容を出力
+    print(f"DEBUG: selected_onomatope keys: {list(selected_onomatope.keys())}")
+    print(f"DEBUG: selected_onomatope data: {selected_onomatope}")
+    
     # selected_onomatopeから例文データを取得
     if "example1" in selected_onomatope and selected_onomatope["example1"]:
         examples.append(selected_onomatope["example1"])
+        print(f"DEBUG: Added example1: {selected_onomatope['example1']}")
+    else:
+        print(f"DEBUG: example1 not found or empty")
+    
     if "example2" in selected_onomatope and selected_onomatope["example2"]:
         examples.append(selected_onomatope["example2"])
+        print(f"DEBUG: Added example2: {selected_onomatope['example2']}")
+    else:
+        print(f"DEBUG: example2 not found or empty")
     
     # 英語翻訳の例文を取得
     if "translation_example1" in selected_onomatope and selected_onomatope["translation_example1"]:
         examples_en.append(selected_onomatope["translation_example1"])
+        print(f"DEBUG: Added translation_example1: {selected_onomatope['translation_example1']}")
+    else:
+        print(f"DEBUG: translation_example1 not found or empty")
+        
     if "translation_example2" in selected_onomatope and selected_onomatope["translation_example2"]:
         examples_en.append(selected_onomatope["translation_example2"])
+        print(f"DEBUG: Added translation_example2: {selected_onomatope['translation_example2']}")
+    else:
+        print(f"DEBUG: translation_example2 not found or empty")
     
     # 例文が不足している場合はデフォルト例文を追加
     if not examples:
@@ -333,6 +351,10 @@ def get_today_quiz():
         "examples": examples,
         "examples_en": examples_en
     }
+    
+    # デバッグ: 最終的な例文データを出力
+    print(f"DEBUG: Final examples: {examples}")
+    print(f"DEBUG: Final examples_en: {examples_en}")
     
     # 最終チェック：正解が確実にデータベースの値と一致するように
     if quiz.get("correct_meaning_en") != onomatope_meaning:
@@ -414,6 +436,16 @@ def database_image(filename):
     """database/imagesフォルダの画像を配信"""
     from flask import send_from_directory
     return send_from_directory('database/images', filename)
+
+@app.route("/clear-cache")
+def clear_onomatopoeia_cache_route():
+    """オノマトペキャッシュをクリア（デバッグ用）"""
+    try:
+        from onomatopoeia_data import clear_onomatopoeia_cache
+        clear_onomatopoeia_cache()
+        return "Cache cleared successfully", 200
+    except Exception as e:
+        return f"Error clearing cache: {e}", 500
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
