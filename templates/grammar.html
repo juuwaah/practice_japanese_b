@@ -70,8 +70,8 @@
       {{ _('original') }}:
     </div>
     <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
-      {% if original_ruby and original_ruby != original %}
-        {{ original_ruby | safe }}
+      {% if original_ruby and original_ruby.strip() and (original_ruby != original) and (('（' in original_ruby) or ('(' in original_ruby)) %}
+        {{ original_ruby }}
       {% else %}
         {{ original }}
       {% endif %}
@@ -115,7 +115,7 @@
         <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('model_answers') }}:</div>
         {% if model_answer_ruby %}
           {% for ans in model_answer_ruby %}
-            <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans | safe }}</div>
+            <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans }}</div>
           {% endfor %}
         {% elif model_answer %}
           {% for ans in model_answer %}
@@ -129,8 +129,8 @@
       <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 6px; background: #F8F8F8;">
         <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('casual_language') }}:</div>
         <div style="font-size: 9px; font-family: monospace;">
-          {% if casual_answer_ruby and casual_answer_ruby != casual_answer %}
-            {{ casual_answer_ruby | safe }}
+          {% if casual_answer_ruby and casual_answer_ruby.strip() and (casual_answer_ruby != casual_answer) and (('（' in casual_answer_ruby) or ('(' in casual_answer_ruby)) %}
+            {{ casual_answer_ruby }}
           {% else %}
             {{ casual_answer }}
           {% endif %}

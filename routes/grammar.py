@@ -185,7 +185,8 @@ def grammar_index():
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
     else:
-        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}, has kanji: {bool(original and any('\u4e00' <= ch <= '\u9fff' for ch in original))}")
+        has_kanji = bool(original and any('\u4e00' <= ch <= '\u9fff' for ch in original))
+        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}, has kanji: {has_kanji}")
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},

@@ -37,7 +37,7 @@ def text_to_ruby_html(text):
             print(f"DEBUG: Rate limiting - sleeping for {sleep_time:.1f} seconds")
             time.sleep(sleep_time)
         # GPTプロンプト（括弧形式でシンプルに）
-        prompt = f"""以下の日本語文の後に、全体をひらがなに直したものを括弧内に追加してください。
+        prompt = f"""以下の日本語文の後に、全体をひらがなに直したものを全角括弧内に追加してください。
 
 文: {text}
 
@@ -47,7 +47,7 @@ def text_to_ruby_html(text):
 入力: 彼は学校で勉強した。
 出力: 彼は学校で勉強した。（かれはがっこうでべんきょうした。）
 
-変換結果のみ返してください:"""
+必ず全角括弧（）を使用してください。変換結果のみ返してください:"""
 
         def make_furigana_request():
             client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
