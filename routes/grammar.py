@@ -155,8 +155,8 @@ def grammar_index():
             original_ruby = original
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
-    elif original and any('\u4e00' <= ch <= '\u9fff' for ch in original):
-        # 方向に関係なく、日本語（漢字）が含まれていれば振り仮名を付与
+    elif original and (any('\u4e00' <= ch <= '\u9fff' for ch in original) or any('\u30a0' <= ch <= '\u30ff' for ch in original)):
+        # 方向に関係なく、日本語（漢字またはカタカナ）が含まれていれば振り仮名を付与
         try:
             original_ruby = text_to_ruby_html(original)
             if casual_answer and any('\u4e00' <= ch <= '\u9fff' for ch in casual_answer):
