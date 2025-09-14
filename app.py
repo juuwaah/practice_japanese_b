@@ -417,6 +417,11 @@ def home():
         correct = (selected == quiz['correct_meaning_en'])
     template = 'index.html'
     
+    # デバッグ: example_pairsの内容を確認
+    example_pairs_debug = list(zip(quiz['examples'], [''] * len(quiz['examples']), quiz.get('examples_en', [])))
+    print(f"DEBUG: example_pairs content: {example_pairs_debug}")
+    print(f"DEBUG: answered: {answered}")
+    
     return render_template(template,
         quiz=quiz,
         onomatope=quiz['onomatope'],
@@ -426,7 +431,7 @@ def home():
         examples=quiz['examples'],
         examples_hiragana=quiz.get('examples_hiragana', []),
         examples_en=quiz.get('examples_en', []),
-        example_pairs=list(zip(quiz['examples'], quiz.get('examples_hiragana', []), quiz.get('examples_en', []))),
+        example_pairs=list(zip(quiz['examples'], [''] * len(quiz['examples']), quiz.get('examples_en', []))),
         blog_link=quiz.get('ref_link'),
         blog_title=quiz.get('blog_title')
     )
