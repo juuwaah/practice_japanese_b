@@ -11,7 +11,7 @@ import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
 from error_handler import safe_openai_request, format_error_response, get_localized_error_message, handle_database_errors
-# from utils.furigana import text_to_ruby_html  # 削除
+from utils.furigana import text_to_ruby_html
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
 load_dotenv()
@@ -73,9 +73,9 @@ def grammar_index():
     feedback = ""
     message = ""
     casual_answer = ""
-    # original_ruby = ""
-    # model_answer_ruby = []
-    # casual_answer_ruby = ""
+    original_ruby = ""
+    model_answer_ruby = []
+    casual_answer_ruby = ""
 
     level = "N5"
     direction = "en-ja"
@@ -109,6 +109,7 @@ def grammar_index():
                         score = ((grammar + meaning) / 6.0) * 100 if grammar and meaning else None
                         
                         # ログを保存
+                        import json
                         log = GrammarQuizLog(
                             user_id=current_user.id,
                             original_sentence=original,
@@ -116,7 +117,8 @@ def grammar_index():
                             jlpt_level=level,
                             direction='en_to_ja' if direction == 'en-ja' else 'ja_to_en',
                             score=score,
-                            feedback=feedback if feedback else None
+                            feedback=feedback if feedback else None,
+                            model_answer=json.dumps(model_answer) if model_answer else None
                         )
                         db.session.add(log)
                         db.session.commit()
@@ -138,7 +140,20 @@ def grammar_index():
         original = generate_example_sentence(level, direction)
         translation = ""
 
-    # ルビ付与処理 削除
+    # 日本語→英語の方向の場合のみ振り仮名を付与
+    if direction == "ja-en" and original:
+        try:
+            original_ruby = text_to_ruby_html(original)
+            if casual_answer:
+                casual_answer_ruby = text_to_ruby_html(casual_answer)
+            if model_answer:
+                model_answer_ruby = [text_to_ruby_html(answer) for answer in model_answer]
+        except Exception as e:
+            # furigana機能でエラーが発生した場合は元のテキストを使用
+            print(f"Furigana error: {e}")
+            original_ruby = original
+            casual_answer_ruby = casual_answer
+            model_answer_ruby = model_answer
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
@@ -151,10 +166,10 @@ def grammar_index():
         message=message,
         direction=direction,
         level=level,
-        casual_answer=casual_answer
-        # original_ruby=original_ruby,
-        # model_answer_ruby=model_answer_ruby,
-        # casual_answer_ruby=casual_answer_ruby
+        casual_answer=casual_answer,
+        original_ruby=original_ruby,
+        model_answer_ruby=model_answer_ruby,
+        casual_answer_ruby=casual_answer_ruby
     )
 
 def generate_example_sentence(level, direction):
@@ -315,6 +330,7 @@ def extract_json(text):
 @google_login_required
 def grammar_logs():
     """ユーザーの文法クイズログを表示"""
+    import json
     page = request.args.get('page', 1, type=int)
     per_page = 20
     
@@ -322,5 +338,15 @@ def grammar_logs():
     logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
                              .order_by(GrammarQuizLog.created_at.desc())\
                              .paginate(page=page, per_page=per_page, error_out=False)
+    
+    # ログのmodel_answerをJSONからリストに変換
+    for log in logs.items:
+        if log.model_answer:
+            try:
+                log.parsed_model_answer = json.loads(log.model_answer)
+            except:
+                log.parsed_model_answer = []
+        else:
+            log.parsed_model_answer = []
     
     return render_template('grammar_logs.html', logs=logs)

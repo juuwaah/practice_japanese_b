@@ -27,6 +27,7 @@
           <th style="border: 1px solid #888; padding: 4px;">{{ _('original_sentence') }}</th>
           <th style="border: 1px solid #888; padding: 4px;">{{ _('your_translation') }}</th>
           <th style="border: 1px solid #888; padding: 4px;">{{ _('score') }}</th>
+          <th style="border: 1px solid #888; padding: 4px;">詳細</th>
         </tr>
       </thead>
       <tbody>
@@ -61,6 +62,51 @@
             {% else %}
               -
             {% endif %}
+          </td>
+          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            <button onclick="toggleDetails('log{{ log.id }}')" 
+                    style="background: #E0E0E0; border: 1px solid #888; padding: 2px 6px; font-size: 7px; cursor: pointer;">
+              詳細
+            </button>
+          </td>
+        </tr>
+        <tr id="log{{ log.id }}" style="display: none;">
+          <td colspan="7" style="border: 1px solid #888; padding: 8px; background: #F8F8F8;">
+            <div style="font-size: 9px;">
+              <div style="margin-bottom: 8px;">
+                <strong>元の文（完全版）:</strong>
+                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFFFFF;">
+                  {{ log.original_sentence }}
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 8px;">
+                <strong>あなたの回答（完全版）:</strong>
+                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFFFFF;">
+                  {{ log.user_translation }}
+                </div>
+              </div>
+              
+              {% if log.parsed_model_answer %}
+              <div style="margin-bottom: 8px;">
+                <strong>模範解答 (GPT):</strong>
+                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #E8F5E8;">
+                  {% for answer in log.parsed_model_answer %}
+                  <div style="margin-bottom: 2px;">• {{ answer }}</div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if log.feedback %}
+              <div style="margin-bottom: 8px;">
+                <strong>フィードバック:</strong>
+                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFF3CD;">
+                  {{ log.feedback }}
+                </div>
+              </div>
+              {% endif %}
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -121,4 +167,15 @@
   </div>
 </div>
 {% endif %}
+
+<script>
+function toggleDetails(logId) {
+  var element = document.getElementById(logId);
+  if (element.style.display === 'none') {
+    element.style.display = 'table-row';
+  } else {
+    element.style.display = 'none';
+  }
+}
+</script>
 {% endblock %}

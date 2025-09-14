@@ -188,6 +188,26 @@ def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
                 image = record.get('image', '').strip()
                 if image:
                     onomatopoeia_item['image'] = image
+                
+                # example1列が存在する場合は追加
+                example1 = record.get('example1', '').strip()
+                if example1:
+                    onomatopoeia_item['example1'] = example1
+                
+                # example2列が存在する場合は追加
+                example2 = record.get('example2', '').strip()
+                if example2:
+                    onomatopoeia_item['example2'] = example2
+                
+                # translation_example1列が存在する場合は追加
+                translation_example1 = record.get('translation_example1', '').strip()
+                if translation_example1:
+                    onomatopoeia_item['translation_example1'] = translation_example1
+                
+                # translation_example2列が存在する場合は追加
+                translation_example2 = record.get('translation_example2', '').strip()
+                if translation_example2:
+                    onomatopoeia_item['translation_example2'] = translation_example2
                     
                 onomatopoeia_list.append(onomatopoeia_item)
         

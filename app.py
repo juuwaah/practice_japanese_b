@@ -292,109 +292,47 @@ def get_today_quiz():
     random.shuffle(other_meanings)
     distractors = other_meanings[:2]
     
-    # Step 3: AIで例文のみ生成
-    prompt = f"""
-あなたは日本語教師です。以下の日本語オノマトペを使ったクイズを作ってください。
-
-指定されたオノマトペ: {onomatope_word}
-正解の英語意味: {onomatope_meaning}
-カテゴリ: {onomatope_category}
-
-【重要】正解の英語意味は必ず「{onomatope_meaning}」を使用してください。変更しないでください。
-
-以下を作成してください：
-1. このオノマトペ「{onomatope_word}」を使った自然な日本語の例文を2つ作る
-2. 各例文のひらがな読み（漢字にひらがなをつけて読みやすくしたもの）を作る
-3. 各例文に対応する自然な英語訳を作る
-
-出力はJSON形式で：
-{{
-  "onomatope": "{onomatope_word}",
-  "correct_meaning_en": "{onomatope_meaning}",
-  "distractors_en": {distractors},
-  "examples": ["...", "..."],
-  "examples_hiragana": ["...", "..."],
-  "examples_en": ["...", "..."]
-}}
-"""
+    # Step 3: スプレッドシートから例文データを取得
+    examples = []
+    examples_en = []
     
-    def make_quiz_request():
-        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
-        )
-        
-        # Extract JSON from response
-        import re
-        content = response.choices[0].message.content
-        if content:
-            match = re.search(r'\{[\s\S]*\}', content)
-            if match:
-                return json.loads(match.group(0))
-        
-        # fallback: use selected onomatope with default examples
-        return {
-            "onomatope": onomatope_word,
-            "correct_meaning_en": onomatope_meaning,
-            "distractors_en": [
-                "the sound of something crashing",
-                "the feeling of being sleepy"
-                    ],
-                    "examples": [
-                        f"この{onomatope_word}という音が好きです。",
-                        f"{onomatope_word}とした気持ちになりました。"
-                    ],
-                    "examples_en": [
-                        f"I like this {onomatope_word} sound.",
-                        f"I felt {onomatope_meaning}."
-                    ]
-                }
+    # selected_onomatopeから例文データを取得
+    if "example1" in selected_onomatope and selected_onomatope["example1"]:
+        examples.append(selected_onomatope["example1"])
+    if "example2" in selected_onomatope and selected_onomatope["example2"]:
+        examples.append(selected_onomatope["example2"])
     
-    try:
-        # エラーハンドリング付きでAPI呼び出し
-        quiz = safe_openai_request(make_quiz_request)
-        
-        # APIエラーの場合はフォールバック
-        if isinstance(quiz, dict) and "error" in quiz:
-            print(f"Daily quiz generation failed: {quiz['error']}")
-            # fallback: use selected onomatope with default examples
-            quiz = {
-                "onomatope": onomatope_word,
-                "correct_meaning_en": onomatope_meaning,
-                "distractors_en": [
-                    "the sound of something crashing", 
-                    "the feeling of being sleepy"
-                ],
-                "examples": [
-                    f"この{onomatope_word}という音が好きです。",
-                    f"{onomatope_word}とした気持ちになりました。"
-                ],
-                "examples_en": [
-                    f"I like this {onomatope_word} sound.",
-                    f"I felt {onomatope_meaning}."
-                ]
-            }
-    except Exception as e:
-        print(f"AI generation failed: {e}")
-        # Complete fallback: use selected onomatope with basic examples
-        quiz = {
-            "onomatope": onomatope_word,
-            "correct_meaning_en": onomatope_meaning,
-            "distractors_en": [
-                "the sound of something crashing",
-                "the feeling of being sleepy"
-            ],
-            "examples": [
-                f"この{onomatope_word}という音が好きです。",
-                f"{onomatope_word}とした気持ちになりました。"
-            ],
-            "examples_en": [
-                f"I like this {onomatope_word} sound.",
-                f"I felt {onomatope_meaning}."
-            ]
-        }
+    # 英語翻訳の例文を取得
+    if "translation_example1" in selected_onomatope and selected_onomatope["translation_example1"]:
+        examples_en.append(selected_onomatope["translation_example1"])
+    if "translation_example2" in selected_onomatope and selected_onomatope["translation_example2"]:
+        examples_en.append(selected_onomatope["translation_example2"])
+    
+    # 例文が不足している場合はデフォルト例文を追加
+    if not examples:
+        examples = [
+            f"この{onomatope_word}という音が好きです。",
+            f"{onomatope_word}とした気持ちになりました。"
+        ]
+    elif len(examples) == 1:
+        examples.append(f"{onomatope_word}とした気持ちになりました。")
+    
+    if not examples_en:
+        examples_en = [
+            f"I like this {onomatope_word} sound.",
+            f"I felt {onomatope_meaning}."
+        ]
+    elif len(examples_en) == 1:
+        examples_en.append(f"I felt {onomatope_meaning}.")
+    
+    # クイズデータを直接作成（OpenAI APIを使用しない）
+    quiz = {
+        "onomatope": onomatope_word,
+        "correct_meaning_en": onomatope_meaning,
+        "distractors_en": distractors,
+        "examples": examples,
+        "examples_en": examples_en
+    }
     
     # 最終チェック：正解が確実にデータベースの値と一致するように
     if quiz.get("correct_meaning_en") != onomatope_meaning:

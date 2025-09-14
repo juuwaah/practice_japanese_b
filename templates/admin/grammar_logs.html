@@ -1,0 +1,216 @@
+{% extends "base_admin.html" %}
+
+{% block title %}文法クイズログ{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>文法クイズログ</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">ダッシュボードに戻る</a>
+    </div>
+
+    <!-- フィルタ -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6>フィルタ</h6>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="user_id" class="form-label">ユーザーID</label>
+                    <input type="text" class="form-control" id="user_id" name="user_id" 
+                           value="{{ current_user_id }}" placeholder="例: 123">
+                </div>
+                <div class="col-md-3">
+                    <label for="jlpt_level" class="form-label">JLPTレベル</label>
+                    <select class="form-select" id="jlpt_level" name="jlpt_level">
+                        <option value="">全て</option>
+                        {% for level in jlpt_levels %}
+                        <option value="{{ level }}" {{ 'selected' if current_jlpt_level == level else '' }}>
+                            {{ level }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="direction" class="form-label">翻訳方向</label>
+                    <select class="form-select" id="direction" name="direction">
+                        <option value="">全て</option>
+                        {% for direction_value, direction_label in directions %}
+                        <option value="{{ direction_value }}" {{ 'selected' if current_direction == direction_value else '' }}>
+                            {{ direction_label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">フィルタ</button>
+                    <a href="{{ url_for('admin.grammar_logs') }}" class="btn btn-outline-secondary">リセット</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5>文法クイズログ一覧 ({{ logs.total }}件)</h5>
+        </div>
+        <div class="card-body">
+            {% if logs.items %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ユーザー</th>
+                            <th>レベル</th>
+                            <th>方向</th>
+                            <th>元文</th>
+                            <th>ユーザー回答</th>
+                            <th>スコア</th>
+                            <th>実施日時</th>
+                            <th>詳細</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>
+                                <small>
+                                    ID: {{ log.user_id }}<br>
+                                    {{ log.user.display_name if log.user else '削除済み' }}
+                                </small>
+                            </td>
+                            <td><span class="badge bg-info">{{ log.jlpt_level }}</span></td>
+                            <td>
+                                <small>
+                                    {% if log.direction == 'en_to_ja' %}
+                                    英→日
+                                    {% else %}
+                                    日→英
+                                    {% endif %}
+                                </small>
+                            </td>
+                            <td>
+                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                    <small>{{ log.original_sentence[:50] }}{% if log.original_sentence|length > 50 %}...{% endif %}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                    <small>{{ log.user_translation[:50] }}{% if log.user_translation|length > 50 %}...{% endif %}</small>
+                                </div>
+                            </td>
+                            <td>
+                                {% if log.score %}
+                                <span class="badge bg-{{ 'success' if log.score >= 70 else 'warning' if log.score >= 50 else 'danger' }}">
+                                    {{ "%.1f"|format(log.score) }}%
+                                </span>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ log.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapse{{ log.id }}" 
+                                        aria-expanded="false" aria-controls="collapse{{ log.id }}">
+                                    詳細表示
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="9" class="p-0">
+                                <div class="collapse" id="collapse{{ log.id }}">
+                                    <div class="card card-body m-3">
+                                        <h6>詳細情報</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>元の文:</strong>
+                                                <div class="border p-2 mb-3" style="background-color: #f8f9fa;">
+                                                    {{ log.original_sentence }}
+                                                </div>
+                                                
+                                                <strong>ユーザーの回答:</strong>
+                                                <div class="border p-2 mb-3" style="background-color: #f8f9fa;">
+                                                    {{ log.user_translation }}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if log.parsed_model_answer %}
+                                                <strong>GPT Model Answer:</strong>
+                                                <div class="border p-2 mb-3" style="background-color: #e8f5e8;">
+                                                    {% for answer in log.parsed_model_answer %}
+                                                    <div>• {{ answer }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if log.feedback %}
+                                                <strong>フィードバック:</strong>
+                                                <div class="border p-2" style="background-color: #fff3cd;">
+                                                    {{ log.feedback }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- ページネーション -->
+            {% if logs.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if logs.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.grammar_logs', page=logs.prev_num, 
+                            user_id=current_user_id, jlpt_level=current_jlpt_level, direction=current_direction) }}">前へ</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in logs.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != logs.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.grammar_logs', page=page_num,
+                                    user_id=current_user_id, jlpt_level=current_jlpt_level, direction=current_direction) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if logs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.grammar_logs', page=logs.next_num,
+                            user_id=current_user_id, jlpt_level=current_jlpt_level, direction=current_direction) }}">次へ</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center text-muted py-4">
+                <p>該当するログが見つかりませんでした。</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -70,7 +70,11 @@
       {{ _('original') }}:
     </div>
     <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
-      {{ original }}
+      {% if direction == 'ja-en' and original_ruby %}
+        {{ original_ruby | safe }}
+      {% else %}
+        {{ original }}
+      {% endif %}
     </div>
   </div>
 
@@ -109,16 +113,28 @@
     {% if model_answer %}
       <div style="border: 1px solid #000; padding: 4px; margin-bottom: 6px; background: #F8F8F8;">
         <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('model_answers') }}:</div>
-        {% for ans in model_answer %}
-          <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans }}</div>
-        {% endfor %}
+        {% if direction == 'ja-en' and model_answer_ruby %}
+          {% for ans in model_answer_ruby %}
+            <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans | safe }}</div>
+          {% endfor %}
+        {% else %}
+          {% for ans in model_answer %}
+            <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans }}</div>
+          {% endfor %}
+        {% endif %}
       </div>
     {% endif %}
     
     {% if casual_answer %}
       <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 6px; background: #F8F8F8;">
         <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('casual_language') }}:</div>
-        <div style="font-size: 9px; font-family: monospace;">{{ casual_answer }}</div>
+        <div style="font-size: 9px; font-family: monospace;">
+          {% if direction == 'ja-en' and casual_answer_ruby %}
+            {{ casual_answer_ruby | safe }}
+          {% else %}
+            {{ casual_answer }}
+          {% endif %}
+        </div>
       </div>
     {% endif %}
     

@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from functools import wraps
-from models import db, SystemErrorLog, SystemMetrics, User, Feedback
+from models import db, SystemErrorLog, SystemMetrics, User, Feedback, GrammarQuizLog
 from datetime import datetime, timedelta
 from sqlalchemy import func, desc
 
@@ -172,3 +172,51 @@ def feedback():
     return render_template('admin/feedback.html',
                          feedback_items=feedback_items,
                          current_status=status)
+
+@admin_bp.route("/grammar-logs")
+@admin_required
+def grammar_logs():
+    """Grammar Quiz ログ管理"""
+    import json
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    # フィルタ
+    user_id = request.args.get('user_id', '', type=str)
+    jlpt_level = request.args.get('jlpt_level', '')
+    direction = request.args.get('direction', '')
+    
+    query = GrammarQuizLog.query
+    
+    if user_id:
+        query = query.filter(GrammarQuizLog.user_id == int(user_id) if user_id.isdigit() else 0)
+    if jlpt_level:
+        query = query.filter(GrammarQuizLog.jlpt_level == jlpt_level)
+    if direction:
+        query = query.filter(GrammarQuizLog.direction == direction)
+    
+    logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    
+    # ログのmodel_answerをJSONからリストに変換
+    for log in logs.items:
+        if log.model_answer:
+            try:
+                log.parsed_model_answer = json.loads(log.model_answer)
+            except:
+                log.parsed_model_answer = []
+        else:
+            log.parsed_model_answer = []
+    
+    # フィルタオプション用のデータ
+    jlpt_levels = ['N5', 'N4', 'N3', 'N2', 'N1']
+    directions = [('en_to_ja', 'English → Japanese'), ('ja_to_en', 'Japanese → English')]
+    
+    return render_template('admin/grammar_logs.html',
+                         logs=logs,
+                         jlpt_levels=jlpt_levels,
+                         directions=directions,
+                         current_user_id=user_id,
+                         current_jlpt_level=jlpt_level,
+                         current_direction=direction)

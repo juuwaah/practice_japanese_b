@@ -123,6 +123,7 @@ class GrammarQuizLog(db.Model):
     direction = db.Column(db.String(10), nullable=False)    # ja_to_en または en_to_ja
     score = db.Column(db.Float, nullable=True)              # 採点結果（0-100）
     feedback = db.Column(db.Text, nullable=True)            # AIからのフィードバック
+    model_answer = db.Column(db.Text, nullable=True)        # GPT生成のModel answer (JSON string)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # リレーションシップ
