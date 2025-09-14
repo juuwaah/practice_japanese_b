@@ -7,7 +7,7 @@ from error_handler import safe_openai_request
 FURIGANA_AVAILABLE = True
 
 # キャッシュとレート制限対策
-_furigana_cache = {}  # Clear cache for testing
+_furigana_cache = {}  # Cleared for new prompt
 _last_request_time = 0
 
 def text_to_ruby_html(text):
@@ -32,10 +32,12 @@ def text_to_ruby_html(text):
             sleep_time = 3 - time_since_last
             time.sleep(sleep_time)
             
-        # シンプルなGPTプロンプト
-        prompt = f"""この日本語文にひらがな読みを（）で追加して: {text}
+        # 最もシンプルなプロンプト
+        prompt = f"""この日本語文の後ろに全文のひらがな読みを（）で追加してください:
 
-例: 学校 → 学校（がっこう）
+{text}
+
+例: 彼は今勉強しているところです → 彼は今勉強しているところです（かれはいまべんきょうしているところです）
 
 結果:"""
 

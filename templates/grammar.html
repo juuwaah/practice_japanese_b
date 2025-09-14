@@ -70,7 +70,7 @@
       {{ _('original') }}:
     </div>
     <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
-      {% if original_ruby and original_ruby.strip() and (original_ruby != original) and (('（' in original_ruby) or ('(' in original_ruby)) %}
+      {% if original_ruby and original_ruby != original %}
         {{ original_ruby }}
       {% else %}
         {{ original }}
