@@ -140,7 +140,10 @@ def grammar_index():
         original = generate_example_sentence(level, direction)
         translation = ""
 
+    print(f"DEBUG: Direction check - direction: '{direction}', original exists: {bool(original)}")
+    
     # 日本語→英語の方向の場合のみ振り仮名を付与
+    # direction が 'ja-en' または日本語が含まれる場合
     if direction == "ja-en" and original:
         print(f"DEBUG: Attempting to add furigana to: {original}")
         try:
@@ -158,8 +161,31 @@ def grammar_index():
             original_ruby = original
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
+    elif original and any('\u4e00' <= ch <= '\u9fff' for ch in original):
+        # 方向に関係なく、日本語（漢字）が含まれていれば振り仮名を付与
+        print(f"DEBUG: Japanese text detected, adding furigana regardless of direction")
+        try:
+            original_ruby = text_to_ruby_html(original)
+            print(f"DEBUG: Furigana result: {original_ruby}")
+            if casual_answer and any('\u4e00' <= ch <= '\u9fff' for ch in casual_answer):
+                casual_answer_ruby = text_to_ruby_html(casual_answer)
+                print(f"DEBUG: Casual answer furigana: {casual_answer_ruby}")
+            if model_answer:
+                model_answer_ruby = []
+                for answer in model_answer:
+                    if any('\u4e00' <= ch <= '\u9fff' for ch in answer):
+                        ruby_answer = text_to_ruby_html(answer)
+                        model_answer_ruby.append(ruby_answer)
+                    else:
+                        model_answer_ruby.append(answer)
+                print(f"DEBUG: Model answer furigana: {model_answer_ruby}")
+        except Exception as e:
+            print(f"Furigana error: {e}")
+            original_ruby = original
+            casual_answer_ruby = casual_answer
+            model_answer_ruby = model_answer
     else:
-        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}")
+        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}, has kanji: {bool(original and any('\u4e00' <= ch <= '\u9fff' for ch in original))}")
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
