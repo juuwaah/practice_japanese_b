@@ -177,47 +177,59 @@ def feedback():
 @admin_required
 def grammar_logs():
     """Grammar Quiz ログ管理"""
-    import json
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    # フィルタ
-    user_id = request.args.get('user_id', '', type=str)
-    jlpt_level = request.args.get('jlpt_level', '')
-    direction = request.args.get('direction', '')
-    
-    query = GrammarQuizLog.query
-    
-    if user_id:
-        query = query.filter(GrammarQuizLog.user_id == int(user_id) if user_id.isdigit() else 0)
-    if jlpt_level:
-        query = query.filter(GrammarQuizLog.jlpt_level == jlpt_level)
-    if direction:
-        query = query.filter(GrammarQuizLog.direction == direction)
-    
-    logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    
-    # ログのmodel_answerをJSONからリストに変換
-    for log in logs.items:
-        try:
-            if hasattr(log, 'model_answer') and log.model_answer:
-                log.parsed_model_answer = json.loads(log.model_answer)
-            else:
+    try:
+        import json
+        print("DEBUG: Admin grammar_logs route accessed")
+        page = request.args.get('page', 1, type=int)
+        per_page = 20
+        
+        # フィルタ
+        user_id = request.args.get('user_id', '', type=str)
+        jlpt_level = request.args.get('jlpt_level', '')
+        direction = request.args.get('direction', '')
+        
+        print(f"DEBUG: Filters - user_id: {user_id}, jlpt_level: {jlpt_level}, direction: {direction}")
+        
+        query = GrammarQuizLog.query
+        
+        if user_id:
+            query = query.filter(GrammarQuizLog.user_id == int(user_id) if user_id.isdigit() else 0)
+        if jlpt_level:
+            query = query.filter(GrammarQuizLog.jlpt_level == jlpt_level)
+        if direction:
+            query = query.filter(GrammarQuizLog.direction == direction)
+        
+        print("DEBUG: About to execute query...")
+        logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+        print(f"DEBUG: Query executed, found {len(logs.items)} logs")
+        
+        # ログのmodel_answerをJSONからリストに変換
+        for log in logs.items:
+            try:
+                if hasattr(log, 'model_answer') and log.model_answer:
+                    log.parsed_model_answer = json.loads(log.model_answer)
+                else:
+                    log.parsed_model_answer = []
+            except (json.JSONDecodeError, AttributeError) as e:
+                print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
                 log.parsed_model_answer = []
-        except (json.JSONDecodeError, AttributeError) as e:
-            print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
-            log.parsed_model_answer = []
-    
-    # フィルタオプション用のデータ
-    jlpt_levels = ['N5', 'N4', 'N3', 'N2', 'N1']
-    directions = [('en_to_ja', 'English → Japanese'), ('ja_to_en', 'Japanese → English')]
-    
-    return render_template('admin/grammar_logs.html',
-                         logs=logs,
-                         jlpt_levels=jlpt_levels,
-                         directions=directions,
-                         current_user_id=user_id,
-                         current_jlpt_level=jlpt_level,
-                         current_direction=direction)
+        
+        # フィルタオプション用のデータ
+        jlpt_levels = ['N5', 'N4', 'N3', 'N2', 'N1']
+        directions = [('en_to_ja', 'English → Japanese'), ('ja_to_en', 'Japanese → English')]
+        
+        print("DEBUG: About to render template...")
+        return render_template('admin/grammar_logs.html',
+                             logs=logs,
+                             jlpt_levels=jlpt_levels,
+                             directions=directions,
+                             current_user_id=user_id,
+                             current_jlpt_level=jlpt_level,
+                             current_direction=direction)
+    except Exception as e:
+        print(f"ERROR: Admin grammar_logs route error: {e}")
+        import traceback
+        traceback.print_exc()
+        return f"Grammar logs error: {str(e)}", 500

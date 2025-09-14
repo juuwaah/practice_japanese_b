@@ -942,17 +942,28 @@ try:
         
         # GrammarQuizLogテーブルにmodel_answer列を安全に追加
         try:
-            inspector = db.inspect(db.engine)
-            columns = [col['name'] for col in inspector.get_columns('grammar_quiz_log')]
+            from sqlalchemy import inspect
+            inspector = inspect(db.engine)
             
-            if 'model_answer' not in columns:
-                print("DEBUG: Adding model_answer column to GrammarQuizLog table")
-                db.engine.execute('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT')
-                print("DEBUG: model_answer column added successfully")
+            # テーブルが存在するかチェック
+            if db.engine.has_table('grammar_quiz_log'):
+                columns = [col['name'] for col in inspector.get_columns('grammar_quiz_log')]
+                print(f"DEBUG: Existing columns in grammar_quiz_log: {columns}")
+                
+                if 'model_answer' not in columns:
+                    print("DEBUG: Adding model_answer column to GrammarQuizLog table")
+                    with db.engine.connect() as conn:
+                        conn.execute('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT')
+                        conn.commit()
+                    print("DEBUG: model_answer column added successfully")
+                else:
+                    print("DEBUG: model_answer column already exists")
             else:
-                print("DEBUG: model_answer column already exists")
+                print("DEBUG: grammar_quiz_log table does not exist yet, will be created")
         except Exception as migration_error:
             print(f"DEBUG: Database migration error (non-fatal): {migration_error}")
+            import traceback
+            traceback.print_exc()
             
         print("DEBUG: Database tables created successfully")
 except Exception as e:

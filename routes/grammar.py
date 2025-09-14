@@ -330,24 +330,34 @@ def extract_json(text):
 @google_login_required
 def grammar_logs():
     """ユーザーの文法クイズログを表示"""
-    import json
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    # 現在のユーザーのログのみを取得
-    logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
-                             .order_by(GrammarQuizLog.created_at.desc())\
-                             .paginate(page=page, per_page=per_page, error_out=False)
-    
-    # ログのmodel_answerをJSONからリストに変換
-    for log in logs.items:
-        try:
-            if hasattr(log, 'model_answer') and log.model_answer:
-                log.parsed_model_answer = json.loads(log.model_answer)
-            else:
+    try:
+        import json
+        print(f"DEBUG: Grammar logs accessed by user {current_user.id}")
+        page = request.args.get('page', 1, type=int)
+        per_page = 20
+        
+        print("DEBUG: About to query grammar logs...")
+        # 現在のユーザーのログのみを取得
+        logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
+                                 .order_by(GrammarQuizLog.created_at.desc())\
+                                 .paginate(page=page, per_page=per_page, error_out=False)
+        print(f"DEBUG: Found {len(logs.items)} logs for user {current_user.id}")
+        
+        # ログのmodel_answerをJSONからリストに変換
+        for log in logs.items:
+            try:
+                if hasattr(log, 'model_answer') and log.model_answer:
+                    log.parsed_model_answer = json.loads(log.model_answer)
+                else:
+                    log.parsed_model_answer = []
+            except (json.JSONDecodeError, AttributeError) as e:
+                print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
                 log.parsed_model_answer = []
-        except (json.JSONDecodeError, AttributeError) as e:
-            print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
-            log.parsed_model_answer = []
-    
-    return render_template('grammar_logs.html', logs=logs)
+        
+        print("DEBUG: About to render grammar_logs template...")
+        return render_template('grammar_logs.html', logs=logs)
+    except Exception as e:
+        print(f"ERROR: Grammar logs route error: {e}")
+        import traceback
+        traceback.print_exc()
+        return f"Grammar logs error: {str(e)}", 500
