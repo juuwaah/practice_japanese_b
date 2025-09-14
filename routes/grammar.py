@@ -11,7 +11,6 @@ import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
 from error_handler import safe_openai_request, format_error_response, get_localized_error_message, handle_database_errors
-from utils.furigana import text_to_ruby_html
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
 load_dotenv()
@@ -73,9 +72,6 @@ def grammar_index():
     feedback = ""
     message = ""
     casual_answer = ""
-    original_ruby = ""
-    model_answer_ruby = []
-    casual_answer_ruby = ""
 
     level = "N5"
     direction = "en-ja"
@@ -140,40 +136,6 @@ def grammar_index():
         original = generate_example_sentence(level, direction)
         translation = ""
 
-    
-    # 日本語→英語の方向の場合のみ振り仮名を付与
-    # direction が 'ja-en' または日本語が含まれる場合
-    if direction == "ja-en" and original:
-        try:
-            original_ruby = text_to_ruby_html(original)
-            if casual_answer:
-                casual_answer_ruby = text_to_ruby_html(casual_answer)
-            if model_answer:
-                model_answer_ruby = [text_to_ruby_html(answer) for answer in model_answer]
-        except Exception as e:
-            # furigana機能でエラーが発生した場合は元のテキストを使用
-            original_ruby = original
-            casual_answer_ruby = casual_answer
-            model_answer_ruby = model_answer
-    elif original and (any('\u4e00' <= ch <= '\u9fff' for ch in original) or any('\u30a0' <= ch <= '\u30ff' for ch in original)):
-        # 方向に関係なく、日本語（漢字またはカタカナ）が含まれていれば振り仮名を付与
-        try:
-            original_ruby = text_to_ruby_html(original)
-            if casual_answer and any('\u4e00' <= ch <= '\u9fff' for ch in casual_answer):
-                casual_answer_ruby = text_to_ruby_html(casual_answer)
-            if model_answer:
-                model_answer_ruby = []
-                for answer in model_answer:
-                    if any('\u4e00' <= ch <= '\u9fff' for ch in answer):
-                        ruby_answer = text_to_ruby_html(answer)
-                        model_answer_ruby.append(ruby_answer)
-                    else:
-                        model_answer_ruby.append(answer)
-        except Exception as e:
-            original_ruby = original
-            casual_answer_ruby = casual_answer
-            model_answer_ruby = model_answer
-    # No furigana needed for English-only text
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
@@ -186,10 +148,7 @@ def grammar_index():
         message=message,
         direction=direction,
         level=level,
-        casual_answer=casual_answer,
-        original_ruby=original_ruby,
-        model_answer_ruby=model_answer_ruby,
-        casual_answer_ruby=casual_answer_ruby
+        casual_answer=casual_answer
     )
 
 def generate_example_sentence(level, direction):
