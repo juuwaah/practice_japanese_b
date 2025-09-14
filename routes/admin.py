@@ -179,7 +179,6 @@ def grammar_logs():
     """Grammar Quiz ログ管理"""
     try:
         import json
-        print("DEBUG: Admin grammar_logs route accessed")
         page = request.args.get('page', 1, type=int)
         per_page = 20
         
@@ -187,8 +186,6 @@ def grammar_logs():
         user_id = request.args.get('user_id', '', type=str)
         jlpt_level = request.args.get('jlpt_level', '')
         direction = request.args.get('direction', '')
-        
-        print(f"DEBUG: Filters - user_id: {user_id}, jlpt_level: {jlpt_level}, direction: {direction}")
         
         query = GrammarQuizLog.query
         
@@ -199,20 +196,16 @@ def grammar_logs():
         if direction:
             query = query.filter(GrammarQuizLog.direction == direction)
         
-        print("DEBUG: About to execute query...")
         try:
             logs = query.order_by(desc(GrammarQuizLog.created_at)).paginate(
                 page=page, per_page=per_page, error_out=False
             )
-            print(f"DEBUG: Query executed, found {len(logs.items)} logs")
         except Exception as query_error:
-            print(f"DEBUG: Query error: {query_error}")
             # PostgreSQLトランザクションをロールバック
             try:
                 db.session.rollback()
-                print("DEBUG: Transaction rolled back")
-            except Exception as rollback_error:
-                print(f"DEBUG: Rollback error: {rollback_error}")
+            except Exception:
+                pass
             
             # model_answer列がない場合は、基本的なクエリのみ実行
             try:
@@ -229,9 +222,7 @@ def grammar_logs():
                 ).order_by(desc(GrammarQuizLog.created_at)).paginate(
                     page=page, per_page=per_page, error_out=False
                 )
-                print(f"DEBUG: Fallback query executed, found {len(logs.items)} logs")
             except Exception as fallback_error:
-                print(f"DEBUG: Fallback query also failed: {fallback_error}")
                 # 空のページネーションオブジェクトを作成
                 from flask_sqlalchemy import Pagination
                 logs = Pagination(page=page, per_page=per_page, total=0, items=[], error_out=False)
@@ -243,15 +234,13 @@ def grammar_logs():
                     log.parsed_model_answer = json.loads(log.model_answer)
                 else:
                     log.parsed_model_answer = []
-            except (json.JSONDecodeError, AttributeError) as e:
-                print(f"DEBUG: Error parsing model_answer for log {log.id}: {e}")
+            except (json.JSONDecodeError, AttributeError):
                 log.parsed_model_answer = []
         
         # フィルタオプション用のデータ
         jlpt_levels = ['N5', 'N4', 'N3', 'N2', 'N1']
         directions = [('en_to_ja', 'English → Japanese'), ('ja_to_en', 'Japanese → English')]
         
-        print("DEBUG: About to render template...")
         return render_template('admin/grammar_logs.html',
                              logs=logs,
                              jlpt_levels=jlpt_levels,
@@ -260,7 +249,4 @@ def grammar_logs():
                              current_jlpt_level=jlpt_level,
                              current_direction=direction)
     except Exception as e:
-        print(f"ERROR: Admin grammar_logs route error: {e}")
-        import traceback
-        traceback.print_exc()
         return f"Grammar logs error: {str(e)}", 500

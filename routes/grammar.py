@@ -140,36 +140,27 @@ def grammar_index():
         original = generate_example_sentence(level, direction)
         translation = ""
 
-    print(f"DEBUG: Direction check - direction: '{direction}', original exists: {bool(original)}")
     
     # 日本語→英語の方向の場合のみ振り仮名を付与
     # direction が 'ja-en' または日本語が含まれる場合
     if direction == "ja-en" and original:
-        print(f"DEBUG: Attempting to add furigana to: {original}")
         try:
             original_ruby = text_to_ruby_html(original)
-            print(f"DEBUG: Furigana result: {original_ruby}")
             if casual_answer:
                 casual_answer_ruby = text_to_ruby_html(casual_answer)
-                print(f"DEBUG: Casual answer furigana: {casual_answer_ruby}")
             if model_answer:
                 model_answer_ruby = [text_to_ruby_html(answer) for answer in model_answer]
-                print(f"DEBUG: Model answer furigana: {model_answer_ruby}")
         except Exception as e:
             # furigana機能でエラーが発生した場合は元のテキストを使用
-            print(f"Furigana error: {e}")
             original_ruby = original
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
     elif original and any('\u4e00' <= ch <= '\u9fff' for ch in original):
         # 方向に関係なく、日本語（漢字）が含まれていれば振り仮名を付与
-        print(f"DEBUG: Japanese text detected, adding furigana regardless of direction")
         try:
             original_ruby = text_to_ruby_html(original)
-            print(f"DEBUG: Furigana result: {original_ruby}")
             if casual_answer and any('\u4e00' <= ch <= '\u9fff' for ch in casual_answer):
                 casual_answer_ruby = text_to_ruby_html(casual_answer)
-                print(f"DEBUG: Casual answer furigana: {casual_answer_ruby}")
             if model_answer:
                 model_answer_ruby = []
                 for answer in model_answer:
@@ -178,15 +169,11 @@ def grammar_index():
                         model_answer_ruby.append(ruby_answer)
                     else:
                         model_answer_ruby.append(answer)
-                print(f"DEBUG: Model answer furigana: {model_answer_ruby}")
         except Exception as e:
-            print(f"Furigana error: {e}")
             original_ruby = original
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
-    else:
-        has_kanji = bool(original and any('\u4e00' <= ch <= '\u9fff' for ch in original))
-        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}, has kanji: {has_kanji}")
+    # No furigana needed for English-only text
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
@@ -365,25 +352,20 @@ def grammar_logs():
     """ユーザーの文法クイズログを表示"""
     try:
         import json
-        print(f"DEBUG: Grammar logs accessed by user {current_user.id}")
         page = request.args.get('page', 1, type=int)
         per_page = 20
         
-        print("DEBUG: About to query grammar logs...")
         try:
             # 現在のユーザーのログのみを取得
             logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
                                      .order_by(GrammarQuizLog.created_at.desc())\
                                      .paginate(page=page, per_page=per_page, error_out=False)
-            print(f"DEBUG: Found {len(logs.items)} logs for user {current_user.id}")
         except Exception as query_error:
-            print(f"DEBUG: Grammar logs query error for user {current_user.id}: {query_error}")
             # PostgreSQLトランザクションをロールバック
             try:
                 db.session.rollback()
-                print("DEBUG: Transaction rolled back")
-            except Exception as rollback_error:
-                print(f"DEBUG: Rollback error: {rollback_error}")
+            except Exception:
+                pass
                 
             # model_answer列がない場合は、基本的なクエリのみ実行
             try:
@@ -400,9 +382,7 @@ def grammar_logs():
                 ).filter_by(user_id=current_user.id)\
                  .order_by(GrammarQuizLog.created_at.desc())\
                  .paginate(page=page, per_page=per_page, error_out=False)
-                print(f"DEBUG: Fallback query found {len(logs.items)} logs for user {current_user.id}")
             except Exception as fallback_error:
-                print(f"DEBUG: Fallback query also failed: {fallback_error}")
                 # 空のページネーションオブジェクトを作成
                 class FakePagination:
                     def __init__(self, page, per_page, total, items):
@@ -452,18 +432,12 @@ def grammar_logs():
                 processed_logs.append(LogObject(log_dict))
                 
             except Exception as e:
-                print(f"DEBUG: Error processing log: {e}")
                 # エラーが発生したログはスキップ
                 continue
         
         # logs.itemsを処理済みのリストに置き換え
         logs.items = processed_logs
-        print(f"DEBUG: Successfully processed {len(processed_logs)} logs")
         
-        print("DEBUG: About to render grammar_logs template...")
         return render_template('grammar_logs.html', logs=logs)
     except Exception as e:
-        print(f"ERROR: Grammar logs route error: {e}")
-        import traceback
-        traceback.print_exc()
         return f"Grammar logs error: {str(e)}", 500
