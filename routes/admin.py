@@ -207,21 +207,34 @@ def grammar_logs():
             print(f"DEBUG: Query executed, found {len(logs.items)} logs")
         except Exception as query_error:
             print(f"DEBUG: Query error: {query_error}")
+            # PostgreSQLトランザクションをロールバック
+            try:
+                db.session.rollback()
+                print("DEBUG: Transaction rolled back")
+            except Exception as rollback_error:
+                print(f"DEBUG: Rollback error: {rollback_error}")
+            
             # model_answer列がない場合は、基本的なクエリのみ実行
-            logs = GrammarQuizLog.query.with_entities(
-                GrammarQuizLog.id,
-                GrammarQuizLog.user_id,
-                GrammarQuizLog.original_sentence,
-                GrammarQuizLog.user_translation,
-                GrammarQuizLog.jlpt_level,
-                GrammarQuizLog.direction,
-                GrammarQuizLog.score,
-                GrammarQuizLog.feedback,
-                GrammarQuizLog.created_at
-            ).order_by(desc(GrammarQuizLog.created_at)).paginate(
-                page=page, per_page=per_page, error_out=False
-            )
-            print(f"DEBUG: Fallback query executed, found {len(logs.items)} logs")
+            try:
+                logs = GrammarQuizLog.query.with_entities(
+                    GrammarQuizLog.id,
+                    GrammarQuizLog.user_id,
+                    GrammarQuizLog.original_sentence,
+                    GrammarQuizLog.user_translation,
+                    GrammarQuizLog.jlpt_level,
+                    GrammarQuizLog.direction,
+                    GrammarQuizLog.score,
+                    GrammarQuizLog.feedback,
+                    GrammarQuizLog.created_at
+                ).order_by(desc(GrammarQuizLog.created_at)).paginate(
+                    page=page, per_page=per_page, error_out=False
+                )
+                print(f"DEBUG: Fallback query executed, found {len(logs.items)} logs")
+            except Exception as fallback_error:
+                print(f"DEBUG: Fallback query also failed: {fallback_error}")
+                # 空のページネーションオブジェクトを作成
+                from flask_sqlalchemy import Pagination
+                logs = Pagination(page=page, per_page=per_page, total=0, items=[], error_out=False)
         
         # ログのmodel_answerをJSONからリストに変換
         for log in logs.items:

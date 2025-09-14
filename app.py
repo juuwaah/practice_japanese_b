@@ -844,6 +844,13 @@ def admin_user_detail(user_id):
         grammar_logs = GrammarQuizLog.query.filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
     except Exception as grammar_log_error:
         print(f"DEBUG: Grammar logs query error for user {user_id}: {grammar_log_error}")
+        # PostgreSQLトランザクションをロールバック
+        try:
+            db.session.rollback()
+            print("DEBUG: Transaction rolled back")
+        except Exception as rollback_error:
+            print(f"DEBUG: Rollback error: {rollback_error}")
+            
         # model_answer列がない場合は、基本的なクエリのみ実行
         try:
             grammar_logs = GrammarQuizLog.query.with_entities(

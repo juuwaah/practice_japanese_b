@@ -2,23 +2,33 @@ try:
     import fugashi
     tagger = fugashi.Tagger()
     FURIGANA_AVAILABLE = True
-except Exception:
+    print("DEBUG: Fugashi loaded successfully")
+except Exception as e:
+    print(f"DEBUG: Fugashi failed to load: {e}")
     # Fallback to MeCab if fugashi fails
     try:
         import MeCab
         import unidic_lite
         tagger = MeCab.Tagger(f"-d {unidic_lite.DICDIR}")
         FURIGANA_AVAILABLE = True
-    except Exception:
+        print("DEBUG: MeCab loaded successfully as fallback")
+    except Exception as e2:
+        print(f"DEBUG: MeCab also failed to load: {e2}")
         tagger = None
         FURIGANA_AVAILABLE = False
+
+print(f"DEBUG: FURIGANA_AVAILABLE = {FURIGANA_AVAILABLE}")
 
 def text_to_ruby_html(text):
     """
     Convert Japanese text to HTML with <ruby> tags for all kanji words (熟語単位), using hiragana as furigana.
     """
+    print(f"DEBUG: text_to_ruby_html called with: '{text}'")
+    print(f"DEBUG: FURIGANA_AVAILABLE = {FURIGANA_AVAILABLE}, tagger = {tagger}")
+    
     if not FURIGANA_AVAILABLE or not tagger:
         # Return original text if furigana is not available
+        print("DEBUG: Furigana not available, returning original text")
         return text
     
     try:

@@ -142,18 +142,24 @@ def grammar_index():
 
     # 日本語→英語の方向の場合のみ振り仮名を付与
     if direction == "ja-en" and original:
+        print(f"DEBUG: Attempting to add furigana to: {original}")
         try:
             original_ruby = text_to_ruby_html(original)
+            print(f"DEBUG: Furigana result: {original_ruby}")
             if casual_answer:
                 casual_answer_ruby = text_to_ruby_html(casual_answer)
+                print(f"DEBUG: Casual answer furigana: {casual_answer_ruby}")
             if model_answer:
                 model_answer_ruby = [text_to_ruby_html(answer) for answer in model_answer]
+                print(f"DEBUG: Model answer furigana: {model_answer_ruby}")
         except Exception as e:
             # furigana機能でエラーが発生した場合は元のテキストを使用
             print(f"Furigana error: {e}")
             original_ruby = original
             casual_answer_ruby = casual_answer
             model_answer_ruby = model_answer
+    else:
+        print(f"DEBUG: Furigana not applied - direction: {direction}, original: {bool(original)}")
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
@@ -345,21 +351,34 @@ def grammar_logs():
             print(f"DEBUG: Found {len(logs.items)} logs for user {current_user.id}")
         except Exception as query_error:
             print(f"DEBUG: Grammar logs query error for user {current_user.id}: {query_error}")
+            # PostgreSQLトランザクションをロールバック
+            try:
+                db.session.rollback()
+                print("DEBUG: Transaction rolled back")
+            except Exception as rollback_error:
+                print(f"DEBUG: Rollback error: {rollback_error}")
+                
             # model_answer列がない場合は、基本的なクエリのみ実行
-            logs = GrammarQuizLog.query.with_entities(
-                GrammarQuizLog.id,
-                GrammarQuizLog.user_id,
-                GrammarQuizLog.original_sentence,
-                GrammarQuizLog.user_translation,
-                GrammarQuizLog.jlpt_level,
-                GrammarQuizLog.direction,
-                GrammarQuizLog.score,
-                GrammarQuizLog.feedback,
-                GrammarQuizLog.created_at
-            ).filter_by(user_id=current_user.id)\
-             .order_by(GrammarQuizLog.created_at.desc())\
-             .paginate(page=page, per_page=per_page, error_out=False)
-            print(f"DEBUG: Fallback query found {len(logs.items)} logs for user {current_user.id}")
+            try:
+                logs = GrammarQuizLog.query.with_entities(
+                    GrammarQuizLog.id,
+                    GrammarQuizLog.user_id,
+                    GrammarQuizLog.original_sentence,
+                    GrammarQuizLog.user_translation,
+                    GrammarQuizLog.jlpt_level,
+                    GrammarQuizLog.direction,
+                    GrammarQuizLog.score,
+                    GrammarQuizLog.feedback,
+                    GrammarQuizLog.created_at
+                ).filter_by(user_id=current_user.id)\
+                 .order_by(GrammarQuizLog.created_at.desc())\
+                 .paginate(page=page, per_page=per_page, error_out=False)
+                print(f"DEBUG: Fallback query found {len(logs.items)} logs for user {current_user.id}")
+            except Exception as fallback_error:
+                print(f"DEBUG: Fallback query also failed: {fallback_error}")
+                # 空のページネーションオブジェクトを作成
+                from flask_sqlalchemy import Pagination
+                logs = Pagination(page=page, per_page=per_page, total=0, items=[], error_out=False)
         
         # ログのmodel_answerをJSONからリストに変換
         for log in logs.items:
