@@ -35,30 +35,32 @@ def text_to_ruby_html(text):
             sleep_time = 3 - time_since_last
             print(f"DEBUG: Rate limiting - sleeping for {sleep_time:.1f} seconds")
             time.sleep(sleep_time)
-        # GPTプロンプト
-        prompt = f"""
-日本語の文章にふりがな（ひらがな）を付けて、HTML ruby形式で出力してください。
-漢字が含まれる単語のみにrubyタグを付け、ひらがなやカタカナはそのまま残してください。
+        # GPTプロンプト（よりシンプルで明確に）
+        prompt = f"""以下の日本語文にふりがなを付けて、HTML ruby形式で返してください。
 
-入力: {text}
+文: {text}
 
-出力形式例: <ruby>子ども<rt>こども</rt></ruby>のころ、よく<ruby>公園<rt>こうえん</rt></ruby>で<ruby>遊<rt>あそ</rt></ruby>びました。
+ルール:
+1. 漢字にのみ<ruby>漢字<rt>ひらがな</rt></ruby>形式を適用
+2. ひらがな・カタカナ・記号は変更しない
+3. 変換結果のみ返す（説明不要）
 
-重要な注意:
-- 漢字を含む単語のみrubyタグを付ける
-- ひらがな、カタカナ、記号はそのまま出力
-- rubyタグの中身は必ずひらがなにする
-- 余計な説明は一切不要で、変換結果のみ出力
+例:
+入力: 彼は学校で勉強した。
+出力: <ruby>彼<rt>かれ</rt></ruby>は<ruby>学校<rt>がっこう</rt></ruby>で<ruby>勉強<rt>べんきょう</rt></ruby>した。
 
 出力:"""
 
         def make_furigana_request():
             client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # より安価なモデルを使用
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,  # 一貫性を保つため低く設定
-                max_tokens=500
+                model="gpt-4o",  # より高性能なモデルを使用
+                messages=[
+                    {"role": "system", "content": "あなたは日本語の漢字にひらがなの読みを付ける専門家です。正確なふりがなをHTML ruby形式で出力してください。"},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.0,  # 完全に一貫性を保つ
+                max_tokens=1000
             )
             return response.choices[0].message.content.strip()
         
@@ -70,10 +72,26 @@ def text_to_ruby_html(text):
             print(f"DEBUG: GPT furigana error: {result['error']}")
             return text  # エラーの場合は元のテキストを返す
             
-        print(f"DEBUG: GPT furigana result: {result}")
+        print(f"DEBUG: GPT raw result: {result}")
+        
+        # 結果を清浄化（余計な文字や改行を除去）
+        if result:
+            # 先頭・末尾の空白や改行を除去
+            result = result.strip()
+            # 「出力:」などの余計な文字を除去
+            if result.startswith("出力:"):
+                result = result[3:].strip()
+            # バッククォートで囲まれている場合は除去
+            if result.startswith("```") and result.endswith("```"):
+                result = result[3:-3].strip()
+            if result.startswith("`") and result.endswith("`"):
+                result = result[1:-1].strip()
+        
+        print(f"DEBUG: GPT cleaned result: {result}")
         
         # 結果をキャッシュに保存
-        _furigana_cache[text] = result
+        if result:
+            _furigana_cache[text] = result
         
         # キャッシュサイズ制限（メモリ使用量を抑制）
         if len(_furigana_cache) > 100:
@@ -81,7 +99,7 @@ def text_to_ruby_html(text):
             _furigana_cache.clear()
             print("DEBUG: Furigana cache cleared due to size limit")
         
-        return result
+        return result if result else text
         
     except Exception as e:
         print(f"DEBUG: Exception in GPT text_to_ruby_html: {e}")
