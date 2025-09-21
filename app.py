@@ -339,24 +339,8 @@ def get_today_quiz():
     else:
         print(f"DEBUG: translation_example2 not found or empty")
     
-    # 例文が不足している場合はデフォルト例文を追加
-    if not examples:
-        examples = [
-            f"この{onomatope_word}という音が好きです。",
-            f"{onomatope_word}とした気持ちになりました。"
-        ]
-        examples_furigana = ["", ""]  # デフォルト例文にはふりがななし
-    elif len(examples) == 1:
-        examples.append(f"{onomatope_word}とした気持ちになりました。")
-        examples_furigana.append("")  # 追加例文にはふりがななし
-    
-    if not examples_en:
-        examples_en = [
-            f"I like this {onomatope_word} sound.",
-            f"I felt {onomatope_meaning}."
-        ]
-    elif len(examples_en) == 1:
-        examples_en.append(f"I felt {onomatope_meaning}.")
+    # 例文はスプレッドシートのデータのみを使用（自動生成しない）
+    # examples, examples_en, examples_furiganaはスプレッドシートから取得したデータのみ
         
     # ふりがなリストの長さを例文リストに合わせる
     while len(examples_furigana) < len(examples):

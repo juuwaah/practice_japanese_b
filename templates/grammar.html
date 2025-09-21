@@ -70,7 +70,11 @@
       {{ _('original') }}:
     </div>
     <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
-      {{ original }}
+      {% if direction == "ja-en" and original_with_furigana %}
+        {{ original_with_furigana }}
+      {% else %}
+        {{ original }}
+      {% endif %}
     </div>
   </div>
 

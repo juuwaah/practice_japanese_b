@@ -11,6 +11,7 @@ import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
 from error_handler import safe_openai_request, format_error_response, get_localized_error_message, handle_database_errors
+from utils.furigana import text_to_ruby_html
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
 load_dotenv()
@@ -72,6 +73,7 @@ def grammar_index():
     feedback = ""
     message = ""
     casual_answer = ""
+    original_with_furigana = ""
 
     level = "N5"
     direction = "en-ja"
@@ -85,11 +87,17 @@ def grammar_index():
         try:
             if action == "generate":
                 original = generate_example_sentence(level, direction)
+                # 日本語→英語の場合のみふりがなを生成
+                if direction == "ja-en" and original:
+                    original_with_furigana = text_to_ruby_html(original)
                 translation = ""
             elif action == "score":
                 original = request.form.get("original", "")
                 if not original or original.lower() == "none":
                     raise ValueError("Please generate an example sentence first.")
+                # 日本語→英語の場合のみふりがなを生成
+                if direction == "ja-en" and original:
+                    original_with_furigana = text_to_ruby_html(original)
                 result = score_translation(original, translation, direction, level)
                 grammar = result.get("grammar")
                 meaning = result.get("meaning")
@@ -134,12 +142,16 @@ def grammar_index():
     else:
         # GETリクエスト時は必ず文を生成
         original = generate_example_sentence(level, direction)
+        # 日本語→英語の場合のみふりがなを生成
+        if direction == "ja-en" and original:
+            original_with_furigana = text_to_ruby_html(original)
         translation = ""
 
 
     return render_template("grammar.html",
         directions={"en-ja": "English → Japanese", "ja-en": "Japanese → English"},
         original=original,
+        original_with_furigana=original_with_furigana,
         translation=translation,
         grammar=grammar,
         meaning=meaning,
