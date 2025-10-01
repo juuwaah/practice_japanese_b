@@ -15,10 +15,12 @@
 }
 
 .blog-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-top: 20px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    margin-top: 20px !important;
+    width: 100% !important;
+    max-width: none !important;
 }
 
 .blog-post-tile {
@@ -28,6 +30,9 @@
     background: #FFF;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100% !important;
+    max-width: initial !important;
+    box-sizing: border-box !important;
 }
 
 .blog-post-tile:hover {
@@ -131,6 +136,12 @@
     color: #333;
 }
 
+/* ブロググリッド保護用の追加ルール */
+.blog-list-container .blog-grid,
+.blog-list-container .blog-post-tile {
+    max-width: initial !important;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
     .blog-list-container {
@@ -138,12 +149,14 @@
     }
     
     .blog-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
     }
     
     .blog-post-tile {
         padding: 12px;
+        width: 100% !important;
+        max-width: initial !important;
     }
     
     .blog-post-tile h3 {
