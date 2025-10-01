@@ -53,6 +53,12 @@ def blog_index():
     
     # 各記事にタグ情報を追加
     for post in blog_posts:
+        # デバッグ情報を追加
+        print(f"DEBUG Blog Route: Post data = {post}")
+        print(f"DEBUG Blog Route: Post keys = {list(post.keys())}")
+        print(f"DEBUG Blog Route: Post title = {post.get('title', 'NO_TITLE')}")
+        print(f"DEBUG Blog Route: Post name = {post.get('name', 'NO_NAME')}")
+        
         doc_content = get_document_content(post['id'])
         if doc_content:
             post['tags'] = doc_content.get('tags', [])
