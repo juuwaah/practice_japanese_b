@@ -7,23 +7,25 @@
 
 {% block extra_head %}
 <style>
-/* 重要：ブログページ専用でzoomを無効化 */
+/* ブログページを他のページと同じズーム比率に合わせる */
 body {
-    zoom: 1.0 !important;
-    transform: none !important;
+    zoom: 2.0 !important;
 }
 
 .blog-container {
-    zoom: 1.0 !important;
-    transform: none !important;
-}
-
-/* シンプルなブログページCSS */
-.blog-container {
-    max-width: 800px;
-    margin: 0 auto;
+    /* アプリ統一の背景パターンを適用 */
+    background-color: #FFFFFF;
+    background-image: radial-gradient(circle, #C0C0C0 1.6px, transparent 1.6px);
+    background-size: 3px 3px;
+    background-position: 0 0, 1.5px 1.5px;
+    background-attachment: fixed;
+    /* コンテナ自体の背景も調整 */
     padding: 20px;
+    margin: 0 auto;
+    max-width: 400px; /* zoom 2.0を考慮した幅調整 */
 }
+
+/* 重複しているのでこのスタイルは削除済み */
 
 .blog-header {
     text-align: center;
@@ -100,13 +102,13 @@ body {
     padding: 0 !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important;
+    gap: 10px !important; /* zoom 2.0を考慮してgapを縮小 */
     width: 100% !important;
     max-width: none !important;
 }
 
 .blog-post-item {
-    padding: 20px;
+    padding: 10px; /* zoom 2.0を考慮してpaddingを縮小 */
     border: 2px solid #333;
     border-radius: 0;
     background: #f5f5f5;
