@@ -7,6 +7,17 @@
 
 {% block head %}
 <style>
+/* 重要：ブログページ専用でzoomを無効化 */
+body {
+    zoom: 1.0 !important;
+    transform: none !important;
+}
+
+.blog-container {
+    zoom: 1.0 !important;
+    transform: none !important;
+}
+
 /* シンプルなブログページCSS */
 .blog-container {
     max-width: 800px;
