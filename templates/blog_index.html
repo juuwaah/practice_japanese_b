@@ -7,22 +7,14 @@
 
 {% block extra_head %}
 <style>
-/* ブログページを他のページと同じズーム比率に合わせる */
-body {
-    zoom: 2.0 !important;
-}
-
+/* ブログコンテンツエリアは通常サイズを維持 */
 .blog-container {
-    /* アプリ統一の背景パターンを適用 */
-    background-color: #FFFFFF;
-    background-image: radial-gradient(circle, #C0C0C0 1.6px, transparent 1.6px);
-    background-size: 3px 3px;
-    background-position: 0 0, 1.5px 1.5px;
-    background-attachment: fixed;
-    /* コンテナ自体の背景も調整 */
-    padding: 20px;
+    zoom: 0.5 !important; /* 外側のzoom 2.0を相殺して元サイズに */
+    max-width: 800px;
     margin: 0 auto;
-    max-width: 400px; /* zoom 2.0を考慮した幅調整 */
+    padding: 20px;
+    /* 背景は透明にしてbaseの背景を表示 */
+    background: transparent;
 }
 
 /* 重複しているのでこのスタイルは削除済み */
@@ -102,13 +94,13 @@ body {
     padding: 0 !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important; /* zoom 2.0を考慮してgapを縮小 */
+    gap: 20px !important; /* 元のサイズに戻す */
     width: 100% !important;
     max-width: none !important;
 }
 
 .blog-post-item {
-    padding: 10px; /* zoom 2.0を考慮してpaddingを縮小 */
+    padding: 20px; /* 元のサイズに戻す */
     border: 2px solid #333;
     border-radius: 0;
     background: #f5f5f5;
