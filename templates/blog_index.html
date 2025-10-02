@@ -7,428 +7,156 @@
 
 {% block head %}
 <style>
-/* ===== ブログページ専用CSS - 完全リニューアル ===== */
-
-/* 重要：グローバルCSS制約を強制的に上書き */
-.blog-main-container,
-.blog-main-container *,
-.blog-grid,
-.blog-grid *,
-.blog-card,
-.blog-card * {
-    max-width: initial !important;
-    width: auto !important;
-    display: initial !important;
+/* シンプルなブログページCSS */
+.blog-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* 超重要：style-retro.cssの * { max-width: 100vw !important; } を無効化 */
-.blog-grid,
-.blog-grid *,
-.blog-card,
-.blog-card * {
-    max-width: none !important;
-}
-
-/* グリッド専用の超強制スタイル - 最高優先度 */
-.blog-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 25px !important;
-    width: 100% !important;
-    max-width: none !important;
-    overflow: visible !important;
-    container-type: normal !important;
-}
-
-/* 古いスタイルは削除済み */
-
-/* メインコンテナ */
-.blog-main-container {
-    max-width: 1200px !important;
-    margin: 0 auto !important;
-    padding: 20px !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    display: block !important;
-    position: relative !important;
-    z-index: 10 !important;
-}
-
-/* ヘッダーセクション */
 .blog-header {
     text-align: center;
-    margin-bottom: 40px;
-    padding: 30px 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-}
-
-.blog-header h1 {
-    font-size: 2.5rem;
-    margin: 0 0 10px 0;
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.blog-header p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin: 0;
-}
-
-/* 検索・フィルターセクション */
-.blog-controls {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     margin-bottom: 30px;
 }
 
-.search-section {
-    margin-bottom: 20px;
+.blog-header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.blog-controls {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
 }
 
 .search-box {
-    display: flex;
-    gap: 10px;
-    max-width: 600px;
-    margin: 0 auto;
+    margin-bottom: 15px;
 }
 
 .search-input {
-    flex: 1;
-    padding: 12px 20px;
-    border: 2px solid #e1e5e9;
-    border-radius: 25px;
-    font-size: 16px;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .search-btn {
-    padding: 12px 24px;
-    background: #667eea;
+    padding: 10px 20px;
+    background: #007bff;
     color: white;
     border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 16px;
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
-.search-btn:hover {
-    background: #5a6fd8;
-    transform: translateY(-2px);
-}
-
-/* タグフィルターセクション */
 .tags-section {
-    text-align: center;
-}
-
-.tags-title {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    color: #333;
-    font-weight: 600;
-}
-
-.tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+    margin-top: 15px;
 }
 
 .tag-pill {
-    padding: 8px 16px;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 25px;
-    color: #495057;
+    display: inline-block;
+    padding: 5px 12px;
+    margin: 3px;
+    background: #e9ecef;
+    border: 1px solid #ddd;
+    border-radius: 15px;
     text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    color: #495057;
 }
 
 .tag-pill:hover {
-    background: #667eea;
-    border-color: #667eea;
+    background: #007bff;
     color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .tag-pill.active {
-    background: #667eea;
-    border-color: #667eea;
+    background: #007bff;
     color: white;
 }
 
-.clear-tag {
-    background: #dc3545;
-    border-color: #dc3545;
-    color: white;
+.blog-posts {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
-.clear-tag:hover {
-    background: #c82333;
-    border-color: #c82333;
+.blog-post-item {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 検索結果表示 */
-.search-result-info {
-    text-align: center;
-    margin: 20px 0;
-    padding: 15px;
-    background: #e3f2fd;
-    border-radius: 10px;
-    color: #1565c0;
-    font-weight: 500;
+.blog-post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* ブログ記事グリッド - 削除（上で既に定義済み） */
-
-/* ブログカード */
-.blog-card {
-    background: white !important;
-    border-radius: 15px !important;
-    overflow: hidden !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
-    transition: all 0.3s ease !important;
-    border: 2px solid #e9ecef !important;
-    position: relative !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 300px !important;
-    height: auto !important;
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .blog-posts {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 
-.blog-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 45px rgba(0,0,0,0.2);
-    border-color: #667eea;
+.blog-post-title {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
 }
 
-.blog-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 15px 15px 0 0;
-}
-
-.blog-card-header {
-    padding: 25px;
-    padding-bottom: 15px;
-}
-
-.blog-card-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0 0 10px 0;
-    line-height: 1.4;
-}
-
-.blog-card-title a {
-    color: #333;
+.blog-post-title a {
     text-decoration: none;
-    transition: color 0.3s ease;
+    color: #333;
 }
 
-.blog-card-title a:hover {
-    color: #667eea;
+.blog-post-title a:hover {
+    color: #007bff;
 }
 
-.blog-card-meta {
-    color: #6c757d;
-    font-size: 14px;
-    margin-bottom: 15px;
+.blog-post-meta {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
 }
 
-.blog-card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 25px 25px 25px;
+.blog-post-tags {
+    margin-top: 10px;
 }
 
 .blog-tag {
-    padding: 4px 12px;
+    display: inline-block;
+    padding: 3px 8px;
+    margin-right: 5px;
     background: #f8f9fa;
-    color: #495057;
-    border-radius: 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 0.8rem;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
+    color: #666;
 }
 
 .blog-tag:hover {
-    background: #667eea;
+    background: #007bff;
     color: white;
-    transform: scale(1.05);
 }
 
-/* 空状態 */
-.empty-state {
+.no-posts {
     text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 40px;
+    color: #666;
 }
-
-.empty-state-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    opacity: 0.3;
-}
-
-.empty-state-title {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #495057;
-    font-weight: 600;
-}
-
-.empty-state-message {
-    color: #6c757d;
-    font-size: 1rem;
-}
-
-/* レスポンシブデザイン - 強制的に適用 */
-@media (max-width: 768px) {
-    .blog-main-container {
-        padding: 15px !important;
-        max-width: none !important;
-    }
-    
-    .blog-header {
-        padding: 20px !important;
-        margin-bottom: 25px !important;
-    }
-    
-    .blog-header h1 {
-        font-size: 2rem !important;
-    }
-    
-    .blog-controls {
-        padding: 20px !important;
-    }
-    
-    .search-box {
-        flex-direction: column !important;
-    }
-    
-    .search-input, .search-btn {
-        width: 100% !important;
-        border-radius: 10px !important;
-        max-width: none !important;
-    }
-    
-    .blog-grid {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 20px !important;
-        width: 100% !important;
-        max-width: none !important;
-    }
-    
-    .blog-card {
-        width: 100% !important;
-        max-width: none !important;
-        min-width: auto !important;
-    }
-    
-    .tags-container {
-        justify-content: flex-start !important;
-    }
-    
-    .tag-pill {
-        font-size: 12px !important;
-        padding: 6px 12px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .blog-header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .blog-card-header {
-        padding: 20px;
-        padding-bottom: 10px;
-    }
-    
-    .blog-card-tags {
-        padding: 0 20px 20px 20px;
-    }
-    
-    .blog-card-title {
-        font-size: 1.2rem;
-    }
-}
-
-/* デスクトップ向け強制グリッド */
-@media (min-width: 769px) {
-    .blog-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 25px !important;
-        width: 100% !important;
-        max-width: none !important;
-        overflow: visible !important;
-        container-type: normal !important;
-    }
-    
-    .blog-card {
-        display: block !important;
-        width: 100% !important;
-        max-width: none !important;
-        min-width: auto !important;
-        container-type: normal !important;
-    }
-}
-
-/* アニメーション */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.blog-card {
-    animation: fadeInUp 0.6s ease forwards !important;
-}
-
-.blog-card:nth-child(2) { animation-delay: 0.1s; }
-.blog-card:nth-child(3) { animation-delay: 0.2s; }
-.blog-card:nth-child(4) { animation-delay: 0.3s; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="blog-main-container">
+<div class="blog-container">
   <!-- ブログヘッダー -->
   <header class="blog-header">
     <h1>📝 {{ _('blog') if _('blog') else 'ブログ' }}</h1>
@@ -457,10 +185,10 @@
     <!-- タグフィルターセクション -->
     {% if all_tags %}
     <div class="tags-section">
-      <h3 class="tags-title">🏷️ {{ _('filter_by_tags') if _('filter_by_tags') else 'タグで絞り込み' }}</h3>
+      <h4>🏷️ {{ _('filter_by_tags') if _('filter_by_tags') else 'タグで絞り込み' }}</h4>
       <div class="tags-container">
         {% if tag_filter %}
-        <a href="{{ url_for('blog.blog_index', q=search_query) }}" class="tag-pill clear-tag">
+        <a href="{{ url_for('blog.blog_index', q=search_query) }}" class="tag-pill" style="background: #dc3545; color: white;">
           ✕ {{ _('clear_filter') if _('clear_filter') else 'フィルターをクリア' }}
         </a>
         {% endif %}
@@ -477,7 +205,7 @@
 
   <!-- 検索結果情報 -->
   {% if search_query or tag_filter %}
-  <div class="search-result-info">
+  <div style="text-align: center; margin: 20px 0; padding: 10px; background: #e3f2fd; border-radius: 5px;">
     {% if search_query and tag_filter %}
       "{{ search_query }}" + {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('search_results') if _('search_results') else 'の検索結果' }}: {{ blog_posts|length }}{{ _('articles_found') if _('articles_found') else '件の記事' }}
     {% elif search_query %}
@@ -486,34 +214,32 @@
       {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('articles') if _('articles') else 'の記事' }}: {{ blog_posts|length }}{{ _('items') if _('items') else '件' }}
     {% endif %}
     <br>
-    <a href="{{ url_for('blog.blog_index') }}" style="color: #667eea; text-decoration: none;">
+    <a href="{{ url_for('blog.blog_index') }}" style="color: #007bff;">
       → {{ _('show_all_articles') if _('show_all_articles') else '全ての記事を表示' }}
     </a>
   </div>
   {% endif %}
 
-  <!-- ブログ記事グリッド -->
+  <!-- ブログ記事リスト -->
   {% if blog_posts %}
-  <section class="blog-grid">
+  <ul class="blog-posts">
     {% for post in blog_posts %}
-    <article class="blog-card">
-      <div class="blog-card-header">
-        <h2 class="blog-card-title">
-          <a href="{{ url_for('blog.blog_post', document_id=post.id or post.get('id', '')) }}">
-            {{ post.title or post.name or post.get('title', '') or post.get('name', '') or ('ブログ記事 ' ~ loop.index) }}
-          </a>
-        </h2>
-        
-        {% if post.created_date or post.modified_date %}
-        <div class="blog-card-meta">
-          {% if post.created_date %}📅 {{ _('created') if _('created') else '作成' }}: {{ post.created_date }}{% endif %}
-          {% if post.modified_date and post.modified_date != post.created_date %} | 📝 {{ _('updated') if _('updated') else '更新' }}: {{ post.modified_date }}{% endif %}
-        </div>
-        {% endif %}
+    <li class="blog-post-item">
+      <h2 class="blog-post-title">
+        <a href="{{ url_for('blog.blog_post', document_id=post.id or post.get('id', '')) }}">
+          {{ post.title or post.name or post.get('title', '') or post.get('name', '') or ('ブログ記事 ' ~ loop.index) }}
+        </a>
+      </h2>
+      
+      {% if post.created_date or post.modified_date %}
+      <div class="blog-post-meta">
+        {% if post.created_date %}📅 {{ _('created') if _('created') else '作成' }}: {{ post.created_date }}{% endif %}
+        {% if post.modified_date and post.modified_date != post.created_date %} | 📝 {{ _('updated') if _('updated') else '更新' }}: {{ post.modified_date }}{% endif %}
       </div>
+      {% endif %}
       
       {% if post.tags %}
-      <div class="blog-card-tags">
+      <div class="blog-post-tags">
         {% for tag in post.tags %}
         <a href="{{ url_for('blog.blog_index', tag=tag, q=search_query) }}" class="blog-tag">
           {{ tag }}
@@ -521,27 +247,26 @@
         {% endfor %}
       </div>
       {% endif %}
-    </article>
+    </li>
     {% endfor %}
-  </section>
+  </ul>
   {% else %}
-  <section class="empty-state">
-    <div class="empty-state-icon">📚</div>
-    <h2 class="empty-state-title">
+  <div class="no-posts">
+    <h3>
       {% if search_query %}
         {{ _('no_articles_found') if _('no_articles_found') else '検索結果が見つかりません' }}
       {% else %}
         {{ _('no_blog_posts_yet') if _('no_blog_posts_yet') else 'ブログ記事がまだありません' }}
       {% endif %}
-    </h2>
-    <p class="empty-state-message">
+    </h3>
+    <p>
       {% if search_query %}
         {{ _('try_different_search') if _('try_different_search') else '別のキーワードで検索してみてください' }}
       {% else %}
         {{ _('check_back_later') if _('check_back_later') else '近日中に記事を公開予定です。しばらくお待ちください。' }}
       {% endif %}
     </p>
-  </section>
+  </div>
   {% endif %}
 </div>
 {% endblock %}
