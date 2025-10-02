@@ -77,11 +77,13 @@
 }
 
 .blog-posts {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    list-style: none !important;
+    padding: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: none !important;
 }
 
 .blog-post-item {
@@ -98,11 +100,25 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* モバイル対応 */
+/* モバイル対応 - 強制適用 */
 @media (max-width: 768px) {
     .blog-posts {
-        grid-template-columns: 1fr;
-        gap: 15px;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+}
+
+/* デスクトップでの強制グリッド - zoomを考慮 */
+@media (min-width: 769px) {
+    .blog-posts {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+        width: 100% !important;
+        max-width: none !important;
     }
 }
 
