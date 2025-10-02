@@ -21,16 +21,26 @@
     display: initial !important;
 }
 
-/* グリッド専用の強制スタイル */
+/* 超重要：style-retro.cssの * { max-width: 100vw !important; } を無効化 */
+.blog-grid,
+.blog-grid *,
+.blog-card,
+.blog-card * {
+    max-width: none !important;
+}
+
+/* グリッド専用の超強制スタイル - 最高優先度 */
 .blog-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 25px !important;
-    margin-top: 30px !important;
     width: 100% !important;
     max-width: none !important;
     overflow: visible !important;
+    container-type: normal !important;
 }
+
+/* 古いスタイルは削除済み */
 
 /* メインコンテナ */
 .blog-main-container {
@@ -378,18 +388,20 @@
 @media (min-width: 769px) {
     .blog-grid {
         display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 25px !important;
         width: 100% !important;
         max-width: none !important;
         overflow: visible !important;
+        container-type: normal !important;
     }
     
     .blog-card {
         display: block !important;
         width: 100% !important;
         max-width: none !important;
-        min-width: 300px !important;
+        min-width: auto !important;
+        container-type: normal !important;
     }
 }
 
