@@ -9,12 +9,38 @@
 <style>
 /* ===== ブログページ専用CSS - 完全リニューアル ===== */
 
+/* 重要：グローバルCSS制約を強制的に上書き */
+.blog-main-container,
+.blog-main-container *,
+.blog-grid,
+.blog-grid *,
+.blog-card,
+.blog-card * {
+    max-width: initial !important;
+    width: auto !important;
+    display: initial !important;
+}
+
+/* グリッド専用の強制スタイル */
+.blog-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+    gap: 25px !important;
+    margin-top: 30px !important;
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+}
+
 /* メインコンテナ */
 .blog-main-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 10 !important;
 }
 
 /* ヘッダーセクション */
@@ -160,23 +186,22 @@
     font-weight: 500;
 }
 
-/* ブログ記事グリッド */
-.blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
-}
+/* ブログ記事グリッド - 削除（上で既に定義済み） */
 
 /* ブログカード */
 .blog-card {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
-    border: 2px solid #e9ecef;
-    position: relative;
+    background: white !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid #e9ecef !important;
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 300px !important;
+    height: auto !important;
 }
 
 .blog-card:hover {
@@ -276,46 +301,57 @@
     font-size: 1rem;
 }
 
-/* レスポンシブデザイン */
+/* レスポンシブデザイン - 強制的に適用 */
 @media (max-width: 768px) {
     .blog-main-container {
-        padding: 15px;
+        padding: 15px !important;
+        max-width: none !important;
     }
     
     .blog-header {
-        padding: 20px;
-        margin-bottom: 25px;
+        padding: 20px !important;
+        margin-bottom: 25px !important;
     }
     
     .blog-header h1 {
-        font-size: 2rem;
+        font-size: 2rem !important;
     }
     
     .blog-controls {
-        padding: 20px;
+        padding: 20px !important;
     }
     
     .search-box {
-        flex-direction: column;
+        flex-direction: column !important;
     }
     
     .search-input, .search-btn {
-        width: 100%;
-        border-radius: 10px;
+        width: 100% !important;
+        border-radius: 10px !important;
+        max-width: none !important;
     }
     
     .blog-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    .blog-card {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: auto !important;
     }
     
     .tags-container {
-        justify-content: flex-start;
+        justify-content: flex-start !important;
     }
     
     .tag-pill {
-        font-size: 12px;
-        padding: 6px 12px;
+        font-size: 12px !important;
+        padding: 6px 12px !important;
     }
 }
 
@@ -338,6 +374,25 @@
     }
 }
 
+/* デスクトップ向け強制グリッド */
+@media (min-width: 769px) {
+    .blog-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+        gap: 25px !important;
+        width: 100% !important;
+        max-width: none !important;
+        overflow: visible !important;
+    }
+    
+    .blog-card {
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 300px !important;
+    }
+}
+
 /* アニメーション */
 @keyframes fadeInUp {
     from {
@@ -351,7 +406,7 @@
 }
 
 .blog-card {
-    animation: fadeInUp 0.6s ease forwards;
+    animation: fadeInUp 0.6s ease forwards !important;
 }
 
 .blog-card:nth-child(2) { animation-delay: 0.1s; }
