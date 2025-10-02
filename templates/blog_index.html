@@ -173,14 +173,27 @@
     background: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
+    border: 2px solid #e9ecef;
+    position: relative;
 }
 
 .blog-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.2);
+    border-color: #667eea;
+}
+
+.blog-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 15px 15px 0 0;
 }
 
 .blog-card-header {
@@ -351,8 +364,8 @@
 <div class="blog-main-container">
   <!-- ブログヘッダー -->
   <header class="blog-header">
-    <h1>📝 ブログ</h1>
-    <p>日本語学習に役立つ記事をお楽しみください</p>
+    <h1>📝 {{ _('blog') if _('blog') else 'ブログ' }}</h1>
+    <p>{{ _('blog_description') if _('blog_description') else '日本語学習に役立つ記事をお楽しみください' }}</p>
   </header>
 
   <!-- 検索・フィルターコントロール -->
@@ -364,12 +377,12 @@
           <input type="text" 
                  name="q" 
                  value="{{ search_query }}" 
-                 placeholder="ブログ記事を検索..." 
+                 placeholder="{{ _('search_blog_posts') if _('search_blog_posts') else 'ブログ記事を検索...' }}" 
                  class="search-input">
           {% if tag_filter %}
           <input type="hidden" name="tag" value="{{ tag_filter }}">
           {% endif %}
-          <button type="submit" class="search-btn">🔍 検索</button>
+          <button type="submit" class="search-btn">🔍 {{ _('search') if _('search') else '検索' }}</button>
         </div>
       </form>
     </div>
@@ -377,11 +390,11 @@
     <!-- タグフィルターセクション -->
     {% if all_tags %}
     <div class="tags-section">
-      <h3 class="tags-title">🏷️ タグで絞り込み</h3>
+      <h3 class="tags-title">🏷️ {{ _('filter_by_tags') if _('filter_by_tags') else 'タグで絞り込み' }}</h3>
       <div class="tags-container">
         {% if tag_filter %}
         <a href="{{ url_for('blog.blog_index', q=search_query) }}" class="tag-pill clear-tag">
-          ✕ フィルターをクリア
+          ✕ {{ _('clear_filter') if _('clear_filter') else 'フィルターをクリア' }}
         </a>
         {% endif %}
         {% for tag in all_tags %}
@@ -399,15 +412,15 @@
   {% if search_query or tag_filter %}
   <div class="search-result-info">
     {% if search_query and tag_filter %}
-      「{{ search_query }}」+ タグ「{{ tag_filter }}」の検索結果: {{ blog_posts|length }}件の記事
+      "{{ search_query }}" + {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('search_results') if _('search_results') else 'の検索結果' }}: {{ blog_posts|length }}{{ _('articles_found') if _('articles_found') else '件の記事' }}
     {% elif search_query %}
-      「{{ search_query }}」の検索結果: {{ blog_posts|length }}件の記事
+      "{{ search_query }}"{{ _('search_results') if _('search_results') else 'の検索結果' }}: {{ blog_posts|length }}{{ _('articles_found') if _('articles_found') else '件の記事' }}
     {% elif tag_filter %}
-      タグ「{{ tag_filter }}」の記事: {{ blog_posts|length }}件
+      {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('articles') if _('articles') else 'の記事' }}: {{ blog_posts|length }}{{ _('items') if _('items') else '件' }}
     {% endif %}
     <br>
     <a href="{{ url_for('blog.blog_index') }}" style="color: #667eea; text-decoration: none;">
-      → 全ての記事を表示
+      → {{ _('show_all_articles') if _('show_all_articles') else '全ての記事を表示' }}
     </a>
   </div>
   {% endif %}
@@ -426,8 +439,8 @@
         
         {% if post.created_date or post.modified_date %}
         <div class="blog-card-meta">
-          {% if post.created_date %}📅 作成: {{ post.created_date }}{% endif %}
-          {% if post.modified_date and post.modified_date != post.created_date %} | 📝 更新: {{ post.modified_date }}{% endif %}
+          {% if post.created_date %}📅 {{ _('created') if _('created') else '作成' }}: {{ post.created_date }}{% endif %}
+          {% if post.modified_date and post.modified_date != post.created_date %} | 📝 {{ _('updated') if _('updated') else '更新' }}: {{ post.modified_date }}{% endif %}
         </div>
         {% endif %}
       </div>
@@ -449,16 +462,16 @@
     <div class="empty-state-icon">📚</div>
     <h2 class="empty-state-title">
       {% if search_query %}
-        検索結果が見つかりません
+        {{ _('no_articles_found') if _('no_articles_found') else '検索結果が見つかりません' }}
       {% else %}
-        ブログ記事がまだありません
+        {{ _('no_blog_posts_yet') if _('no_blog_posts_yet') else 'ブログ記事がまだありません' }}
       {% endif %}
     </h2>
     <p class="empty-state-message">
       {% if search_query %}
-        別のキーワードで検索してみてください
+        {{ _('try_different_search') if _('try_different_search') else '別のキーワードで検索してみてください' }}
       {% else %}
-        近日中に記事を公開予定です。しばらくお待ちください。
+        {{ _('check_back_later') if _('check_back_later') else '近日中に記事を公開予定です。しばらくお待ちください。' }}
       {% endif %}
     </p>
   </section>

@@ -336,6 +336,12 @@ TRANSLATIONS = {
         'no_blog_posts_yet': 'No blog posts yet',
         'check_back_later': 'Check back later for new articles',
         'back_to_blog': 'Back to blog',
+        'filter_by_tags': 'Filter by tags',
+        'clear_filter': 'Clear filter',
+        'tag': 'Tag',
+        'articles': 'articles',
+        'items': 'items',
+        'created': 'Created',
         
         # YouTube Content Disclaimer
         'youtube_content_disclaimer': 'YouTube Content Disclaimer',
@@ -689,6 +695,12 @@ TRANSLATIONS = {
         'no_blog_posts_yet': 'まだブログ記事がありません',
         'check_back_later': '新しい記事については後でチェックしてください',
         'back_to_blog': 'ブログに戻る',
+        'filter_by_tags': 'タグで絞り込み',
+        'clear_filter': 'フィルターをクリア',
+        'tag': 'タグ',
+        'articles': 'の記事',
+        'items': '件',
+        'created': '作成',
         
         # YouTube コンテンツ免責事項
         'youtube_content_disclaimer': 'YouTube コンテンツ免責事項',
@@ -1033,7 +1045,13 @@ TRANSLATIONS = {
         'try_different_search': 'Try a different search term',
         'no_blog_posts_yet': 'No blog posts yet',
         'check_back_later': 'Check back later for new articles',
-        'back_to_blog': 'Back to blog',
+        'back_to_blog': 'Volver al blog',
+        'filter_by_tags': 'Filtrar por etiquetas',
+        'clear_filter': 'Limpiar filtro',
+        'tag': 'Etiqueta',
+        'articles': 'artículos',
+        'items': 'elementos',
+        'created': 'Creado',
         
         # Descargo de responsabilidad de contenido de YouTube
         'youtube_content_disclaimer': 'Descargo de responsabilidad de contenido de YouTube',
