@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, abort, jsonify, redirect,
 from flask_login import current_user, login_required
 from google_drive_helper import get_blog_documents, get_document_content, search_blog_posts
 from models import db, BlogComment, BlogFavorite
-from datetime import datetime
 
 blog_bp = Blueprint('blog', __name__, url_prefix='/blog')
 
@@ -53,12 +52,6 @@ def blog_index():
     
     # 各記事にタグ情報を追加
     for post in blog_posts:
-        # デバッグ情報を追加
-        print(f"DEBUG Blog Route: Post data = {post}")
-        print(f"DEBUG Blog Route: Post keys = {list(post.keys())}")
-        print(f"DEBUG Blog Route: Post title = {post.get('title', 'NO_TITLE')}")
-        print(f"DEBUG Blog Route: Post name = {post.get('name', 'NO_NAME')}")
-        
         doc_content = get_document_content(post['id'])
         if doc_content:
             post['tags'] = doc_content.get('tags', [])
@@ -184,24 +177,3 @@ def toggle_favorite(document_id):
     else:
         flash(message, 'success')
         return redirect(url_for('blog.blog_post', document_id=document_id))
-
-@blog_bp.route('/favorites')
-@login_required
-def user_favorites():
-    """ユーザーのお気に入り記事一覧"""
-    favorites = BlogFavorite.query.filter_by(user_id=current_user.id)\
-                                .order_by(BlogFavorite.created_at.desc()).all()
-    
-    # お気に入り記事の情報を取得
-    favorite_posts = []
-    for favorite in favorites:
-        doc_content = get_document_content(favorite.document_id)
-        if doc_content:
-            favorite_posts.append({
-                'id': favorite.document_id,
-                'title': doc_content['title'],
-                'tags': doc_content.get('tags', []),
-                'favorited_at': favorite.created_at
-            })
-    
-    return render_template('blog_favorites.html', favorite_posts=favorite_posts)

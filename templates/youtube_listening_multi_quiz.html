@@ -1,16 +1,28 @@
 {% set hide_sidebar = true %}
 {% extends "base.html" %}
 
-{% block title %}{{ base_quiz.title }} - YouTube リスニングクイズ{% endblock %}
+{% block title %}{% if language == 'ja' %}{{ base_quiz.title }} - YouTube リスニングクイズ{% else %}{{ base_quiz.title }} - YouTube Listening Quiz{% endif %}{% endblock %}
 
 {% block content %}
+{% if language != 'ja' %}
+<div class="container">
+{% endif %}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ base_quiz.title }}</h1>
+{% if language == 'ja' %}
         <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level) }}" 
            class="btn btn-secondary">{{ base_quiz.level }}一覧に戻る</a>
+{% else %}
+        <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level, lang='en') }}" 
+           class="btn btn-secondary">Back to {{ base_quiz.level }} List</a>
+{% endif %}
     </div>
     
+{% if language == 'ja' %}
     <!-- YouTube動画 -->
+{% else %}
+    <!-- YouTube Video -->
+{% endif %}
     <div class="row mb-4">
         <div class="col-lg-12">
             <div class="embed-responsive embed-responsive-16by9 youtube-video-container" style="max-width: 800px; margin: 0 auto;">
@@ -20,20 +32,41 @@
             </div>
             <div class="mt-2">
                 <div id="video-info" class="alert alert-info small">
+{% if language == 'ja' %}
                     <strong>📺 再生範囲:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span>
+{% else %}
+                    <strong>📺 Playback Range:</strong> <span id="time-display">{{ '%d:%02d'|format(base_quiz.start//60, base_quiz.start%60) }} - {{ '%d:%02d'|format(base_quiz.end//60, base_quiz.end%60) }} ({{ '%d:%02d'|format((base_quiz.end - base_quiz.start)//60, (base_quiz.end - base_quiz.start)%60) }})</span>
+{% endif %}
                 </div>
                 
+{% if language == 'ja' %}
                 <!-- 申立てボタン -->
+{% else %}
+                <!-- Report Button -->
+{% endif %}
                 <div style="text-align: center; margin-top: 8px;">
                     <button onclick="showReportForm()" class="btn btn-sm btn-outline-danger">
+{% if language == 'ja' %}
                         📢 動画に関する申立て
+{% else %}
+                        📢 Report Video Issue
+{% endif %}
                     </button>
                 </div>
                 
+{% if language == 'ja' %}
                 <!-- 申立てフォーム（初期は非表示） -->
+{% else %}
+                <!-- Report Form (initially hidden) -->
+{% endif %}
                 <div id="report-form-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;">
+{% if language == 'ja' %}
                     <h6>動画に関する申立て</h6>
                     <p class="small text-muted">著作権や不適切なコンテンツに関するご連絡がございましたら、下記フォームよりお知らせください。</p>
+{% else %}
+                    <h6>Report Video Issue</h6>
+                    <p class="small text-muted">If you have concerns about copyright infringement or inappropriate content, please let us know using the form below.</p>
+{% endif %}
                     
                     <form id="report-form" method="POST" action="/youtube_report">
                         <input type="hidden" name="video_id" value="{{ base_quiz.video_id }}">
@@ -41,25 +74,50 @@
                         <input type="hidden" name="quiz_id" value="{{ base_quiz.id }}">
                         
                         <div class="form-group mb-3">
+{% if language == 'ja' %}
                             <label for="report-type">申立て内容:</label>
+{% else %}
+                            <label for="report-type">Issue Type:</label>
+{% endif %}
                             <select name="report_type" id="report-type" class="form-control form-control-sm" required>
+{% if language == 'ja' %}
                                 <option value="">選択してください</option>
                                 <option value="copyright">著作権侵害</option>
                                 <option value="inappropriate">不適切なコンテンツ</option>
                                 <option value="privacy">プライバシーの問題</option>
                                 <option value="other">その他</option>
+{% else %}
+                                <option value="">Please select</option>
+                                <option value="copyright">Copyright Infringement</option>
+                                <option value="inappropriate">Inappropriate Content</option>
+                                <option value="privacy">Privacy Concerns</option>
+                                <option value="other">Other</option>
+{% endif %}
                             </select>
                         </div>
                         
                         <div class="form-group mb-3">
+{% if language == 'ja' %}
                             <label for="report-message">詳細:</label>
+{% else %}
+                            <label for="report-message">Details:</label>
+{% endif %}
                             <textarea name="message" id="report-message" rows="4" class="form-control form-control-sm" 
+{% if language == 'ja' %}
                                       placeholder="申立て内容の詳細をお書きください..." required></textarea>
+{% else %}
+                                      placeholder="Please provide details about the issue..." required></textarea>
+{% endif %}
                         </div>
                         
                         <div class="d-flex gap-2">
+{% if language == 'ja' %}
                             <button type="submit" class="btn btn-danger btn-sm">送信</button>
                             <button type="button" onclick="hideReportForm()" class="btn btn-secondary btn-sm">キャンセル</button>
+{% else %}
+                            <button type="submit" class="btn btn-danger btn-sm">Submit</button>
+                            <button type="button" onclick="hideReportForm()" class="btn btn-secondary btn-sm">Cancel</button>
+{% endif %}
                         </div>
                     </form>
                 </div>
@@ -67,9 +125,17 @@
         </div>
     </div>
     
+{% if language == 'ja' %}
     <!-- クイズ問題（複数） -->
+{% else %}
+    <!-- Quiz Questions (Multiple) -->
+{% endif %}
     {% if not show_answers %}
+{% if language == 'ja' %}
     <!-- 回答フォーム -->
+{% else %}
+    <!-- Answer Form -->
+{% endif %}
     <form method="POST">
         {% for quiz in quizzes %}
         <div class="row mb-4">
@@ -77,7 +143,11 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="mb-3">
+{% if language == 'ja' %}
                             <h5 class="card-title mb-0" style="font-size: 1.1rem; font-weight: 600;">問題{{ quiz.quiz_num }}</h5>
+{% else %}
+                            <h5 class="card-title mb-0" style="font-size: 1.1rem; font-weight: 600;">Question {{ quiz.quiz_num }}</h5>
+{% endif %}
                         </div>
                         {% if quiz.start and quiz.end and (quiz.start != base_quiz.start or quiz.end != base_quiz.end) %}
                         <div class="mb-3">
@@ -86,7 +156,11 @@
                                         src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=0&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
                                         allow="autoplay"></iframe>
                             </div>
+{% if language == 'ja' %}
                             <small class="text-muted">📺 この問題の動画 ({{ '%d:%02d'|format(quiz.start//60, quiz.start%60) }} - {{ '%d:%02d'|format(quiz.end//60, quiz.end%60) }})</small>
+{% else %}
+                            <small class="text-muted">📺 This question's video ({{ '%d:%02d'|format(quiz.start//60, quiz.start%60) }} - {{ '%d:%02d'|format(quiz.end//60, quiz.end%60) }})</small>
+{% endif %}
                         </div>
                         {% endif %}
                         <p class="card-text" style="font-size: 1.1rem; font-weight: 600; line-height: 1.6;">{{ quiz.question }}</p>
@@ -118,13 +192,21 @@
         
         <div class="row">
             <div class="col-lg-12" style="max-width: 800px; margin: 0 auto;">
+{% if language == 'ja' %}
                 <button type="submit" class="btn btn-primary btn-lg">回答する</button>
+{% else %}
+                <button type="submit" class="btn btn-primary btn-lg">Submit All Answers</button>
+{% endif %}
             </div>
         </div>
     </form>
     
     {% else %}
+{% if language == 'ja' %}
     <!-- 結果表示 -->
+{% else %}
+    <!-- Results Display -->
+{% endif %}
     <div class="row mb-5">
         <div class="col-lg-10 mx-auto">
             <div class="text-center mb-4">
@@ -135,7 +217,11 @@
                         {% elif total_correct >= total_questions/2 %}👍
                         {% else %}💪{% endif %}
                     </div>
+{% if language == 'ja' %}
                     <h3 class="mb-2" style="font-weight: 600; font-size: 1.5rem;">{{ total_correct }}/{{ total_questions }}問正解</h3>
+{% else %}
+                    <h3 class="mb-2" style="font-weight: 600; font-size: 1.5rem;">{{ total_correct }}/{{ total_questions }} Correct</h3>
+{% endif %}
                 </div>
             </div>
         </div>
@@ -149,10 +235,18 @@
                 <div class="card-header {% if result.is_correct %}bg-success{% else %}bg-danger{% endif %} text-white" 
                      style="padding: 1rem 1.5rem;">
                     <div class="d-flex align-items-center">
+{% if language == 'ja' %}
                         <h4 class="mb-0 me-3" style="font-weight: 600; font-size: 1.1rem;">問題{{ result.quiz_num }}</h4>
+{% else %}
+                        <h4 class="mb-0 me-3" style="font-weight: 600; font-size: 1.1rem;">Question {{ result.quiz_num }}</h4>
+{% endif %}
                         <span class="badge {% if result.is_correct %}bg-light text-success{% else %}bg-light text-danger{% endif %}" 
                               style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+{% if language == 'ja' %}
                             {% if result.is_correct %}✓ 正解{% else %}✗ 不正解{% endif %}
+{% else %}
+                            {% if result.is_correct %}✓ Correct{% else %}✗ Incorrect{% endif %}
+{% endif %}
                         </span>
                     </div>
                 </div>
@@ -185,7 +279,11 @@
                                     {{ choice.number }}. {{ choice.text }}
                                 </span>
                                 {% if choice.number|string == result.correct_answer %}
+{% if language == 'ja' %}
                                     <span class="badge bg-success" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">✓ 正解</span>
+{% else %}
+                                    <span class="badge bg-success" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">✓ Correct</span>
+{% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -194,13 +292,21 @@
                     
                     {% if result.explanation %}
                     <div class="explanation-box mt-4 p-4 rounded" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #007bff;">
+{% if language == 'ja' %}
                         <h5 class="mb-3" style="color: #495057; font-weight: 600; font-size: 1.1rem;">📝 解説</h5>
+{% else %}
+                        <h5 class="mb-3" style="color: #495057; font-weight: 600; font-size: 1.1rem;">📝 Explanation</h5>
+{% endif %}
                         <p class="mb-3" style="font-size: 1rem; line-height: 1.6; color: #495057; margin: 0; font-weight: 400;">{{ result.explanation }}</p>
                         {% if result.explanation_time %}
                         <button onclick="jumpToTime({{ result.explanation_time }})" 
                                 class="btn btn-outline-primary btn-sm mt-2" 
                                 style="font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 0; font-weight: 500;">
+{% if language == 'ja' %}
                             🎥 解説箇所を見る ({{ result.explanation_time }}秒)
+{% else %}
+                            🎥 Watch Explanation ({{ result.explanation_time }}s)
+{% endif %}
                         </button>
                         {% endif %}
                     </div>
@@ -217,26 +323,42 @@
                 <a href="{{ url_for('youtube_listening.listening_levels', level=base_quiz.level) }}" 
                    class="btn btn-primary btn-lg" 
                    style="font-size: 1rem; padding: 0.75rem 2rem; border-radius: 0; font-weight: 500; min-width: 160px;">
+{% if language == 'ja' %}
                     📚 次のクイズへ
+{% else %}
+                    📚 Next Quiz
+{% endif %}
                 </a>
                 <a href="{{ url_for('youtube_listening.listening_quiz', quiz_id=base_quiz.id) }}" 
                    class="btn btn-outline-secondary btn-lg" 
                    style="font-size: 1rem; padding: 0.75rem 2rem; border-radius: 0; font-weight: 500; min-width: 160px;">
+{% if language == 'ja' %}
                     🔄 もう一度挑戦
+{% else %}
+                    🔄 Try Again
+{% endif %}
                 </a>
             </div>
         </div>
     </div>
     {% endif %}
     
+{% if language == 'ja' %}
     <!-- YouTubeチャンネルリンク -->
+{% else %}
+    <!-- YouTube Channel Link -->
+{% endif %}
     {% if base_quiz.youtube_channel_page and base_quiz.channel_name %}
     <div class="row mt-4 mb-5">
         <div class="col-lg-10 mx-auto">
             <div class="card" style="border-radius: 0; border: 1px solid #e9ecef;">
                 <div class="card-body text-center" style="padding: 1.5rem;">
                     <p class="mb-3" style="font-size: 1rem; color: #6c757d; margin-bottom: 1rem;">
+{% if language == 'ja' %}
                         この動画のチャンネルはこちら
+{% else %}
+                        You can reach the channel of this video via
+{% endif %}
                     </p>
                     <a href="{{ base_quiz.youtube_channel_page }}" target="_blank" rel="noopener noreferrer" 
                        class="btn btn-outline-danger" 
@@ -251,9 +373,16 @@
         </div>
     </div>
     {% endif %}
+{% if language != 'ja' %}
+</div>
+{% endif %}
 
 <style>
+{% if language == 'ja' %}
 /* 80年代ゲーム風レトロアイコン枠線 */
+{% else %}
+/* 80s game style retro icon border */
+{% endif %}
 .retro-channel-icon {
     position: relative;
     border: 2px solid #00ff41;
@@ -286,7 +415,11 @@
     100% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 8px #ff0080; }
 }
 
+{% if language == 'ja' %}
 /* レトロテーマのボタンハイライト */
+{% else %}
+/* Retro theme button highlight */
+{% endif %}
 .btn-outline-danger:hover .retro-channel-icon {
     transform: scale(1.05);
     transition: all 0.2s ease;
@@ -303,7 +436,11 @@ function jumpToTime(seconds) {
     iframe.src = newSrc;
 }
 
+{% if language == 'ja' %}
 // 申立てフォームの表示/非表示
+{% else %}
+// Report form show/hide functions
+{% endif %}
 function showReportForm() {
     document.getElementById('report-form-container').style.display = 'block';
 }
@@ -313,7 +450,11 @@ function hideReportForm() {
     document.getElementById('report-form').reset();
 }
 
+{% if language == 'ja' %}
 // 申立てフォーム送信処理
+{% else %}
+// Report form submission handling
+{% endif %}
 document.addEventListener('DOMContentLoaded', function() {
     const reportForm = document.getElementById('report-form');
     if (reportForm) {
@@ -329,15 +470,27 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+{% if language == 'ja' %}
                     alert('申立てを受け付けました。ご連絡ありがとうございます。');
+{% else %}
+                    alert('Thank you for your report. We have received your submission.');
+{% endif %}
                     hideReportForm();
                 } else {
+{% if language == 'ja' %}
                     alert('送信中にエラーが発生しました。もう一度お試しください。');
+{% else %}
+                    alert('An error occurred while submitting. Please try again.');
+{% endif %}
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+{% if language == 'ja' %}
                 alert('送信中にエラーが発生しました。もう一度お試しください。');
+{% else %}
+                alert('An error occurred while submitting. Please try again.');
+{% endif %}
             });
         });
     }

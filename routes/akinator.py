@@ -1,10 +1,11 @@
 import os
-import random
 import pandas as pd
-from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, session, redirect, url_for
 import openai
 import re
-from error_handler import safe_openai_request, format_error_response, get_localized_error_message
+from dotenv import load_dotenv
+
+load_dotenv()
 
 """
 JLPT Kotoba Akinator - How to play
@@ -27,6 +28,55 @@ VOCAB_XLSX = os.path.join(os.path.dirname(__file__), '../database/JLPT vocabular
 JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1']
 # AIがアキネーターの場合は質問が難しすぎるため、N5とN4を除外
 AI_AKINATOR_LEVELS = ['N3', 'N2', 'N1']
+
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+def ask_gpt(prompt, temperature=0.5):
+    """ChatGPTにプロンプトを送り、テキスト応答を返す"""
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": str(prompt)}],
+        temperature=temperature
+    )
+    reply = response.choices[0].message.content
+    return reply.strip() if isinstance(reply, str) else ''
+
+def start_game(role, level):
+    """セッションを初期化して新しいゲームを開始"""
+    session['akinator_role'] = role
+    session['akinator_level'] = level
+    session['akinator_gameover'] = False
+    session['akinator_history'] = []
+    word, meaning, kanji = select_random_noun(level)
+    session['akinator_word'] = word
+    session['akinator_meaning'] = meaning
+    session['akinator_kanji'] = kanji
+    return redirect(url_for('akinator.akinator_game'))
+
+def render_game(history, show_word=False):
+    """ゲーム画面を描画（show_word: ユーザーが当てるモードでは単語を渡す）"""
+    return render_template("akinator.html",
+        role=session['akinator_role'],
+        level=session['akinator_level'],
+        gameover=session.get('akinator_gameover', False),
+        word=session.get('akinator_word') if show_word else None,
+        meaning=session.get('akinator_meaning') if show_word else None,
+        history=history)
+
+def append_hint(history, level):
+    """ヒントを生成して履歴に追加（短すぎる・疑問文などは再生成）"""
+    word = session.get('akinator_word')
+    meaning = session.get('akinator_meaning')
+    hint_prompt = build_akinator_hint_prompt(history, level, word, meaning)
+    hint_text = ''
+    for _ in range(3):
+        hint_text = ask_gpt(hint_prompt)
+        if len(hint_text) < 6 or any(e in hint_text for e in
+                ["⎝", "( ᐛ )", "？", "?", "(੭", "Ҩ", "╭☞", "ʕ˒", "!", "only output", "output only"]):
+            continue
+        break
+    history.append({'role': 'gpt', 'text': f'ヒント: {hint_text}'})
+    session['akinator_history'] = history
 
 # 一般的な漢字読み辞書（主要なJLPT語彙）- 漢字とひらがなの対応
 KANJI_READINGS = {
@@ -279,76 +329,35 @@ def is_correct_answer(user_guess, correct_word, correct_kanji=None):
 # セッション初期化
 @akinator_bp.route('/', methods=['GET', 'POST'])
 def akinator_index():
-    # GETパラメータから設定を取得
+    # GETパラメータに有効な設定がある場合は直接ゲームを開始
     role_param = request.args.get('role')
     level_param = request.args.get('level')
-    
-    # 有効なパラメータがある場合は直接ゲームを開始
-    if role_param in ['user', 'gpt'] and level_param in JLPT_LEVELS:
-        session['akinator_role'] = role_param
-        session['akinator_level'] = level_param
-        session['akinator_gameover'] = False
-        session['akinator_history'] = []
-        # 語彙を選択
-        word, meaning, kanji = select_random_noun(level_param)
-        session['akinator_word'] = word
-        session['akinator_meaning'] = meaning
-        session['akinator_kanji'] = kanji
-        return redirect(url_for('akinator.akinator_game'))
-    
-    # roleパラメータがあるがlevelパラメータがない場合、適切なデフォルトレベルを設定して直接ゲームを開始
-    if role_param in ['user', 'gpt'] and not level_param:
-        # ユーザーがアキネーター: N5からN1まで利用可能（デフォルトN5）
-        # AIがアキネーター: N3からN1のみ利用可能（デフォルトN3）
-        if role_param == 'user':
-            default_level = 'N5'
-        else:  # role_param == 'gpt'
-            default_level = 'N3'
-        
-        session['akinator_role'] = role_param
-        session['akinator_level'] = default_level
-        session['akinator_gameover'] = False
-        session['akinator_history'] = []
-        # 語彙を選択
-        word, meaning, kanji = select_random_noun(default_level)
-        session['akinator_word'] = word
-        session['akinator_meaning'] = meaning
-        session['akinator_kanji'] = kanji
-        return redirect(url_for('akinator.akinator_game'))
-    
+    if role_param in ('user', 'gpt'):
+        if level_param in JLPT_LEVELS:
+            return start_game(role_param, level_param)
+        if not level_param:
+            # レベル未指定時のデフォルト（ユーザーが当てる: N5 / AIが当てる: N3）
+            return start_game(role_param, 'N5' if role_param == 'user' else 'N3')
+
     if request.method == 'POST':
         role = request.form.get('role')
         level = request.form.get('level')
-        
         # ロールに応じてレベルの有効性をチェック
         valid_levels = AI_AKINATOR_LEVELS if role == 'gpt' else JLPT_LEVELS
-        
-        if role in ['user', 'gpt'] and level in valid_levels:
-            session['akinator_role'] = role
-            session['akinator_level'] = level
-            session['akinator_gameover'] = False
-            session['akinator_history'] = []
-            # 語彙を選択
-            word, meaning, kanji = select_random_noun(level)
-            session['akinator_word'] = word
-            session['akinator_meaning'] = meaning
-            session['akinator_kanji'] = kanji
-            return redirect(url_for('akinator.akinator_game'))
-    
+        if role in ('user', 'gpt') and level in valid_levels:
+            return start_game(role, level)
+
     # デフォルト値として前回の設定を使用
     default_role = session.get('akinator_role', 'gpt')
-    # デフォルトレベルをロールに応じて設定
     if default_role == 'gpt':
-        default_level = session.get('akinator_level', 'N3') if session.get('akinator_level') in AI_AKINATOR_LEVELS else 'N3'
+        default_level = session.get('akinator_level') if session.get('akinator_level') in AI_AKINATOR_LEVELS else 'N3'
     else:
         default_level = session.get('akinator_level', 'N5')
-    
-    # デフォルトロールに応じて利用可能なレベルを設定
+
     available_levels = AI_AKINATOR_LEVELS if default_role == 'gpt' else JLPT_LEVELS
-    
-    return render_template("akinator_select.html", 
-                         levels=available_levels, 
-                         default_role=default_role, 
+    return render_template("akinator_select.html",
+                         levels=available_levels,
+                         default_role=default_role,
                          default_level=default_level)
 
 # もう一度ゲームを開始
@@ -356,22 +365,9 @@ def akinator_index():
 def akinator_restart():
     # 現在の設定を保持してゲームをリスタート
     if 'akinator_role' in session and 'akinator_level' in session:
-        level = session['akinator_level']
-        
-        # ゲーム状態をリセット
-        session['akinator_gameover'] = False
-        session['akinator_history'] = []
-        
-        # 新しい語彙を選択
-        word, meaning, kanji = select_random_noun(level)
-        session['akinator_word'] = word
-        session['akinator_meaning'] = meaning
-        session['akinator_kanji'] = kanji
-        
-        return redirect(url_for('akinator.akinator_game'))
-    else:
-        # 設定がない場合は選択画面へ
-        return redirect(url_for('akinator.akinator_index'))
+        return start_game(session['akinator_role'], session['akinator_level'])
+    # 設定がない場合は選択画面へ
+    return redirect(url_for('akinator.akinator_index'))
 
 # ゲーム画面
 @akinator_bp.route('/game', methods=['GET', 'POST'])
@@ -379,48 +375,28 @@ def akinator_game():
     if 'akinator_role' not in session or 'akinator_level' not in session:
         return redirect(url_for('akinator.akinator_index'))
 
-    # 履歴の初期化
-    if 'akinator_history' not in session or not isinstance(session['akinator_history'], list) or \
-       (session['akinator_history'] and not isinstance(session['akinator_history'][0], dict)):
-        session['akinator_history'] = []
-
     role = session['akinator_role']
     level = session['akinator_level']
-    history = session['akinator_history']
+
+    # 履歴の初期化（不正な形式の場合もリセット）
+    history = session.get('akinator_history')
     if not isinstance(history, list) or (history and not isinstance(history[0], dict)):
         history = []
         session['akinator_history'] = history
 
     # ChatGPTがアキネーターモード
     if role == 'gpt':
-        # 最初のGET時はChatGPTから質問を出す
         if request.method == 'GET' and not history:
-            prompt = build_akinator_gpt_prompt(history, level)
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": str(prompt)}],
-                temperature=0.5
-            )
-            gpt_reply = response.choices[0].message.content
-            if isinstance(gpt_reply, str):
-                gpt_reply = gpt_reply.strip()
-            else:
-                gpt_reply = ''
-            history.append({'role': 'gpt', 'text': gpt_reply})
+            # 最初のGET時はChatGPTから質問を出す
+            history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
             session['akinator_history'] = history
-        # POST: ユーザーのボタン回答を受け付け
         elif request.method == 'POST' and not session.get('akinator_gameover', False):
-            # ユーザーの推測を処理
             user_guess = request.form.get('user_guess', '').strip()
+            msg = (request.form.get('message') or '').strip()
             if user_guess:
-                # ユーザーの推測をチェック
-                # この時点では正解単語を知らないので、ChatGPTに判定してもらう
+                # ユーザーの推測。この時点では正解単語を知らないので、ChatGPTに判定してもらう
                 history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
-                session['akinator_history'] = history
-                
-                # ChatGPTに推測の判定を依頼
-                gpt_response_prompt = f"""
+                judge_prompt = f"""
 あなたはアキネーターです。ユーザーが「{user_guess}」と推測しました。
 これまでの会話から考えて、この推測が正解かどうかを判定してください。
 
@@ -433,289 +409,78 @@ def akinator_game():
 
 必ずこの2つのどちらかで回答してください。
 """
-                
-                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[{"role": "user", "content": gpt_response_prompt}],
-                    temperature=0.3
-                )
-                gpt_reply = response.choices[0].message.content.strip()
-                
-                # 正解判定
+                gpt_reply = ask_gpt(judge_prompt, temperature=0.3)
+                history.append({'role': 'gpt', 'text': gpt_reply})
                 if 'せいかい' in gpt_reply or '正解' in gpt_reply:
-                    # ゲーム終了
-                    history.append({'role': 'gpt', 'text': gpt_reply})
                     session['akinator_gameover'] = True
-                    session['akinator_history'] = history
-                    return render_template("akinator.html",
-                        role=role, level=level, gameover=True,
-                        word=None, meaning=None, history=history)
                 else:
-                    # 不正解 - ゲームを継続
-                    history.append({'role': 'gpt', 'text': gpt_reply})
-                    session['akinator_history'] = history
-                    
-                    # 次の質問を生成
-                    prompt = build_akinator_gpt_prompt(history, level)
-                    response = client.chat.completions.create(
-                        model="gpt-4o",
-                        messages=[{"role": "user", "content": str(prompt)}],
-                        temperature=0.5
-                    )
-                    next_question = response.choices[0].message.content.strip()
-                    history.append({'role': 'gpt', 'text': next_question})
-                    session['akinator_history'] = history
-                    
-                return render_template("akinator.html",
-                    role=role, level=level, gameover=session.get('akinator_gameover', False),
-                    word=None, meaning=None, history=history)
-            
-            msg = request.form.get('message', '')
-            if isinstance(msg, str):
-                msg = msg.strip()
-            else:
-                msg = ''
-            if msg:
+                    # 不正解 - 次の質問を生成してゲームを継続
+                    history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
+                session['akinator_history'] = history
+            elif msg:
                 # ユーザーの回答を履歴に追加
                 history.append({'role': 'user', 'text': msg})
                 session['akinator_history'] = history
-                # --- ヒントリクエスト処理 ---
                 if msg == 'ヒント':
-                    # ヒントの場合は理解不能判定をスキップ
-                    word = session.get('akinator_word')
-                    meaning = session.get('akinator_meaning')
-                    hint_prompt = build_akinator_hint_prompt(history, level, word, meaning)
-                    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                    max_retry = 3
-                    for _ in range(max_retry):
-                        response = client.chat.completions.create(
-                            model="gpt-4o",
-                            messages=[{"role": "user", "content": str(hint_prompt)}],
-                            temperature=0.5
-                        )
-                        hint_text = response.choices[0].message.content
-                        if isinstance(hint_text, str):
-                            hint_text = hint_text.strip()
-                        else:
-                            hint_text = ''
-                        # 絵文字や短すぎるヒント、疑問文、?のみ、などは再生成
-                        if len(hint_text) < 6 or any(e in hint_text for e in ["⎝", "( ᐛ )", "？", "?", "(੭", "Ҩ", "╭☞", "ʕ˒", "!", "only output", "output only"]):
-                            continue
-                        if hint_text.endswith("？") or hint_text.endswith("?"):
-                            continue
-                        break
-                    history.append({'role': 'gpt', 'text': f'ヒント: {hint_text}'})
-                    session['akinator_history'] = history
-                    return render_template("akinator.html",
-                        role=role, level=level, gameover=session.get('akinator_gameover', False),
-                        word=None, meaning=None, history=history)
-                # 推測に「はい」と答えても質問を継続（正解！ボタンが押されるまで）
-                if msg == 'はい':
-                    last_gpt = None
-                    for m in reversed(history[:-1]):
-                        if isinstance(m, dict) and 'role' in m and m['role'] == 'gpt':
-                            last_gpt = m
-                            break
-                    # 推測に「はい」と答えても、質問を継続する
-                    # 「正解！」ボタンが押されるまでゲームは終了しない
-                # 「正解！」が入力された場合の処理
-                if msg == '正解！':
+                    append_hint(history, level)
+                elif msg == '正解！':
                     history.append({'role': 'gpt', 'text': 'やった！遊んでくれてありがとう！'})
                     session['akinator_gameover'] = True
                     session['akinator_history'] = history
-                    return render_template("akinator.html",
-                        role=role, level=level, gameover=True,
-                        word=None, meaning=None, history=history)
-                # まだ続く場合は次の質問/推測
-                prompt = build_akinator_gpt_prompt(history, level)
-                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                response = client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[{"role": "user", "content": str(prompt)}],
-                    temperature=0.5
-                )
-                gpt_reply = response.choices[0].message.content
-                if isinstance(gpt_reply, str):
-                    gpt_reply = gpt_reply.strip()
                 else:
-                    gpt_reply = ''
-                history.append({'role': 'gpt', 'text': gpt_reply})
-                session['akinator_history'] = history
-        return render_template("akinator.html",
-            role=role, level=level, gameover=session.get('akinator_gameover', False),
-            word=None, meaning=None, history=history)
+                    # まだ続く場合は次の質問/推測
+                    history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
+                    session['akinator_history'] = history
+        return render_game(history)
 
-    # あなたがアキネーターモード（従来通り）
+    # あなたがアキネーターモード
     if request.method == 'POST' and not session.get('akinator_gameover', False):
-        # ユーザーの推測を処理（ユーザーモード）
+        word = session.get('akinator_word')
+        meaning = session.get('akinator_meaning')
         user_guess = request.form.get('user_guess', '').strip()
+        msg = (request.form.get('message') or '').strip()
+
         if user_guess:
-            word = session.get('akinator_word')
-            meaning = session.get('akinator_meaning')
-            kanji = session.get('akinator_kanji')
-            
-            # ユーザーの推測をチェック
-            if is_correct_answer(user_guess, word, kanji):
-                history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
+            # ユーザーの推測をチェック（文字種・漢字読みを考慮）
+            history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
+            if is_correct_answer(user_guess, word, session.get('akinator_kanji')):
                 history.append({'role': 'gpt', 'text': 'せいかい！おめでとう！ ( ◜◡◝ )'})
                 session['akinator_gameover'] = True
-                session['akinator_history'] = history
-                return render_template("akinator.html",
-                    role=session['akinator_role'],
-                    level=session['akinator_level'],
-                    gameover=True,
-                    word=word,
-                    meaning=meaning,
-                    history=history
-                )
             else:
-                history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
                 history.append({'role': 'gpt', 'text': 'ざんねん！'})
-                session['akinator_history'] = history
-                return render_template("akinator.html",
-                    role=session['akinator_role'],
-                    level=session['akinator_level'],
-                    gameover=session.get('akinator_gameover', False),
-                    word=session.get('akinator_word'),
-                    meaning=session.get('akinator_meaning'),
-                    history=history
-                )
-        
-        msg = request.form.get('message', '')
-        if isinstance(msg, str):
-            msg = msg.strip()
-        else:
-            msg = ''
-        if msg:
-            if not isinstance(history, list) or (history and not isinstance(history[0], dict)):
-                history = []
-                session['akinator_history'] = history
-            # --- ヒントリクエスト処理（ユーザーがアキネーターの場合も対応） ---
-            if msg == 'ヒント':
-                word = session.get('akinator_word')
-                meaning = session.get('akinator_meaning')
-                hint_prompt = build_akinator_hint_prompt(history, level, word, meaning)
-                client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                max_retry = 3
-                for _ in range(max_retry):
-                    response = client.chat.completions.create(
-                        model="gpt-4o",
-                        messages=[{"role": "user", "content": str(hint_prompt)}],
-                        temperature=0.5
-                    )
-                    hint_text = response.choices[0].message.content
-                    if isinstance(hint_text, str):
-                        hint_text = hint_text.strip()
-                    else:
-                        hint_text = ''
-                    if len(hint_text) < 6:
-                        continue
-                    if hint_text.endswith("？") or hint_text.endswith("?"):
-                        continue
-                    break
-                history.append({'role': 'gpt', 'text': f'ヒント: {hint_text}'})
-                session['akinator_history'] = history
-                return render_template("akinator.html",
-                    role=session['akinator_role'],
-                    level=session['akinator_level'],
-                    gameover=session.get('akinator_gameover', False),
-                    word=session.get('akinator_word'),
-                    meaning=session.get('akinator_meaning'),
-                    history=history
-                )
-            # --- 正解！ボタン処理 ---
-            if msg == '正解！':
-                history.append({'role': 'user', 'text': '正解！'})
-                history.append({'role': 'gpt', 'text': 'おめでとうございます！正解です！'})
-                session['akinator_gameover'] = True
-                session['akinator_history'] = history
-                return render_template("akinator.html",
-                    role=session['akinator_role'],
-                    level=session['akinator_level'],
-                    gameover=True,
-                    word=session.get('akinator_word'),
-                    meaning=session.get('akinator_meaning'),
-                    history=history
-                )
-            # --- 「はい」で正解確認された場合の処理 ---
+            session['akinator_history'] = history
+        elif msg == 'ヒント':
+            append_hint(history, level)
+        elif msg == '正解！':
+            history.append({'role': 'user', 'text': '正解！'})
+            history.append({'role': 'gpt', 'text': 'おめでとうございます！正解です！'})
+            session['akinator_gameover'] = True
+            session['akinator_history'] = history
+        elif msg:
+            # 「はい」で直前の推測（「〜正解？」など）が確認された場合はゲーム終了
             if msg == 'はい':
                 last_gpt = None
                 for m in reversed(history[:-1]):
-                    if isinstance(m, dict) and 'role' in m and m['role'] == 'gpt':
+                    if isinstance(m, dict) and m.get('role') == 'gpt':
                         last_gpt = m
                         break
                 if last_gpt and ('正解？' in last_gpt['text'] or ('ですか' in last_gpt['text'] and len(last_gpt['text']) < 20)):
                     history.append({'role': 'gpt', 'text': 'おめでとうございます！正解です！'})
                     session['akinator_gameover'] = True
                     session['akinator_history'] = history
-                    return render_template("akinator.html",
-                        role=session['akinator_role'],
-                        level=session['akinator_level'],
-                        gameover=True,
-                        word=session.get('akinator_word'),
-                        meaning=session.get('akinator_meaning'),
-                        history=history
-                    )
+                    return render_game(history, show_word=True)
+
             history.append({'role': 'user', 'text': msg})
             session['akinator_history'] = history
-            word = session.get('akinator_word')
-            meaning = session.get('akinator_meaning')
-            level = session.get('akinator_level')
-            
-            # 質問の判定（「？」がなくても文脈で判断）
-            question_patterns = [
-                r'.*ですか$',           # 〜ですか
-                r'.*ますか$',           # 〜ますか  
-                r'.*ありますか$',       # 〜ありますか
-                r'.*いますか$',         # 〜いますか
-                r'.*できますか$',       # 〜できますか
-                r'.*使いますか$',       # 〜使いますか
-                r'.*食べますか$',       # 〜食べますか
-                r'.*飲みますか$',       # 〜飲みますか
-                r'.*やりますか$',       # 〜やりますか
-                r'.*見ますか$',         # 〜見ますか
-                r'.*聞きますか$',       # 〜聞きますか
-                r'.*いりますか$',       # 〜いりますか
-                r'.*なりますか$',       # 〜なりますか
-                r'.*きますか$',         # 〜きますか
-                r'.*持ちますか$',       # 〜持ちますか
-                r'.*行きますか$',       # 〜行きますか
-                r'.*来ますか$',         # 〜来ますか
-                r'.*住んでいますか$',   # 〜住んでいますか
-                r'.*作りますか$',       # 〜作りますか
-                r'.*買いますか$',       # 〜買いますか
-                r'.*売りますか$',       # 〜売りますか
-                r'.*知っていますか$',   # 〜知っていますか
-                r'.*覚えていますか$',   # 〜覚えていますか
-                r'.*分かりますか$',     # 〜分かりますか
-                r'.*わかりますか$',     # 〜わかりますか
-            ]
-            
-            import re
-            is_question = (msg.endswith('？') or msg.endswith('?') or 
-                          any(re.search(pattern, msg) for pattern in question_patterns))
-            
-            if is_question:
-                # 質問として通常のGPT処理へ進む（この後のGPT処理コードで処理される）
-                pass
-            # 自動変換はせず、元のメッセージをそのままGPTに送って質問として解釈させる
-            
+
             # 降参コマンド判定
             giveup_cmds = ["/giveup", "降参", "こうさん", "答え", "こたえ", "ギブアップ", "give up", "ans", "answer"]
             if any(cmd in msg.lower() for cmd in giveup_cmds):
-                answer_text = f"正解は「{word}」（{meaning}）でした！"
-                history.append({'role': 'gpt', 'text': answer_text})
+                history.append({'role': 'gpt', 'text': f"正解は「{word}」（{meaning}）でした！"})
                 session['akinator_gameover'] = True
                 session['akinator_history'] = history
-                return render_template("akinator.html",
-                    role=session['akinator_role'],
-                    level=session['akinator_level'],
-                    gameover=True,
-                    word=word,
-                    meaning=meaning,
-                    history=history
-                )
+                return render_game(history, show_word=True)
+
             # ChatGPTは必ず四択で返す（質問しない）
             prompt = f"""
 あなたは日本語語彙アキネーターの回答者です。今、JLPT {level}レベルの日本語名詞「{word}」（意味: {meaning}）を思い浮かべています。
@@ -756,35 +521,25 @@ def akinator_game():
 
 上記のやりとりを必ず確認し、矛盾しない回答をしてください。漢字読みの違いも考慮してください。
 """
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": str(prompt)}],
-                temperature=0.0
-            )
-            gpt_reply = response.choices[0].message.content
-            if isinstance(gpt_reply, str):
-                gpt_reply = gpt_reply.strip()
-            else:
-                gpt_reply = ''
-            # 4択以外の場合、より柔軟に処理
+            gpt_reply = ask_gpt(prompt, temperature=0.0)
+
+            # 4択以外の場合、回答に含まれる意図を判定して4択に正規化
             allowed = ["はい", "いいえ", "わからない", "ときどき"]
             if gpt_reply not in allowed:
-                # 回答に含まれる意図を判定
-                if any(word in gpt_reply.lower() for word in ["はい", "yes", "そう", "そうです"]):
+                if any(w in gpt_reply.lower() for w in ["はい", "yes", "そう", "そうです"]):
                     gpt_reply = "はい"
-                elif any(word in gpt_reply.lower() for word in ["いいえ", "no", "いや", "ちがう", "違う"]):
+                elif any(w in gpt_reply.lower() for w in ["いいえ", "no", "いや", "ちがう", "違う"]):
                     gpt_reply = "いいえ"
-                elif any(word in gpt_reply.lower() for word in ["ときどき", "時々", "sometimes"]):
+                elif any(w in gpt_reply.lower() for w in ["ときどき", "時々", "sometimes"]):
                     gpt_reply = "ときどき"
                 else:
                     gpt_reply = "わからない"
-            
+
             # ユーザーが「正解？」と聞いてAIが「はい」と答えた場合の処理
             if gpt_reply == "はい":
                 last_user = None
                 for m in reversed(history[:-1]):
-                    if isinstance(m, dict) and 'role' in m and m['role'] == 'user':
+                    if isinstance(m, dict) and m.get('role') == 'user':
                         last_user = m
                         break
                 if last_user and '正解？' in last_user['text']:
@@ -792,26 +547,12 @@ def akinator_game():
                     history.append({'role': 'gpt', 'text': 'おめでとうございます！正解です！'})
                     session['akinator_gameover'] = True
                     session['akinator_history'] = history
-                    return render_template("akinator.html",
-                        role=session['akinator_role'],
-                        level=session['akinator_level'],
-                        gameover=True,
-                        word=session.get('akinator_word'),
-                        meaning=session.get('akinator_meaning'),
-                        history=history
-                    )
-            
+                    return render_game(history, show_word=True)
+
             history.append({'role': 'gpt', 'text': gpt_reply})
             session['akinator_history'] = history
 
-    return render_template("akinator.html",
-        role=session['akinator_role'],
-        level=session['akinator_level'],
-        gameover=session.get('akinator_gameover', False),
-        word=session.get('akinator_word'),
-        meaning=session.get('akinator_meaning'),
-        history=session['akinator_history']
-    )
+    return render_game(history, show_word=True)
 
 # 名詞をランダムに選ぶ
 
@@ -828,31 +569,6 @@ def select_random_noun(level):
     meaning = str(row['Meaning'])
     kanji = str(row['Kanji']) if 'Kanji' in row and pd.notna(row['Kanji']) else ""
     return word, meaning, kanji
-
-# ChatGPT用プロンプト生成
-
-def build_akinator_prompt(history, level):
-    chat_log = ""
-    for msg in history:
-        if msg['role'] == 'user':
-            chat_log += f"ユーザー: {msg['text']}\n"
-        else:
-            chat_log += f"アキネーター: {msg['text']}\n"
-    prompt = (
-        f"あなたは日本語語彙アキネーターです。ユーザーが考えているJLPT {level}レベルの日本語名詞を、はい・いいえ・わからない・ときどき だけで質問しながら当ててください。\n"
-        "【ルール】\n"
-        f"- JLPT{level}レベルの学習者が理解できる語彙・文法・表現・漢字で質問や推測を作成してください。\n"
-        "- そのレベルの学習者が混乱しないよう、難しすぎる語彙・文法・漢字や抽象的な表現は避けてください。\n"
-        "- 例：N5なら「水」「人」など基本的な漢字はOKですが、難しい漢字や語彙は使わないでください。\n"
-        "- 1回ごとに「質問」または「推測（例: この単語は『○○』ですか？）」のどちらかを必ず1つだけ出力してください。\n"
-        "- 質問は日本語で簡潔に。\n"
-        "- 推測する場合は「この単語は『○○』ですか？」のように明確に書いてください。\n"
-        "- まだ推測しない場合は、次の質問だけを出力してください。\n"
-        "- 出力は質問または推測のみ。他の説明や前置きは不要です。\n"
-        "【これまでのやりとり】\n"
-        f"{chat_log}"
-    )
-    return prompt
 
 def get_examples_for_level(level):
     """JLPTレベル別の良い例・悪い例を返す"""

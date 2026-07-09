@@ -14,7 +14,6 @@ try:
     from google.oauth2 import service_account
     from googleapiclient.errors import HttpError
     GOOGLE_APIS_AVAILABLE = True
-    print("Google APIs loaded successfully")
 except ImportError as e:
     print(f"Warning: Google API libraries not installed: {e}")
     GOOGLE_APIS_AVAILABLE = False
@@ -36,7 +35,6 @@ SERVICE_ACCOUNT_FILE = 'japaneseapp-466108-327bc89dfc8e.json'  # 既存のサー
 def get_drive_service():
     """Google Drive APIサービスを取得"""
     if not GOOGLE_APIS_AVAILABLE:
-        print("Google APIs not available - using mock data")
         return None
         
     try:
@@ -51,7 +49,6 @@ def get_drive_service():
                 scopes=['https://www.googleapis.com/auth/drive.readonly',
                        'https://www.googleapis.com/auth/documents.readonly']
             )
-            print("Using Google service account from environment variable")
         elif os.path.exists(SERVICE_ACCOUNT_FILE):
             # ローカル開発用：ファイルから認証情報を取得
             credentials = service_account.Credentials.from_service_account_file(
@@ -59,9 +56,7 @@ def get_drive_service():
                 scopes=['https://www.googleapis.com/auth/drive.readonly',
                        'https://www.googleapis.com/auth/documents.readonly']
             )
-            print("Using Google service account from file")
         else:
-            print(f"ERROR: No Google credentials found. Set GOOGLE_SERVICE_ACCOUNT_JSON env var or place {SERVICE_ACCOUNT_FILE}")
             return None
         
         drive_service = build('drive', 'v3', credentials=credentials)
@@ -73,7 +68,6 @@ def get_drive_service():
 def get_docs_service():
     """Google Docs APIサービスを取得"""
     if not GOOGLE_APIS_AVAILABLE:
-        print("Google APIs not available - using mock data")
         return None
         
     try:
@@ -88,7 +82,6 @@ def get_docs_service():
                 scopes=['https://www.googleapis.com/auth/drive.readonly',
                        'https://www.googleapis.com/auth/documents.readonly']
             )
-            print("Using Google service account from environment variable")
         elif os.path.exists(SERVICE_ACCOUNT_FILE):
             # ローカル開発用：ファイルから認証情報を取得
             credentials = service_account.Credentials.from_service_account_file(
@@ -96,9 +89,7 @@ def get_docs_service():
                 scopes=['https://www.googleapis.com/auth/drive.readonly',
                        'https://www.googleapis.com/auth/documents.readonly']
             )
-            print("Using Google service account from file")
         else:
-            print(f"ERROR: No Google credentials found. Set GOOGLE_SERVICE_ACCOUNT_JSON env var or place {SERVICE_ACCOUNT_FILE}")
             return None
         
         docs_service = build('docs', 'v1', credentials=credentials)
@@ -156,7 +147,6 @@ def get_blog_documents() -> List[Dict]:
                 'modified_date': format_date(doc.get('modifiedTime', ''))
             })
         
-        print(f"Found {len(blog_posts)} blog documents")
         return blog_posts
         
     except Exception as e:
@@ -211,18 +201,14 @@ def get_document_content(document_id: str) -> Optional[Dict]:
         # デバッグ: 最初の段落の構造を確認
         if content and len(content) > 0:
             first_element = content[0]
-            print(f"DEBUG: First element keys: {first_element.keys()}")
             if 'paragraph' in first_element:
                 para = first_element['paragraph']
-                print(f"DEBUG: Paragraph keys: {para.keys()}")
                 if 'elements' in para and para['elements']:
                     elem = para['elements'][0]
-                    print(f"DEBUG: Element keys: {elem.keys()}")
                     if 'textRun' in elem:
                         text_run = elem['textRun']
-                        print(f"DEBUG: TextRun keys: {text_run.keys()}")
                         if 'textStyle' in text_run:
-                            print(f"DEBUG: TextStyle keys: {text_run['textStyle'].keys()}")
+                            pass
         
         # コンテンツをHTMLに変換
         html_content = convert_to_html(content)
@@ -381,7 +367,7 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
             
             # デバッグ: テキストの内容をログ出力
             if '\n' in text or '\r' in text or '\u000b' in text:
-                print(f"DEBUG: Line break found in text: {repr(text)}")
+                pass
             
             # スタイル適用
             span_styles = []
@@ -426,7 +412,6 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
                 font_family = text_style['fontFamily']
                 
             if font_family:
-                print(f"DEBUG: Font family found: {font_family}")
                 # Google Fontsの場合の対応
                 if font_family in ['Arial', 'Times New Roman', 'Courier New', 'Helvetica', 'Georgia', 'Verdana', 'Roboto', 'Open Sans']:
                     span_styles.append(f'font-family: "{font_family}", sans-serif')
@@ -447,7 +432,6 @@ def convert_paragraph_to_html(paragraph: Dict) -> str:
             text = text.replace('\r', '<br>')      # キャリッジリターン
             
             # 連続する<br>を整理
-            import re
             text = re.sub(r'(<br>\s*){2,}', '<br><br>', text)
             
             # スタイルをspanで適用
@@ -537,7 +521,6 @@ def convert_table_to_html(table: Dict) -> str:
                         para_html = para_html[3:-4]
                     elif para_html.startswith('<h'):
                         # 見出しタグもシンプルにする
-                        import re
                         para_html = re.sub(r'<h[1-6]>(.*?)</h[1-6]>', r'<strong>\1</strong>', para_html)
                     cell_content.append(para_html)
             
@@ -563,7 +546,6 @@ def extract_tags_from_content(html_content: str) -> List[str]:
         return []
     
     try:
-        import re
         # HTMLタグを除去してプレーンテキストを取得
         text_content = re.sub(r'<[^>]+>', '', html_content)
         

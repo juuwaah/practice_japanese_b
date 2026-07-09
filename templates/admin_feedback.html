@@ -8,7 +8,7 @@
 <div style="text-align: center; margin-bottom: 16px;">
   <h1>📝 フィードバック管理</h1>
   <div style="margin-top: 8px;">
-    <a href="{{ url_for('admin_dashboard') }}" 
+    <a href="{{ url_for('admin.dashboard') }}" 
        style="font-size: 9px; text-decoration: underline; color: #000;">
       ← ダッシュボードに戻る
     </a>
@@ -84,7 +84,7 @@
 <div style="text-align: center; margin: 16px 0;">
   <div style="border: 1px solid #000; padding: 4px; background: #F0F0F0; display: inline-block;">
     {% if feedback_list.has_prev %}
-      <a href="{{ url_for('admin_feedback', page=feedback_list.prev_num) }}" 
+      <a href="{{ url_for('admin.feedback', page=feedback_list.prev_num) }}" 
          style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
                 text-decoration: none; color: #000; font-size: 8px;">
         前へ
@@ -94,7 +94,7 @@
     {% for page_num in feedback_list.iter_pages() %}
       {% if page_num %}
         {% if page_num != feedback_list.page %}
-          <a href="{{ url_for('admin_feedback', page=page_num) }}" 
+          <a href="{{ url_for('admin.feedback', page=page_num) }}" 
              style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
                     text-decoration: none; color: #000; font-size: 8px;">
             {{ page_num }}
@@ -111,7 +111,7 @@
     {% endfor %}
     
     {% if feedback_list.has_next %}
-      <a href="{{ url_for('admin_feedback', page=feedback_list.next_num) }}" 
+      <a href="{{ url_for('admin.feedback', page=feedback_list.next_num) }}" 
          style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
                 text-decoration: none; color: #000; font-size: 8px;">
         次へ

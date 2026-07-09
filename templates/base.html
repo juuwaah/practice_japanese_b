@@ -277,7 +277,7 @@
       <div class="menu-content">
         <a href="{{ url_for('about') }}">{{ _('about') }}</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
-        <a href="{{ url_for('admin_dashboard') }}">{{ _('admin_dashboard') }}</a>
+        <a href="{{ url_for('admin.dashboard') }}">{{ _('admin_dashboard') }}</a>
         {% endif %}
         <a href="{{ url_for('donation') }}">{{ _('donation_page') }}</a>
       </div>

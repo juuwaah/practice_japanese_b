@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 from werkzeug.middleware.proxy_fix import ProxyFix
 from routes.grammar import grammar_bp
 from routes.vocab import vocab_bp
@@ -9,10 +8,10 @@ from routes.flashcard import flashcard_bp
 from routes.youtube_listening import youtube_listening_bp
 from routes.blog import blog_bp
 from routes.admin import admin_bp
-from models import db, User, Feedback, OAuth, GrammarQuizLog, FlashcardLog, BlogComment, BlogFavorite
+from models import db, User, Feedback, OAuth
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
-from error_handler import safe_openai_request, format_error_response, get_localized_error_message
+from error_handler import safe_openai_request
 import datetime as dt
 import random
 import json
@@ -22,15 +21,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 load_dotenv()
-from google.cloud import storage
-from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.google import make_google_blueprint
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
-from flask_dance.consumer import oauth_authorized, OAuth2ConsumerBlueprint
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-# Google Drive API key loaded from environment
+from flask_dance.consumer import oauth_authorized
 
 CACHE_FILE = ".onomatope_cache.json"
 
@@ -89,10 +82,6 @@ def record_auth(setup_state):
 # Force HTTPS redirect manually
 google_bp.redirect_url = "https://japanese-b.com/auth/google/authorized"
 
-# Debug: Print actual redirect URL being used
-print(f"DEBUG: Google BP redirect_url = {google_bp.redirect_url}")
-print(f"DEBUG: Flask app config = {app.config.get('PREFERRED_URL_SCHEME')}")
-print(f"DEBUG: Flask app SERVER_NAME = {app.config.get('SERVER_NAME')}")
 app.register_blueprint(google_bp, url_prefix="/auth")
 
 # Database configuration - Railway compatible
@@ -100,15 +89,12 @@ database_url = os.getenv('DATABASE_URL')
 if database_url:
     # Use Railway PostgreSQL
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    print(f"DEBUG: Using PostgreSQL: {database_url[:50]}...")
 else:
     # Railway SQLite fallback - use current directory which is persistent
-    import tempfile
     db_dir = os.path.join(os.getcwd(), 'data')
     if not os.path.exists(db_dir):
         os.makedirs(db_dir, exist_ok=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_dir}/app.db'
-    print(f"DEBUG: Using SQLite: {db_dir}/app.db")
     
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -175,7 +161,7 @@ def google_logged_in(blueprint, token):
                 username=name,
                 auth_type='google',
                 google_id=google_user_id,
-                is_admin=(email == 'suhdudebac@gmail.com'),
+                is_admin=(email == os.getenv('ADMIN_EMAIL')),
                 is_patreon=True,  # Enable Flashcard for Google users
                 last_login=datetime.utcnow()
             )
@@ -298,46 +284,40 @@ def get_today_quiz():
     examples_furigana = []
     
     # デバッグ: selected_onomatopeの内容を出力
-    print(f"DEBUG: selected_onomatope keys: {list(selected_onomatope.keys())}")
-    print(f"DEBUG: selected_onomatope data: {selected_onomatope}")
     
     # selected_onomatopeから例文データを取得
     if "example1" in selected_onomatope and selected_onomatope["example1"]:
         examples.append(selected_onomatope["example1"])
-        print(f"DEBUG: Added example1: {selected_onomatope['example1']}")
         
         # furigana_example1も取得
         furigana1 = selected_onomatope.get("furigana_example1", "").strip()
         examples_furigana.append(furigana1)
         if furigana1:
-            print(f"DEBUG: Added furigana_example1: {furigana1}")
+            pass
     else:
-        print(f"DEBUG: example1 not found or empty")
+        pass
     
     if "example2" in selected_onomatope and selected_onomatope["example2"]:
         examples.append(selected_onomatope["example2"])
-        print(f"DEBUG: Added example2: {selected_onomatope['example2']}")
         
         # furigana_example2も取得
         furigana2 = selected_onomatope.get("furigana_example2", "").strip()
         examples_furigana.append(furigana2)
         if furigana2:
-            print(f"DEBUG: Added furigana_example2: {furigana2}")
+            pass
     else:
-        print(f"DEBUG: example2 not found or empty")
+        pass
     
     # 英語翻訳の例文を取得
     if "translation_example1" in selected_onomatope and selected_onomatope["translation_example1"]:
         examples_en.append(selected_onomatope["translation_example1"])
-        print(f"DEBUG: Added translation_example1: {selected_onomatope['translation_example1']}")
     else:
-        print(f"DEBUG: translation_example1 not found or empty")
+        pass
         
     if "translation_example2" in selected_onomatope and selected_onomatope["translation_example2"]:
         examples_en.append(selected_onomatope["translation_example2"])
-        print(f"DEBUG: Added translation_example2: {selected_onomatope['translation_example2']}")
     else:
-        print(f"DEBUG: translation_example2 not found or empty")
+        pass
     
     # 例文はスプレッドシートのデータのみを使用（自動生成しない）
     # examples, examples_en, examples_furiganaはスプレッドシートから取得したデータのみ
@@ -357,13 +337,9 @@ def get_today_quiz():
     }
     
     # デバッグ: 最終的な例文データを出力
-    print(f"DEBUG: Final examples: {examples}")
-    print(f"DEBUG: Final examples_en: {examples_en}")
-    print(f"DEBUG: Final examples_furigana: {examples_furigana}")
     
     # 最終チェック：正解が確実にデータベースの値と一致するように
     if quiz.get("correct_meaning_en") != onomatope_meaning:
-        print(f"Final check: correcting answer from '{quiz.get('correct_meaning_en')}' to '{onomatope_meaning}'")
         quiz["correct_meaning_en"] = onomatope_meaning
     
     # ref_linkをクイズデータに追加
@@ -385,13 +361,11 @@ def get_today_quiz():
             database_image_path = f"database/images/{image_file}"
             if os.path.exists(database_image_path):
                 image_urls.append(f"/database-image/{image_file}")
-                print(f"オノマトペ画像追加: {image_file}")
             else:
                 print(f"画像が見つかりません: {image_file} (パス: {database_image_path})")
         
         if image_urls:
             quiz["image_urls"] = image_urls
-            print(f"オノマトペ画像URL一覧: {image_urls}")
     
     # Save to cache
     with open(CACHE_FILE, "w", encoding="utf-8") as f:
@@ -420,14 +394,7 @@ def home():
         selected = request.form.get('selected')
         answered = True
         correct = (selected == quiz['correct_meaning_en'])
-    template = 'index.html'
-    
-    # デバッグ: example_pairsの内容を確認
-    example_pairs_debug = list(zip(quiz['examples'], quiz.get('examples_furigana', []), quiz.get('examples_en', [])))
-    print(f"DEBUG: example_pairs content: {example_pairs_debug}")
-    print(f"DEBUG: answered: {answered}")
-    
-    return render_template(template,
+    return render_template('index.html',
         quiz=quiz,
         onomatope=quiz['onomatope'],
         options=options,
@@ -471,24 +438,27 @@ def login():
         username = form.username.data
         password = form.password.data
         
-        # 管理者アカウントの特別処理
-        if username == 'gotobakuho' and password == '8030xDPv1UMd':
-            admin_user = User.query.filter_by(username='gotobakuho').first()
+        # 管理者アカウントの特別処理（環境変数 ADMIN_USERNAME / ADMIN_PASSWORD で設定）
+        admin_username = os.getenv('ADMIN_USERNAME')
+        admin_password = os.getenv('ADMIN_PASSWORD')
+        if admin_username and admin_password and username == admin_username and password == admin_password:
+            admin_email = os.getenv('ADMIN_EMAIL') or f"{admin_username}@admin.local"
+            admin_user = User.query.filter_by(username=admin_username).first() \
+                or User.query.filter_by(email=admin_email).first()
             if not admin_user:
-                # 管理者アカウント作成
-                admin_user = User(username='gotobakuho', is_admin=True, is_patreon=True)
-                admin_user.set_password('8030xDPv1UMd')
+                # 管理者アカウント作成（emailはNOT NULLなのでADMIN_EMAILを使用）
+                admin_user = User(username=admin_username, email=admin_email,
+                                  is_admin=True, is_patreon=True)
+                admin_user.set_password(admin_password)
                 db.session.add(admin_user)
-                db.session.commit()
             else:
                 # 既存ユーザーに管理者権限とPatreon権限付与
                 admin_user.is_admin = True
                 admin_user.is_patreon = True
-                db.session.commit()
             admin_user.last_login = datetime.utcnow()
             db.session.commit()
             login_user(admin_user, remember=form.remember_me.data)
-            return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('admin.dashboard'))
         
         # 通常ユーザーの認証
         user = User.query.filter_by(username=username).first()
@@ -609,9 +579,9 @@ def sitemap_data():
         # 管理者の場合
         if current_user.is_admin:
             sitemap["Admin"] = [
-                {"name": "Admin Dashboard", "url": url_for('admin_dashboard'), "description": "Site management panel"},
-                {"name": "Feedback Management", "url": url_for('admin_feedback'), "description": "User feedback review"},
-                {"name": "User Management", "url": url_for('admin_users'), "description": "User information management"}
+                {"name": "Admin Dashboard", "url": url_for('admin.dashboard'), "description": "Site management panel"},
+                {"name": "Feedback Management", "url": url_for('admin.feedback'), "description": "User feedback review"},
+                {"name": "User Management", "url": url_for('admin.users'), "description": "User information management"}
             ]
     else:
         sitemap["Auth"].extend([
@@ -726,207 +696,6 @@ def feedback():
         print(f"Feedback error: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
-# Admin機能
-def admin_required(f):
-    """管理者権限チェックデコレータ"""
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated:
-            return redirect(url_for('login'))
-        if not current_user.is_admin:
-            flash('管理者権限が必要です')
-            return redirect(url_for('home'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-@app.route("/admin")
-@admin_required
-def admin_dashboard():
-    """管理者ダッシュボード"""
-    # 統計情報
-    total_users = User.query.count()
-    total_feedback = Feedback.query.count()
-    unread_feedback = Feedback.query.filter_by(status='unread').count()
-    
-    # ブログコメント統計
-    total_comments = BlogComment.query.filter_by(is_deleted=False).count()
-    recent_comments = BlogComment.query.filter_by(is_deleted=False)\
-                                      .order_by(BlogComment.created_at.desc()).limit(5).all()
-    
-    # お気に入り統計
-    total_favorites = BlogFavorite.query.count()
-    
-    # 最近のフィードバック
-    recent_feedback = Feedback.query.order_by(Feedback.created_at.desc()).limit(10).all()
-    
-    # ユーザー登録数の推移（最近7日間）
-    from datetime import datetime, timedelta
-    seven_days_ago = datetime.utcnow() - timedelta(days=7)
-    recent_users = User.query.filter(User.created_at >= seven_days_ago).count()
-    
-    return render_template('admin_dashboard.html', 
-                         total_users=total_users,
-                         total_feedback=total_feedback,
-                         unread_feedback=unread_feedback,
-                         recent_feedback=recent_feedback,
-                         recent_users=recent_users,
-                         total_comments=total_comments,
-                         recent_comments=recent_comments,
-                         total_favorites=total_favorites)
-
-@app.route("/admin/feedback")
-@admin_required
-def admin_feedback():
-    """フィードバック管理"""
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    feedback_query = Feedback.query.order_by(Feedback.created_at.desc())
-    feedback_list = feedback_query.paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    
-    return render_template('admin_feedback.html', feedback_list=feedback_list)
-
-@app.route("/admin/feedback/<int:feedback_id>/mark_read", methods=["POST"])
-@admin_required
-def mark_feedback_read(feedback_id):
-    """フィードバックを既読にマーク"""
-    feedback = Feedback.query.get_or_404(feedback_id)
-    feedback.status = 'read'
-    db.session.commit()
-    return jsonify({'success': True})
-
-@app.route("/admin/users")
-@admin_required
-def admin_users():
-    """ユーザー管理"""
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    users_query = User.query.order_by(User.created_at.desc())
-    users_list = users_query.paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    
-    return render_template('admin_users.html', users_list=users_list)
-
-@app.route('/admin/user/<int:user_id>')
-@login_required
-def admin_user_detail(user_id):
-    """個別ユーザーの詳細とログ表示"""
-    if not current_user.is_admin:
-        flash('アクセス権限がありません', 'error')
-        return redirect(url_for('home'))
-    
-    # ユーザー情報を取得
-    user = User.query.get_or_404(user_id)
-    
-    # 文法クイズログを取得（model_answer列がない場合に備えて安全に取得）
-    try:
-        grammar_logs = GrammarQuizLog.query.filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
-    except Exception as grammar_log_error:
-        print(f"DEBUG: Grammar logs query error for user {user_id}: {grammar_log_error}")
-        # PostgreSQLトランザクションをロールバック
-        try:
-            db.session.rollback()
-            print("DEBUG: Transaction rolled back")
-        except Exception as rollback_error:
-            print(f"DEBUG: Rollback error: {rollback_error}")
-            
-        # model_answer列がない場合は、基本的なクエリのみ実行
-        try:
-            grammar_logs = GrammarQuizLog.query.with_entities(
-                GrammarQuizLog.id,
-                GrammarQuizLog.user_id,
-                GrammarQuizLog.original_sentence,
-                GrammarQuizLog.user_translation,
-                GrammarQuizLog.jlpt_level,
-                GrammarQuizLog.direction,
-                GrammarQuizLog.score,
-                GrammarQuizLog.feedback,
-                GrammarQuizLog.created_at
-            ).filter_by(user_id=user_id).order_by(GrammarQuizLog.created_at.desc()).limit(50).all()
-            print(f"DEBUG: Fallback grammar logs query successful for user {user_id}")
-        except Exception as fallback_error:
-            print(f"DEBUG: Fallback grammar logs query also failed: {fallback_error}")
-            grammar_logs = []
-    
-    # フラッシュカードログを取得
-    flashcard_logs = FlashcardLog.query.filter_by(user_id=user_id).order_by(FlashcardLog.created_at.desc()).limit(50).all()
-    
-    return render_template('admin_user_detail.html', 
-                         user=user, 
-                         grammar_logs=grammar_logs, 
-                         flashcard_logs=flashcard_logs)
-
-@app.route("/admin/comments")
-@admin_required
-def admin_comments():
-    """ブログコメント管理"""
-    page = request.args.get('page', 1, type=int)
-    per_page = 20
-    
-    comments_query = BlogComment.query.filter_by(is_deleted=False)\
-                                     .order_by(BlogComment.created_at.desc())
-    comments_list = comments_query.paginate(
-        page=page, per_page=per_page, error_out=False
-    )
-    
-    return render_template('admin_comments.html', comments_list=comments_list)
-
-@app.route("/admin/comment/<int:comment_id>/reply", methods=["POST"])
-@admin_required
-def admin_reply_comment(comment_id):
-    """管理者がコメントに返信"""
-    parent_comment = BlogComment.query.get_or_404(comment_id)
-    reply_content = request.form.get('reply_content', '').strip()
-    
-    if not reply_content:
-        flash('返信内容を入力してください', 'error')
-        return redirect(url_for('admin_comments'))
-    
-    reply = BlogComment(
-        document_id=parent_comment.document_id,
-        user_id=current_user.id,
-        content=reply_content,
-        parent_comment_id=comment_id,
-        is_admin_reply=True
-    )
-    
-    db.session.add(reply)
-    db.session.commit()
-    
-    flash('返信を投稿しました', 'success')
-    return redirect(url_for('admin_comments'))
-
-@app.route("/admin/comment/<int:comment_id>/delete", methods=["POST"])
-@admin_required
-def admin_delete_comment(comment_id):
-    """コメントを削除（論理削除）"""
-    comment = BlogComment.query.get_or_404(comment_id)
-    comment.is_deleted = True
-    db.session.commit()
-    
-    flash('コメントを削除しました', 'success')
-    return redirect(url_for('admin_comments'))
-
-# GCSバケット名（環境変数から取得、なければ直接指定）
-BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', 'your-bucket-name')
-
-# クイズ一覧を取得（quiz1, quiz2, ...）
-def list_quiz_ids(bucket_name):
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    quiz_ids = set()
-    for blob in bucket.list_blobs():
-        if '/' in blob.name:
-            quiz_id = blob.name.split('/')[0]
-            quiz_ids.add(quiz_id)
-    return sorted(list(quiz_ids))
-
-
 # Blueprint 登録
 app.register_blueprint(grammar_bp)
 app.register_blueprint(vocab_bp)
@@ -947,7 +716,6 @@ try:
             db_path = db_uri.replace('sqlite:///', '')
             db_dir = os.path.dirname(db_path)
             os.makedirs(db_dir, exist_ok=True)
-            print(f"DEBUG: SQLite directory ensured: {db_dir}")
         
         db.create_all()
         
@@ -957,12 +725,11 @@ try:
             inspector = inspect(db.engine)
             
             # テーブルが存在するかチェック
-            if db.engine.has_table('grammar_quiz_log'):
+            if inspector.has_table('grammar_quiz_log'):
                 columns = [col['name'] for col in inspector.get_columns('grammar_quiz_log')]
-                print(f"DEBUG: Existing columns in grammar_quiz_log: {columns}")
                 
                 if 'model_answer' not in columns:
-                    print("DEBUG: Adding model_answer column to GrammarQuizLog table")
+                    pass
                     
                     # PostgreSQLとSQLiteの両方に対応
                     try:
@@ -970,22 +737,19 @@ try:
                             # PostgreSQL/SQLiteで動作するSQL
                             conn.execute(text('ALTER TABLE grammar_quiz_log ADD COLUMN model_answer TEXT'))
                             conn.commit()
-                        print("DEBUG: model_answer column added successfully")
                     except Exception as sql_error:
                         print(f"DEBUG: SQL execution error: {sql_error}")
                         # 手動でcreate_allを再実行してテーブル構造を更新
-                        print("DEBUG: Attempting to recreate tables...")
                         db.create_all()
                 else:
-                    print("DEBUG: model_answer column already exists")
+                    pass
             else:
-                print("DEBUG: grammar_quiz_log table does not exist yet, will be created")
+                pass
         except Exception as migration_error:
             print(f"DEBUG: Database migration error (non-fatal): {migration_error}")
             import traceback
             traceback.print_exc()
             
-        print("DEBUG: Database tables created successfully")
 except Exception as e:
     print(f"DEBUG: Database table creation error: {e}")
     import traceback

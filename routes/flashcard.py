@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
-from flask_login import login_required, current_user
+from flask_login import current_user
 from models import db, VocabMaster, FlashcardProgress, FlashcardLog
 import pandas as pd
 import os
 from datetime import datetime, timedelta
-import random
 from functools import wraps
 
 flashcard_bp = Blueprint('flashcard', __name__, url_prefix='/flashcard')

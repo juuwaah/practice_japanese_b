@@ -1,8 +1,7 @@
 import os
-import re
 import requests
 from flask import Blueprint, render_template, request, redirect, url_for
-from flask_login import login_required, current_user
+from flask_login import current_user
 from google_sheets_helper import load_youtube_listening_data_from_sheets
 from translations import get_user_language
 from models import db, QuizPlayCount
@@ -18,7 +17,6 @@ def get_channel_info_from_api(channel_id):
     """YouTube Data APIを使ってチャンネル情報を取得"""
     api_key = os.getenv('YOUTUBE_API_KEY')
     if not api_key:
-        print(f"DEBUG: YOUTUBE_API_KEY not found for channel {channel_id}")
         return None, None
     
     try:
@@ -33,7 +31,6 @@ def get_channel_info_from_api(channel_id):
         response.raise_for_status()
         
         data = response.json()
-        print(f"DEBUG: YouTube API response for {channel_id}: {data}")
         
         if 'items' in data and len(data['items']) > 0:
             channel_info = data['items'][0]['snippet']
@@ -50,10 +47,8 @@ def get_channel_info_from_api(channel_id):
             else:
                 channel_icon = "https://upload.wikimedia.org/wikipedia/commons/4/42/YouTube_icon_%282013-2017%29.png"
             
-            print(f"DEBUG: Successfully got channel info - Name: {channel_name}, Icon: {channel_icon}")
             return channel_name, channel_icon
         else:
-            print(f"DEBUG: No channel data found for {channel_id}")
             return None, None
             
     except Exception as e:
@@ -62,7 +57,6 @@ def get_channel_info_from_api(channel_id):
 
 def extract_channel_info(channel_data):
     """YouTubeチャンネル情報からチャンネル名とアイコンを取得"""
-    print(f"DEBUG: extract_channel_info called with: {channel_data}")
     if not channel_data:
         return None, None
     
@@ -210,7 +204,6 @@ def listening_levels():
         
         # チャンネル情報を取得
         channel_data = representative_quiz.get('channel_link')
-        print(f"DEBUG: Processing quiz {quiz_id} with channel_data: {channel_data}")
         channel_name, channel_icon = extract_channel_info(channel_data)
         
         representative_quiz['total_duration'] = total_duration
@@ -256,9 +249,7 @@ def listening_levels():
     # 言語判定（URLパラメータがあれば優先、なければセッション/ユーザー設定）
     language = request.args.get('lang') or get_user_language()
     
-    template_name = 'youtube_listening_unified.html' if language == 'ja' else 'youtube_listening_unified_en.html'
-    
-    return render_template(template_name, 
+    return render_template('youtube_listening_unified.html', 
                          quizzes=filtered_quizzes,
                          selected_level=selected_level,
                          current_sort=sort_by,
@@ -354,9 +345,7 @@ def listening_quiz(quiz_id, quiz_num=None):
         
         # 言語判定（URLパラメータがあれば優先、なければセッション/ユーザー設定）
         language = request.args.get('lang') or get_user_language()
-        template_name = 'youtube_listening_multi_quiz.html' if language == 'ja' else 'youtube_listening_multi_quiz_en.html'
-        
-        return render_template(template_name, 
+        return render_template('youtube_listening_multi_quiz.html', 
                              quizzes=same_id_quizzes,
                              base_quiz=base_quiz,
                              results=results,
@@ -423,9 +412,7 @@ def listening_quiz(quiz_id, quiz_num=None):
     
     # 言語判定（URLパラメータがあれば優先、なければセッション/ユーザー設定）
     language = request.args.get('lang') or get_user_language()
-    template_name = 'youtube_listening_quiz.html' if language == 'ja' else 'youtube_listening_quiz_en.html'
-    
-    return render_template(template_name, 
+    return render_template('youtube_listening_quiz.html', 
                          quiz=quiz, 
                          choices=choices,
                          result=result,

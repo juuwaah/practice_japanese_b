@@ -29,26 +29,21 @@ def get_onomatopoeia_list():
     current_time = time.time()
     
     # デバッグログ
-    print(f"DEBUG: ONOMATOPOEIA_SHEET_ID = {ONOMATOPOEIA_SHEET_ID}")
-    print(f"DEBUG: ONOMATOPOEIA_SHEET_NAME = {ONOMATOPOEIA_SHEET_NAME}")
     
     # キャッシュが有効な場合はそれを返す
     if (_onomatopoeia_cache is not None and 
         _cache_timestamp is not None and 
         (current_time - _cache_timestamp) < CACHE_DURATION):
-        print("DEBUG: キャッシュからデータを取得")
         return _onomatopoeia_cache
     
     if ONOMATOPOEIA_SHEET_ID:
-        print("DEBUG: Google Sheetsからデータを読み込み中...")
         # Google Sheetsから読み込み
         sheets_data = load_onomatopoeia_data_from_sheets(ONOMATOPOEIA_SHEET_ID, ONOMATOPOEIA_SHEET_NAME)
         if sheets_data:
-            print(f"DEBUG: Google Sheetsから{len(sheets_data)}個のデータを取得")
             # ウキウキをチェック
             ukiuki = next((item for item in sheets_data if item['word'] == 'ウキウキ'), None)
             if ukiuki:
-                print(f"DEBUG: ウキウキの意味 = {ukiuki['meaning']}")
+                pass
             # キャッシュに保存
             _onomatopoeia_cache = sheets_data
             _cache_timestamp = current_time
@@ -56,10 +51,9 @@ def get_onomatopoeia_list():
         else:
             print("DEBUG: Google Sheetsからの読み込みに失敗")
     else:
-        print("DEBUG: ONOMATOPOEIA_SHEET_IDが設定されていません")
+        pass
     
     # フォールバック：ローカルデータを使用
-    print("DEBUG: フォールバックローカルデータを使用")
     fallback_data = ONOMATOPOEIA_LIST_FALLBACK
     # フォールバックデータもキャッシュ
     _onomatopoeia_cache = fallback_data
@@ -86,4 +80,3 @@ def clear_onomatopoeia_cache():
     global _onomatopoeia_cache, _cache_timestamp
     _onomatopoeia_cache = None
     _cache_timestamp = None
-    print("オノマトペキャッシュをクリアしました")

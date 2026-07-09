@@ -1,9 +1,7 @@
 import gspread
-from google.auth import exceptions
 import pandas as pd
 import os
 import json
-import tempfile
 
 def get_google_sheets_client():
     """Google Sheets APIクライアントを取得"""
@@ -17,7 +15,6 @@ def get_google_sheets_client():
                 credentials_dict = json.loads(service_account_json)
                 # gspreadで辞書から認証
                 gc = gspread.service_account_from_dict(credentials_dict)
-                print("環境変数からGoogle Sheets認証成功")
                 return gc
             except json.JSONDecodeError as e:
                 print(f"環境変数のJSONパースエラー: {e}")
@@ -29,7 +26,6 @@ def get_google_sheets_client():
         
         if os.path.exists(credentials_path):
             gc = gspread.service_account(filename=credentials_path)
-            print("ファイルからGoogle Sheets認証成功")
             return gc
         else:
             print(f"認証ファイルが見つかりません: {credentials_path}")
@@ -58,7 +54,6 @@ def load_vocab_data_from_sheets(sheet_id, sheet_name):
         # 空の行を削除
         df = df.dropna(subset=["Kanji", "Word", "Meaning", "Type"])
         
-        print(f"Google Sheetsから語彙データ({sheet_name})を正常に読み込みました（{len(df)}件）")
         return df
         
     except Exception as e:
@@ -84,7 +79,6 @@ def load_grammar_data_from_sheets(sheet_id, sheet_name):
         # Grammar列から空でない値のリストを取得
         grammar_list = df["Grammar"].dropna().tolist()
         
-        print(f"Google Sheetsから文法データ({sheet_name})を正常に読み込みました（{len(grammar_list)}件）")
         return grammar_list
         
     except Exception as e:
@@ -119,7 +113,6 @@ def load_youtube_listening_data_from_sheets(sheet_id, sheet_name):
         df = df.dropna(subset=['id', 'quiz_num', 'level', 'title', 'video_id', 'question'])
         
         result = df.to_dict('records')
-        print(f"Google SheetsからYouTubeリスニングデータを正常に読み込みました（{len(result)}件）")
         return result
         
     except Exception as e:
@@ -128,7 +121,6 @@ def load_youtube_listening_data_from_sheets(sheet_id, sheet_name):
 
 def get_fallback_listening_data():
     """Google Sheets読み込み失敗時のフォールバックデータ"""
-    print("フォールバックのサンプルYouTubeリスニングデータを使用します")
     
     # サンプルデータを返す（実際の運用では空のリストまたは最小限のデータ）
     fallback_data = [
@@ -221,7 +213,6 @@ def load_onomatopoeia_data_from_sheets(sheet_id, sheet_name):
                     
                 onomatopoeia_list.append(onomatopoeia_item)
         
-        print(f"オノマトペデータ読み込み成功: {len(onomatopoeia_list)}個")
         return onomatopoeia_list
         
     except Exception as e:

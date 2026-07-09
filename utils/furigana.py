@@ -1,7 +1,6 @@
 import openai
 import os
 import time
-from error_handler import safe_openai_request
 
 # GPTを使用してひらがな読みを生成
 FURIGANA_AVAILABLE = True

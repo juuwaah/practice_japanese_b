@@ -34,12 +34,12 @@
   <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">管理メニュー</div>
   
   <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-    <a href="{{ url_for('admin_feedback') }}" 
+    <a href="{{ url_for('admin.feedback') }}" 
        style="background: #FFFFFF; border: 1px solid #000; padding: 6px 12px; text-decoration: none; 
               color: #000; font-size: 9px; font-weight: bold; display: inline-block;">
       📝 フィードバック管理 ({{ total_feedback }})
     </a>
-    <a href="{{ url_for('admin_users') }}" 
+    <a href="{{ url_for('admin.users') }}" 
        style="background: #FFFFFF; border: 1px solid #000; padding: 6px 12px; text-decoration: none; 
               color: #000; font-size: 9px; font-weight: bold; display: inline-block;">
       👥 ユーザー管理
@@ -84,7 +84,7 @@
     </div>
     
     <div style="text-align: center; margin-top: 8px;">
-      <a href="{{ url_for('admin_feedback') }}" 
+      <a href="{{ url_for('admin.feedback') }}" 
          style="font-size: 9px; text-decoration: underline; color: #000;">
         すべてのフィードバックを見る →
       </a>

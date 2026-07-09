@@ -1,7 +1,7 @@
 # エラーハンドリング用のユーティリティモジュール
 import time
 from functools import wraps
-from flask import session, request, g
+from flask import session, request
 from flask_login import current_user
 from translations import get_text, get_user_language
 from sqlalchemy.exc import OperationalError
@@ -102,7 +102,6 @@ def retry_with_backoff(max_retries=3, base_delay=1):
                         log_system_error("rate_limit", str(e), func.__name__)
                         return {"error": get_localized_error_message("api_rate_limit_error"), "type": "rate_limit"}
                     delay = base_delay * (2 ** attempt)
-                    print(f"Rate limit hit, waiting {delay}s before retry {attempt + 1}/{max_retries}")
                     time.sleep(delay)
                 except (openai.APIConnectionError, openai.APIError) as e:
                     if attempt == max_retries - 1:

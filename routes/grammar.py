@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from functools import wraps
 import openai
@@ -10,7 +10,7 @@ import pandas as pd
 import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
-from error_handler import safe_openai_request, format_error_response, get_localized_error_message, handle_database_errors
+from error_handler import safe_openai_request, get_localized_error_message, handle_database_errors
 from utils.furigana import text_to_ruby_html
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
@@ -113,7 +113,6 @@ def grammar_index():
                         score = ((grammar + meaning) / 6.0) * 100 if grammar and meaning else None
                         
                         # ログを保存
-                        import json
                         log = GrammarQuizLog(
                             user_id=current_user.id,
                             original_sentence=original,
@@ -321,94 +320,18 @@ def extract_json(text):
 @google_login_required
 def grammar_logs():
     """ユーザーの文法クイズログを表示"""
-    try:
-        import json
-        page = request.args.get('page', 1, type=int)
-        per_page = 20
-        
+    page = request.args.get('page', 1, type=int)
+
+    # 現在のユーザーのログのみを取得
+    logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
+                               .order_by(GrammarQuizLog.created_at.desc())\
+                               .paginate(page=page, per_page=20, error_out=False)
+
+    # ログのmodel_answerをJSONからリストに変換
+    for log in logs.items:
         try:
-            # 現在のユーザーのログのみを取得
-            logs = GrammarQuizLog.query.filter_by(user_id=current_user.id)\
-                                     .order_by(GrammarQuizLog.created_at.desc())\
-                                     .paginate(page=page, per_page=per_page, error_out=False)
-        except Exception as query_error:
-            # PostgreSQLトランザクションをロールバック
-            try:
-                db.session.rollback()
-            except Exception:
-                pass
-                
-            # model_answer列がない場合は、基本的なクエリのみ実行
-            try:
-                logs = GrammarQuizLog.query.with_entities(
-                    GrammarQuizLog.id,
-                    GrammarQuizLog.user_id,
-                    GrammarQuizLog.original_sentence,
-                    GrammarQuizLog.user_translation,
-                    GrammarQuizLog.jlpt_level,
-                    GrammarQuizLog.direction,
-                    GrammarQuizLog.score,
-                    GrammarQuizLog.feedback,
-                    GrammarQuizLog.created_at
-                ).filter_by(user_id=current_user.id)\
-                 .order_by(GrammarQuizLog.created_at.desc())\
-                 .paginate(page=page, per_page=per_page, error_out=False)
-            except Exception as fallback_error:
-                # 空のページネーションオブジェクトを作成
-                class FakePagination:
-                    def __init__(self, page, per_page, total, items):
-                        self.page = page
-                        self.per_page = per_page
-                        self.total = total
-                        self.items = items
-                        self.pages = 1
-                        self.has_prev = False
-                        self.has_next = False
-                        self.prev_num = None
-                        self.next_num = None
-                    
-                    def iter_pages(self):
-                        return []
-                
-                logs = FakePagination(page=page, per_page=per_page, total=0, items=[])
-        
-        # ログのmodel_answerをJSONからリストに変換（安全な方法）
-        processed_logs = []
-        for log in logs.items:
-            try:
-                # logを辞書形式に変換して新しい属性を安全に追加
-                log_dict = {}
-                
-                # SQLAlchemy objectの属性をコピー
-                for attr in ['id', 'user_id', 'original_sentence', 'user_translation', 
-                           'jlpt_level', 'direction', 'score', 'feedback', 'created_at']:
-                    if hasattr(log, attr):
-                        log_dict[attr] = getattr(log, attr)
-                
-                # model_answerを処理
-                if hasattr(log, 'model_answer') and getattr(log, 'model_answer'):
-                    try:
-                        log_dict['parsed_model_answer'] = json.loads(getattr(log, 'model_answer'))
-                    except json.JSONDecodeError:
-                        log_dict['parsed_model_answer'] = []
-                else:
-                    log_dict['parsed_model_answer'] = []
-                
-                # 辞書を簡単なオブジェクトに変換
-                class LogObject:
-                    def __init__(self, data):
-                        for key, value in data.items():
-                            setattr(self, key, value)
-                
-                processed_logs.append(LogObject(log_dict))
-                
-            except Exception as e:
-                # エラーが発生したログはスキップ
-                continue
-        
-        # logs.itemsを処理済みのリストに置き換え
-        logs.items = processed_logs
-        
-        return render_template('grammar_logs.html', logs=logs)
-    except Exception as e:
-        return f"Grammar logs error: {str(e)}", 500
+            log.parsed_model_answer = json.loads(log.model_answer) if log.model_answer else []
+        except (json.JSONDecodeError, TypeError):
+            log.parsed_model_answer = []
+
+    return render_template('grammar_logs.html', logs=logs)
