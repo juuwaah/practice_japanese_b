@@ -2,11 +2,11 @@
 import os
 import pandas as pd
 import random
-import openai
 import json
 from flask import Blueprint, render_template, request, session
 import re
 from google_sheets_helper import load_vocab_data_from_sheets
+from claude_helper import ask_claude
 
 vocab_bp = Blueprint("vocab", __name__, url_prefix="/vocab")
 
@@ -70,20 +70,10 @@ def generate_vocab_quiz(level):
 - 選択肢や問題文には「・」や不自然な記号を絶対に含めないでください。
 - 出力は日本語の例文1文のみ。他の情報や選択肢リスト、ヒントなどは絶対に含めないでください。
 """
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     # 5. 生成文のバリデーション: 答えやその一部が空欄以外に現れていないか、記号が含まれていないか
     max_attempts = 5
     for _ in range(max_attempts):
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
-        )
-        quiz_sentence = response.choices[0].message.content
-        if isinstance(quiz_sentence, str):
-            quiz_sentence = quiz_sentence.strip().replace("\n", "")
-        else:
-            quiz_sentence = ""
+        quiz_sentence = ask_claude(prompt).replace("\n", "")
         # 空欄部分以外に正解語やその一部が含まれていないかチェック
         blank_pattern = r'＿＿'
         # 正解語の分割（例：「運転する」→["運転", "する"]）
@@ -115,7 +105,6 @@ def safe_strip(val):
     return val.strip() if isinstance(val, str) else ""
 
 def generate_feedback_and_examples(word, kanji, meaning, level, quiz_sentence, options):
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     prompt = (
         f"""
 You are a Japanese language teacher. The following is a JLPT {level} vocabulary quiz.
@@ -141,14 +130,7 @@ Options:
 - {options[3]}: <English meaning>
 """
     )
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.5
-    )
-    content = response.choices[0].message.content
-    if not isinstance(content, str):
-        return "", []
+    content = ask_claude(prompt)
     lines = safe_strip(content).split('\n')
     translation = ""
     option_translations = []

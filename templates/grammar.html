@@ -4,10 +4,6 @@
 
 {% block window_title %}{{ _('translation_practice') }}{% endblock %}
 
-{% block extra_head %}
-<script src="{{ url_for('static', filename='speech-recognition.js') }}"></script>
-{% endblock %}
-
 {% block content %}
     <!-- Educational description for AdSense compliance -->
     <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
@@ -86,9 +82,8 @@
       
       <div style="margin-bottom: 8px;">
         <label style="font-size: 9px; font-weight: bold;">{{ _('your_translation') }}:</label>
-        <div style="display: flex; gap: 4px; align-items: flex-start; margin-top: 2px;">
-          <textarea name="translation" id="translation-textarea" rows="3" style="flex: 1; font-size: 9px; padding: 2px;">{{ translation }}</textarea>
-          <div id="voice-input-translation"></div>
+        <div style="margin-top: 2px;">
+          <textarea name="translation" id="translation-textarea" rows="3" style="width: 100%; font-size: 9px; padding: 2px;">{{ translation }}</textarea>
         </div>
       </div>
       
@@ -156,31 +151,6 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // 音声入力の初期化 - 翻訳入力フィールド
-  const voiceInputTranslation = document.getElementById('voice-input-translation');
-  const translationTextarea = document.getElementById('translation-textarea');
-  if (voiceInputTranslation && translationTextarea) {
-    // 翻訳方向に基づいて言語を固定設定
-    const direction = document.querySelector('input[name="direction"]:checked')?.value;
-    let defaultLanguage = 'ja';
-    let isEngToJpn = true;
-    
-    if (direction && direction.includes('jpn_to_eng')) {
-      defaultLanguage = 'en';
-      isEngToJpn = false;
-    }
-    
-    const voiceTranslation = createVoiceInputButton('translation-textarea', {
-      language: defaultLanguage,
-      buttonText: '🎤',
-      fixedLanguage: true,  // 言語固定
-      showLanguageSelect: false  // 選択UI非表示
-    });
-    voiceInputTranslation.appendChild(voiceTranslation.container);
-  }
-});
-
 document.addEventListener('keydown', function(e) {
   // R for Generate Example Sentence (only when NOT in input/textarea)
   const tag = document.activeElement.tagName;

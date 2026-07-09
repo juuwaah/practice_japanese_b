@@ -5,7 +5,7 @@ from flask import session, request
 from flask_login import current_user
 from translations import get_text, get_user_language
 from sqlalchemy.exc import OperationalError
-import openai
+import anthropic
 
 
 def log_system_error(error_type, error_message, feature=None):
@@ -47,27 +47,27 @@ def get_localized_error_message(error_type, language=None):
     return get_text(error_type, language)
 
 
-def handle_openai_errors(func):
-    """OpenAI APIのエラーを処理するデコレータ"""
+def handle_claude_errors(func):
+    """Claude APIのエラーを処理するデコレータ"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except openai.RateLimitError as e:
+        except anthropic.RateLimitError as e:
             log_system_error("rate_limit", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("api_rate_limit_error"), "type": "rate_limit"}
-        except openai.APIConnectionError as e:
+        except anthropic.APIConnectionError as e:
             log_system_error("connection", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("api_connection_error"), "type": "connection"}
-        except openai.APIError as e:
-            if "quota" in str(e).lower() or "billing" in str(e).lower():
+        except anthropic.APIError as e:
+            if "credit" in str(e).lower() or "billing" in str(e).lower():
                 log_system_error("quota", str(e), kwargs.get('feature'))
                 return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
             log_system_error("api_error", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("general_system_error"), "type": "api_error"}
         except Exception as e:
             log_system_error("unknown", str(e), kwargs.get('feature'))
-            print(f"Unexpected OpenAI error: {e}")
+            print(f"Unexpected Claude API error: {e}")
             return {"error": get_localized_error_message("general_system_error"), "type": "unknown"}
     return wrapper
 
@@ -97,15 +97,15 @@ def retry_with_backoff(max_retries=3, base_delay=1):
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
-                except openai.RateLimitError as e:
+                except (anthropic.RateLimitError, anthropic.OverloadedError) as e:
                     if attempt == max_retries - 1:
                         log_system_error("rate_limit", str(e), func.__name__)
                         return {"error": get_localized_error_message("api_rate_limit_error"), "type": "rate_limit"}
                     delay = base_delay * (2 ** attempt)
                     time.sleep(delay)
-                except (openai.APIConnectionError, openai.APIError) as e:
+                except (anthropic.APIConnectionError, anthropic.APIError) as e:
                     if attempt == max_retries - 1:
-                        if "quota" in str(e).lower():
+                        if "credit" in str(e).lower() or "billing" in str(e).lower():
                             log_system_error("quota", str(e), func.__name__)
                             return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
                         log_system_error("api_connection", str(e), func.__name__)
@@ -149,10 +149,10 @@ def format_error_response(error_info, additional_info=None):
     return response
 
 
-def safe_openai_request(api_function):
-    """OpenAI APIリクエストを安全に実行する統合関数"""
+def safe_claude_request(api_function):
+    """Claude APIリクエストを安全に実行する統合関数"""
     @retry_with_backoff(max_retries=3, base_delay=1)
-    @handle_openai_errors
+    @handle_claude_errors
     def make_request():
         # システム負荷チェック
         load_check = check_system_load()

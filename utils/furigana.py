@@ -1,8 +1,8 @@
-import openai
-import os
 import time
 
-# GPTを使用してひらがな読みを生成
+from claude_helper import ask_claude
+
+# Claudeを使用してひらがな読みを生成
 FURIGANA_AVAILABLE = True
 
 # キャッシュとレート制限対策
@@ -11,7 +11,7 @@ _last_request_time = 0
 
 def text_to_ruby_html(text):
     """
-    Convert Japanese text with hiragana reading in parentheses using OpenAI GPT.
+    Convert Japanese text with hiragana reading in parentheses using Claude.
     Format: 元の文（ひらがなのよみ）
     """
     global _last_request_time
@@ -40,18 +40,8 @@ def text_to_ruby_html(text):
 
 結果:"""
 
-        def make_furigana_request():
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-                max_tokens=300
-            )
-            return response.choices[0].message.content.strip()
-        
         try:
-            result = make_furigana_request()
+            result = ask_claude(prompt, max_tokens=300)
         except Exception as e:
             return text
         

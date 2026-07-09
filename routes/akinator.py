@@ -1,9 +1,9 @@
 import os
 import pandas as pd
 from flask import Blueprint, render_template, request, session, redirect, url_for
-import openai
 import re
 from dotenv import load_dotenv
+from claude_helper import ask_claude
 
 load_dotenv()
 
@@ -28,18 +28,6 @@ VOCAB_XLSX = os.path.join(os.path.dirname(__file__), '../database/JLPT vocabular
 JLPT_LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1']
 # AIがアキネーターの場合は質問が難しすぎるため、N5とN4を除外
 AI_AKINATOR_LEVELS = ['N3', 'N2', 'N1']
-
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-def ask_gpt(prompt, temperature=0.5):
-    """ChatGPTにプロンプトを送り、テキスト応答を返す"""
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": str(prompt)}],
-        temperature=temperature
-    )
-    reply = response.choices[0].message.content
-    return reply.strip() if isinstance(reply, str) else ''
 
 def start_game(role, level):
     """セッションを初期化して新しいゲームを開始"""
@@ -70,7 +58,7 @@ def append_hint(history, level):
     hint_prompt = build_akinator_hint_prompt(history, level, word, meaning)
     hint_text = ''
     for _ in range(3):
-        hint_text = ask_gpt(hint_prompt)
+        hint_text = ask_claude(hint_prompt)
         if len(hint_text) < 6 or any(e in hint_text for e in
                 ["⎝", "( ᐛ )", "？", "?", "(੭", "Ҩ", "╭☞", "ʕ˒", "!", "only output", "output only"]):
             continue
@@ -388,7 +376,7 @@ def akinator_game():
     if role == 'gpt':
         if request.method == 'GET' and not history:
             # 最初のGET時はChatGPTから質問を出す
-            history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
+            history.append({'role': 'gpt', 'text': ask_claude(build_akinator_gpt_prompt(history, level))})
             session['akinator_history'] = history
         elif request.method == 'POST' and not session.get('akinator_gameover', False):
             user_guess = request.form.get('user_guess', '').strip()
@@ -409,13 +397,13 @@ def akinator_game():
 
 必ずこの2つのどちらかで回答してください。
 """
-                gpt_reply = ask_gpt(judge_prompt, temperature=0.3)
+                gpt_reply = ask_claude(judge_prompt)
                 history.append({'role': 'gpt', 'text': gpt_reply})
                 if 'せいかい' in gpt_reply or '正解' in gpt_reply:
                     session['akinator_gameover'] = True
                 else:
                     # 不正解 - 次の質問を生成してゲームを継続
-                    history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
+                    history.append({'role': 'gpt', 'text': ask_claude(build_akinator_gpt_prompt(history, level))})
                 session['akinator_history'] = history
             elif msg:
                 # ユーザーの回答を履歴に追加
@@ -429,7 +417,7 @@ def akinator_game():
                     session['akinator_history'] = history
                 else:
                     # まだ続く場合は次の質問/推測
-                    history.append({'role': 'gpt', 'text': ask_gpt(build_akinator_gpt_prompt(history, level))})
+                    history.append({'role': 'gpt', 'text': ask_claude(build_akinator_gpt_prompt(history, level))})
                     session['akinator_history'] = history
         return render_game(history)
 
@@ -521,7 +509,7 @@ def akinator_game():
 
 上記のやりとりを必ず確認し、矛盾しない回答をしてください。漢字読みの違いも考慮してください。
 """
-            gpt_reply = ask_gpt(prompt, temperature=0.0)
+            gpt_reply = ask_claude(prompt)
 
             # 4択以外の場合、回答に含まれる意図を判定して4択に正規化
             allowed = ["はい", "いいえ", "わからない", "ときどき"]

@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user
 from functools import wraps
-import openai
 import os
 import re
 import json
@@ -10,13 +9,26 @@ import pandas as pd
 import random
 from google_sheets_helper import load_grammar_data_from_sheets
 from models import db, GrammarQuizLog
-from error_handler import safe_openai_request, get_localized_error_message, handle_database_errors
+from error_handler import safe_claude_request, get_localized_error_message, handle_database_errors
+from claude_helper import ask_claude, ask_claude_json
 from utils.furigana import text_to_ruby_html
 
 grammar_bp = Blueprint('grammar', __name__, url_prefix="/grammar")
 load_dotenv()
 
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# 採点結果のJSONスキーマ（構造化出力用）
+SCORE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "grammar": {"type": "integer"},
+        "meaning": {"type": "integer"},
+        "model_answer": {"type": "array", "items": {"type": "string"}},
+        "casual_answer": {"type": "string"},
+        "feedback": {"type": "string"},
+    },
+    "required": ["grammar", "meaning", "model_answer", "casual_answer", "feedback"],
+    "additionalProperties": False,
+}
 
 # 文法構文リスト（Google Sheetsから読み込み）
 grammar_dict = {}
@@ -184,15 +196,10 @@ Create one short English sentence that could naturally be translated into Japane
 '''
 
     def make_api_call():
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
-        )
-        return re.split(r'→|:|\n', response.choices[0].message.content.strip())[0]
-    
+        return re.split(r'→|:|\n', ask_claude(prompt))[0]
+
     # エラーハンドリング付きでAPI呼び出し
-    result = safe_openai_request(make_api_call)
+    result = safe_claude_request(make_api_call)
     
     if isinstance(result, dict) and "error" in result:
         return result["error"]  # エラーメッセージを返す
@@ -225,29 +232,22 @@ Respond only with JSON.
 """
         
         def make_api_call():
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.4
-            )
-            raw = response.choices[0].message.content
-            json_text = extract_json(raw)
-            return json.loads(json_text)
-        
+            return ask_claude_json(prompt, SCORE_SCHEMA)
+
         # エラーハンドリング付きでAPI呼び出し
-        result = safe_openai_request(make_api_call)
-        
+        result = safe_claude_request(make_api_call)
+
         if isinstance(result, dict) and "error" in result:
             return {
                 "grammar": None,
-                "meaning": None, 
+                "meaning": None,
                 "model_answer": [],
                 "feedback": result["error"],
                 "casual_answer": ""
             }
-        
+
         return result
-    
+
     # Only provide full feedback for English → Japanese direction
     prompt = f"""
 Original sentence: {original}
@@ -287,17 +287,10 @@ Respond only with JSON.
 """
 
     def make_api_call():
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.4
-        )
-        raw = response.choices[0].message.content
-        json_text = extract_json(raw)
-        return json.loads(json_text)
-    
+        return ask_claude_json(prompt, SCORE_SCHEMA)
+
     # エラーハンドリング付きでAPI呼び出し
-    result = safe_openai_request(make_api_call)
+    result = safe_claude_request(make_api_call)
     
     if isinstance(result, dict) and "error" in result:
         return {
@@ -309,12 +302,6 @@ Respond only with JSON.
         }
     
     return result
-
-def extract_json(text):
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
-        return match.group(0)
-    raise ValueError("Failed to extract JSON.")
 
 @grammar_bp.route("/logs", methods=["GET"])
 @google_login_required

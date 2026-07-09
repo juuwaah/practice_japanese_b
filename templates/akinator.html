@@ -4,10 +4,6 @@
 
 {% block window_title %}JLPT {{ _('word_akinator') }}{% endblock %}
 
-{% block extra_head %}
-<script src="{{ url_for('static', filename='speech-recognition.js') }}"></script>
-{% endblock %}
-
 {% block content %}
     <div style="text-align: center; margin-bottom: 12px;">
       <h1>{{ _('word_akinator') }}</h1>
@@ -40,11 +36,10 @@
   {% if role == 'user' %}
     <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0;">
       <form id="chat-form" method="post" action="">
-        <div style="margin-bottom: 8px; display: flex; gap: 4px; align-items: center;">
-          <input type="text" name="message" id="message" 
-                 placeholder="{{ _('type_your_question') }}" 
-                 style="flex: 1; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
-          <div id="voice-input-message"></div>
+        <div style="margin-bottom: 8px;">
+          <input type="text" name="message" id="message"
+                 placeholder="{{ _('type_your_question') }}"
+                 style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
         </div>
         
         <div style="display: flex; gap: 4px;">
@@ -73,11 +68,10 @@
     
     <div id="guess-form-container" style="display: none; margin-top: 4px;">
       <form id="guess-form" method="post" style="display: flex; gap: 4px; align-items: center;">
-        <input type="text" name="user_guess" id="user_guess" 
-               placeholder="{{ _('enter_answer') }}" 
+        <input type="text" name="user_guess" id="user_guess"
+               placeholder="{{ _('enter_answer') }}"
                style="flex: 1; padding: 4px; font-size: 8px; border: 1px solid #000;">
-        <div id="voice-input-guess"></div>
-        <button type="submit" 
+        <button type="submit"
                 style="padding: 4px 8px; font-size: 8px; font-weight: bold; 
                        background: #D0E0FF; border: 1px solid #000;">
           {{ _('submit_answer') }}
@@ -198,43 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
     messageInput.focus();
   }
   
-  // 音声入力の初期化 - メッセージ入力フィールド（日本語固定）
-  console.log('Debug: Initializing voice input...');
-  const voiceInputMessage = document.getElementById('voice-input-message');
-  console.log('Debug: voiceInputMessage element:', voiceInputMessage);
-  console.log('Debug: messageInput element:', messageInput);
-  console.log('Debug: createVoiceInputButton function:', typeof createVoiceInputButton);
-  
-  if (voiceInputMessage && messageInput) {
-    console.log('Debug: Creating voice input button...');
-    const voiceInput = createVoiceInputButton('message', {
-      language: 'ja',
-      buttonText: '🎤',
-      fixedLanguage: true,
-      showLanguageSelect: false
-    });
-    console.log('Debug: Voice input created:', voiceInput);
-    voiceInputMessage.appendChild(voiceInput.container);
-    console.log('Debug: Voice input appended to DOM');
-  } else {
-    console.log('Debug: Missing elements - voiceInputMessage:', !!voiceInputMessage, 'messageInput:', !!messageInput);
-  }
-  
-  // 音声入力の初期化 - 答え入力フィールド（日本語固定）
-  const voiceInputGuess = document.getElementById('voice-input-guess');
-  const guessInput = document.getElementById('user_guess');
-  if (voiceInputGuess && guessInput) {
-    const voiceGuess = createVoiceInputButton('user_guess', {
-      language: 'ja',
-      buttonText: '🎤',
-      fixedLanguage: true,
-      showLanguageSelect: false
-    });
-    voiceInputGuess.appendChild(voiceGuess.container);
-  }
-  
-  
   // 「わかった！」ボタンの処理
+  const guessInput = document.getElementById('user_guess');
   const guessBtn = document.getElementById('guess-btn');
   const guessFormContainer = document.getElementById('guess-form-container');
   

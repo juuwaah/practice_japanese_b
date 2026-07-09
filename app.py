@@ -11,12 +11,10 @@ from routes.admin import admin_bp
 from models import db, User, Feedback, OAuth
 from forms import LoginForm, RegistrationForm
 from translations import get_text, get_user_language, get_user_font
-from error_handler import safe_openai_request
 import datetime as dt
 import random
 import json
 import os
-import openai
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -754,63 +752,6 @@ except Exception as e:
     print(f"DEBUG: Database table creation error: {e}")
     import traceback
     traceback.print_exc()
-
-# Speech recognition API endpoint
-@app.route("/api/speech-to-text", methods=["POST"])
-def speech_to_text():
-    """音声をテキストに変換 (OpenAI Whisper API使用)"""
-    try:
-        if 'audio' not in request.files:
-            return jsonify({'success': False, 'error': '音声ファイルがありません'}), 400
-        
-        audio_file = request.files['audio']
-        language = request.form.get('language', 'ja')  # デフォルトは日本語
-        
-        if audio_file.filename == '':
-            return jsonify({'success': False, 'error': '音声ファイルが選択されていません'}), 400
-        
-        # OpenAI Whisper APIで音声認識
-        client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        
-        def make_whisper_request():
-            # 音声ファイルを一時的に保存
-            import tempfile
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp_file:
-                audio_file.save(tmp_file.name)
-                
-                # Whisper APIを呼び出し
-                with open(tmp_file.name, 'rb') as audio:
-                    response = client.audio.transcriptions.create(
-                        model="whisper-1",
-                        file=audio,
-                        language=language if language != 'auto' else None,
-                        response_format="text"
-                    )
-                
-                # 一時ファイルを削除
-                os.unlink(tmp_file.name)
-                return response
-        
-        # エラーハンドリング付きでAPI呼び出し
-        result = safe_openai_request(make_whisper_request)
-        
-        if isinstance(result, dict) and "error" in result:
-            return jsonify({'success': False, 'error': result["error"]}), 500
-        
-        return jsonify({
-            'success': True,
-            'text': result.strip(),
-            'language': language
-        })
-        
-    except Exception as e:
-        print(f"Speech recognition error: {e}")
-        return jsonify({
-            'success': False,
-            'error': f'音声認識エラー: {str(e)}'
-        }), 500
-
-# Patreon OAuth callback removed - using Google login only
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
