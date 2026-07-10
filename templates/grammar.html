@@ -6,21 +6,19 @@
 
 {% block content %}
     <!-- Educational description for AdSense compliance -->
-    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+    <div style="margin-bottom: 8px; padding: 4px 6px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.3; color: #333; text-align: left;">
       {{ _('grammar_quiz_description') }}
     </div>
 
-    <div style="text-align: center; margin-bottom: 12px;">
-      <h1>{{ _('translation_practice') }}</h1>
+    <div style="text-align: center; margin-bottom: 8px;">
+      <h1 style="margin: 2px 0; display: inline-block;">{{ _('translation_practice') }}</h1>
       {% if current_user.is_authenticated %}
-        <div style="margin-top: 8px;">
-          <a href="{{ url_for('grammar.grammar_logs') }}" 
-             style="font-size: 9px; text-decoration: underline; color: #000;">
-            📊 {{ _('view_my_logs') }}
-          </a>
-        </div>
+        <a href="{{ url_for('grammar.grammar_logs') }}"
+           style="font-size: 9px; text-decoration: underline; color: #000; margin-left: 8px;">
+          📊 {{ _('view_my_logs') }}
+        </a>
       {% else %}
-        <div style="margin-top: 8px; font-size: 8px; color: #666;">
+        <div style="margin-top: 2px; font-size: 8px; color: #666;">
           {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}" style="text-decoration: underline; color: #0066CC;">{{ _('google_login_here') }}</a>
         </div>
       {% endif %}
@@ -32,37 +30,34 @@
   </div>
 {% endif %}
 
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 16px; background: #F0F0F0;">
+<div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #F0F0F0;">
   <form method="post">
-    <div style="margin-bottom: 8px;">
-      <label style="font-size: 9px; font-weight: bold;">{{ _('jlpt_level') }}:</label>
-      <select name="level" style="width: 80px; font-size: 9px; margin-left: 4px;">
-        {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
-          <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
-        {% endfor %}
-      </select>
-    </div>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
+      <span style="white-space: nowrap;">
+        <label style="font-size: 9px; font-weight: bold;">{{ _('jlpt_level') }}:</label>
+        <select name="level" style="width: 70px; font-size: 9px; margin-left: 4px;">
+          {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
+            <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
+          {% endfor %}
+        </select>
+      </span>
 
-    <div style="margin-bottom: 12px;">
-      <label style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">{{ _('translation_direction') }}:</label>
-      {% for code, label in directions.items() %}
-        <div style="margin-bottom: 2px;">
+      <span style="white-space: nowrap;">
+        {% for code, label in directions.items() %}
           <input type="radio" name="direction" value="{{ code }}" id="{{ code }}"
-            {% if direction == code %}checked{% endif %}> 
-          <label for="{{ code }}" style="font-size: 9px; font-weight: normal; margin-left: 2px;">{{ label }}</label>
-        </div>
-      {% endfor %}
-    </div>
+            {% if direction == code %}checked{% endif %}>
+          <label for="{{ code }}" style="font-size: 9px; font-weight: normal; margin-right: 10px;">{{ label }}</label>
+        {% endfor %}
+      </span>
 
-    <div style="text-align: center;">
-      <button type="submit" name="action" value="generate" style="padding: 4px 12px; font-size: 9px; margin-right: 4px;">{{ _('generate_press_r') }}</button>
+      <button type="submit" name="action" value="generate" style="padding: 3px 12px; font-size: 9px;">{{ _('generate_press_r') }}</button>
     </div>
   </form>
 </div>
 
 {% if original %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-decoration: underline;">
+  <div style="border: 2px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #FFFFFF;">
+    <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px; text-decoration: underline;">
       {{ _('original') }}:
     </div>
     <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
@@ -74,21 +69,21 @@
     </div>
   </div>
 
-  <div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F0F0F0;">
+  <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #F0F0F0;">
     <form method="post">
       <input type="hidden" name="level" value="{{ level }}">
       <input type="hidden" name="direction" value="{{ direction }}">
       <input type="hidden" name="original" value="{{ original }}">
-      
-      <div style="margin-bottom: 8px;">
+
+      <div style="margin-bottom: 4px;">
         <label style="font-size: 9px; font-weight: bold;">{{ _('your_translation') }}:</label>
         <div style="margin-top: 2px;">
-          <textarea name="translation" id="translation-textarea" rows="3" style="width: 100%; font-size: 9px; padding: 2px;">{{ translation }}</textarea>
+          <textarea name="translation" id="translation-textarea" rows="2" style="width: 100%; font-size: 9px; padding: 2px;">{{ translation }}</textarea>
         </div>
       </div>
-      
+
       <div style="text-align: center;">
-        <button type="submit" name="action" value="score" style="padding: 4px 16px; font-size: 9px;">{{ _('submit_answer_shift_enter') }}</button>
+        <button type="submit" name="action" value="score" style="padding: 3px 16px; font-size: 9px;">{{ _('submit_answer_shift_enter') }}</button>
       </div>
     </form>
   </div>
