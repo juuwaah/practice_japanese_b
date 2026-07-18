@@ -4,6 +4,7 @@ Google Drive API Helper for Blog Posts
 
 import os
 import json
+import time
 from datetime import datetime
 import re
 from typing import List, Dict, Optional
@@ -13,6 +14,8 @@ try:
     from googleapiclient.discovery import build
     from google.oauth2 import service_account
     from googleapiclient.errors import HttpError
+    import httplib2
+    import google_auth_httplib2
     GOOGLE_APIS_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Google API libraries not installed: {e}")
@@ -32,76 +35,64 @@ BLOG_FOLDER_ID = '1dm9jGD2qXzLVcW7JbOnjL_tg9eqM6PZS'
 ONOMATOPOEIA_IMAGES_FOLDER_ID = '1CJllmtcGjqck2S4f1dMcfViMQPwLHgNv'  # オノマトペ画像フォルダ
 SERVICE_ACCOUNT_FILE = 'japaneseapp-466108-327bc89dfc8e.json'  # 既存のサービスアカウントファイル
 
-def get_drive_service():
-    """Google Drive APIサービスを取得"""
+# Google APIへのTCP接続がハングするとgunicornワーカーごと殺されて502になるため、
+# 必ずタイムアウトを設定する
+HTTP_TIMEOUT_SECONDS = 10
+
+# ブログ一覧は毎ページのサイドバーで呼ばれるため、TTL付きでキャッシュし
+# API障害時は古いデータを返し続ける
+BLOG_CACHE_TTL_SECONDS = 600
+_blog_cache = {'data': None, 'fetched_at': 0.0}
+
+def _load_credentials(scopes):
+    """環境変数またはローカルファイルからサービスアカウント認証情報を取得"""
+    service_account_json = os.getenv('GOOGLE_BLOG_SERVICE_ACCOUNT_JSON') or os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+    if service_account_json:
+        return service_account.Credentials.from_service_account_info(
+            json.loads(service_account_json), scopes=scopes)
+    if os.path.exists(SERVICE_ACCOUNT_FILE):
+        return service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=scopes)
+    return None
+
+def _build_service(api_name, api_version):
+    """タイムアウト付きHTTPクライアントでGoogle APIサービスを構築"""
     if not GOOGLE_APIS_AVAILABLE:
         return None
-        
+
     try:
-        # 環境変数からサービスアカウント情報を取得（Railway用）
-        service_account_json = os.getenv('GOOGLE_BLOG_SERVICE_ACCOUNT_JSON') or os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
-        
-        if service_account_json:
-            # 環境変数から認証情報を取得（本番環境）
-            service_account_info = json.loads(service_account_json)
-            credentials = service_account.Credentials.from_service_account_info(
-                service_account_info,
-                scopes=['https://www.googleapis.com/auth/drive.readonly',
-                       'https://www.googleapis.com/auth/documents.readonly']
-            )
-        elif os.path.exists(SERVICE_ACCOUNT_FILE):
-            # ローカル開発用：ファイルから認証情報を取得
-            credentials = service_account.Credentials.from_service_account_file(
-                SERVICE_ACCOUNT_FILE,
-                scopes=['https://www.googleapis.com/auth/drive.readonly',
-                       'https://www.googleapis.com/auth/documents.readonly']
-            )
-        else:
+        credentials = _load_credentials(
+            scopes=['https://www.googleapis.com/auth/drive.readonly',
+                   'https://www.googleapis.com/auth/documents.readonly']
+        )
+        if credentials is None:
             return None
-        
-        drive_service = build('drive', 'v3', credentials=credentials)
-        return drive_service
+
+        authorized_http = google_auth_httplib2.AuthorizedHttp(
+            credentials, http=httplib2.Http(timeout=HTTP_TIMEOUT_SECONDS))
+        return build(api_name, api_version, http=authorized_http)
     except Exception as e:
-        print(f"ERROR: Failed to initialize Google Drive service: {e}")
+        print(f"ERROR: Failed to initialize Google {api_name} service: {e}")
         return None
+
+def get_drive_service():
+    """Google Drive APIサービスを取得"""
+    return _build_service('drive', 'v3')
 
 def get_docs_service():
     """Google Docs APIサービスを取得"""
-    if not GOOGLE_APIS_AVAILABLE:
-        return None
-        
-    try:
-        # 環境変数からサービスアカウント情報を取得（Railway用）
-        service_account_json = os.getenv('GOOGLE_BLOG_SERVICE_ACCOUNT_JSON') or os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
-        
-        if service_account_json:
-            # 環境変数から認証情報を取得（本番環境）
-            service_account_info = json.loads(service_account_json)
-            credentials = service_account.Credentials.from_service_account_info(
-                service_account_info,
-                scopes=['https://www.googleapis.com/auth/drive.readonly',
-                       'https://www.googleapis.com/auth/documents.readonly']
-            )
-        elif os.path.exists(SERVICE_ACCOUNT_FILE):
-            # ローカル開発用：ファイルから認証情報を取得
-            credentials = service_account.Credentials.from_service_account_file(
-                SERVICE_ACCOUNT_FILE,
-                scopes=['https://www.googleapis.com/auth/drive.readonly',
-                       'https://www.googleapis.com/auth/documents.readonly']
-            )
-        else:
-            return None
-        
-        docs_service = build('docs', 'v1', credentials=credentials)
-        return docs_service
-    except Exception as e:
-        print(f"ERROR: Failed to initialize Google Docs service: {e}")
-        return None
+    return _build_service('docs', 'v1')
 
 def get_blog_documents() -> List[Dict]:
-    """ブログフォルダ内のGoogleドキュメントを取得"""
+    """ブログフォルダ内のGoogleドキュメントを取得（TTLキャッシュ付き）"""
+    now = time.time()
+    if _blog_cache['data'] is not None and now - _blog_cache['fetched_at'] < BLOG_CACHE_TTL_SECONDS:
+        return _blog_cache['data']
+
     drive_service = get_drive_service()
     if not drive_service:
+        if _blog_cache['data'] is not None:
+            return _blog_cache['data']
         # Return mock data for testing when APIs aren't available
         if not GOOGLE_APIS_AVAILABLE:
             return [
@@ -146,11 +137,16 @@ def get_blog_documents() -> List[Dict]:
                 'created_date': format_date(doc.get('createdTime', '')),
                 'modified_date': format_date(doc.get('modifiedTime', ''))
             })
-        
+
+        _blog_cache['data'] = blog_posts
+        _blog_cache['fetched_at'] = now
         return blog_posts
-        
+
     except Exception as e:
         print(f"ERROR: Failed to get blog documents: {e}")
+        # API障害時はTTL切れでも古いキャッシュを返し、サイドバー表示を維持する
+        if _blog_cache['data'] is not None:
+            return _blog_cache['data']
         return []
 
 def get_document_content(document_id: str) -> Optional[Dict]:

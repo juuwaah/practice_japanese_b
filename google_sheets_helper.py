@@ -37,6 +37,9 @@ def get_google_sheets_client():
 
 def load_vocab_data_from_sheets(sheet_id, sheet_name):
     """Google SheetsからJLPT語彙データを読み込み"""
+    if not sheet_id:
+        print(f"GOOGLE_SHEETS_IDが未設定です。語彙データ({sheet_name})の読み込みをスキップします。")
+        return None
     try:
         gc = get_google_sheets_client()
         if gc is None:
@@ -62,6 +65,9 @@ def load_vocab_data_from_sheets(sheet_id, sheet_name):
 
 def load_grammar_data_from_sheets(sheet_id, sheet_name):
     """Google SheetsからJLPT文法データを読み込み"""
+    if not sheet_id:
+        print(f"GOOGLE_SHEETS_GRAMMAR_IDが未設定です。文法データ({sheet_name})の読み込みをスキップします。")
+        return None
     try:
         gc = get_google_sheets_client()
         if gc is None:
