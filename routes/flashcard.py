@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import current_user
 from models import db, VocabMaster, FlashcardProgress, FlashcardLog
+from google_sheets_helper import load_vocab_data_from_sheets
 import pandas as pd
 import os
 from datetime import datetime, timedelta
@@ -27,52 +28,87 @@ def google_login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Google Sheetsとの同期を1時間に1回までに制限（APIレート制限対策）
+_last_vocab_sync = None
+VOCAB_SYNC_INTERVAL = timedelta(hours=1)
+
+def _clean_cell(value):
+    """セル値を文字列に正規化（nan・空白を空文字列にする）"""
+    text = str(value).strip()
+    if text.lower() == 'nan':
+        return ''
+    return text
+
 def load_vocab_data():
-    """Excelファイルから語彙データを読み込んでデータベースに保存"""
-    excel_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'JLPT vocabulary.xlsx')
-    
-    if not os.path.exists(excel_path):
-        return False
-    
-    # 既にデータが存在するかチェック
-    if VocabMaster.query.first():
+    """Google Sheets（失敗時はExcel）から語彙データを読み込んでデータベースに同期"""
+    global _last_vocab_sync
+
+    # 既にデータがあり、前回の同期から間もない場合はスキップ
+    if _last_vocab_sync is not None and \
+       datetime.utcnow() - _last_vocab_sync < VOCAB_SYNC_INTERVAL and \
+       VocabMaster.query.first():
         return True
-    
+
+    excel_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'JLPT vocabulary.xlsx')
+    sheet_id = os.getenv('GOOGLE_SHEETS_ID')
+
     try:
-        # 各JLPTレベルのシートを読み込み
         levels = ['N5', 'N4', 'N3', 'N2', 'N1']
+        loaded_any = False
         for level in levels:
-            try:
-                df = pd.read_excel(excel_path, sheet_name=level)
-                for _, row in df.iterrows():
-                    kanji = str(row.get('Kanji', '')).strip()
-                    word = str(row.get('Word', '')).strip()
-                    
-                    # 漢字が空またはnanの場合は空文字列にする
-                    if kanji == 'nan' or kanji == '' or kanji.lower() == 'nan':
-                        kanji = ''
-                    
-                    # Wordがnanの場合は空文字列にする
-                    if word == 'nan' or word.lower() == 'nan':
-                        word = ''
-                    
+            # 1. Google Sheetsから読み込み
+            df = load_vocab_data_from_sheets(sheet_id, level)
+
+            # 2. 失敗時はExcelにフォールバック
+            if df is None and os.path.exists(excel_path):
+                try:
+                    df = pd.read_excel(excel_path, sheet_name=level)
+                except Exception as e:
+                    print(f"Excel fallback failed for {level}: {e}")
+                    continue
+            if df is None:
+                continue
+
+            # 既存レコードを(漢字, 単語)キーでインデックス化（IDを保持したまま更新するため）
+            existing = {}
+            for vocab in VocabMaster.query.filter_by(jlpt_level=level).all():
+                existing.setdefault((vocab.kanji, vocab.word), vocab)
+
+            for _, row in df.iterrows():
+                kanji = _clean_cell(row.get('Kanji', ''))
+                word = _clean_cell(row.get('Word', ''))
+                meaning = _clean_cell(row.get('Meaning', ''))
+                type_ = _clean_cell(row.get('Type', ''))
+
+                if not word and not kanji:
+                    continue
+
+                vocab = existing.get((kanji, word))
+                if vocab:
+                    # 意味・品詞が変わっていれば更新（学習進捗が紐づくIDは維持）
+                    if vocab.meaning != meaning or vocab.type != type_:
+                        vocab.meaning = meaning
+                        vocab.type = type_
+                else:
                     vocab = VocabMaster(
                         kanji=kanji,
                         word=word,
-                        meaning=str(row.get('Meaning', '')),
-                        type=str(row.get('Type', '')),
+                        meaning=meaning,
+                        type=type_,
                         jlpt_level=level
                     )
                     db.session.add(vocab)
-            except Exception as e:
-                print(f"Error loading {level}: {e}")
-                continue
-        
+                    existing[(kanji, word)] = vocab
+            loaded_any = True
+
         db.session.commit()
-        return True
+        if loaded_any:
+            _last_vocab_sync = datetime.utcnow()
+        return loaded_any or VocabMaster.query.first() is not None
     except Exception as e:
+        db.session.rollback()
         print(f"Error loading vocab data: {e}")
-        return False
+        return VocabMaster.query.first() is not None
 
 def get_next_review_date(study_count):
     """忘却曲線に基づいて次回復習日を計算"""
