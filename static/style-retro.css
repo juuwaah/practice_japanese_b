@@ -1183,12 +1183,14 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
   min-width: 120px;
 }
 
-/* Spinning capybara logo (the logo is wide, so it spins inside a square box) */
+/* Spinning capybara logo: logo2-loading.png is a small, transparent copy of logo2.png.
+   The logo is wide, so it spins inside a square box. */
 .loading-logo {
   width: 48px;
   height: 48px;
   object-fit: contain;
-  mix-blend-mode: multiply; /* logo2.png has a white (not transparent) background */
+  image-rendering: auto;
+  will-change: transform;
   animation: retro-spin 1.2s linear infinite;
 }
 
@@ -1682,6 +1684,24 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 .sidebar-post a:hover,
 .sidebar-more-btn:hover {
   color: #FFFFFF;
+}
+
+/* Phones: the right sidebar does not fit, so show the content full width */
+@media screen and (max-width: 768px) {
+  .sidebar-layout {
+    display: block;
+    padding-right: 0;
+  }
+
+  .main-content-column {
+    width: 100%;
+    max-width: 100% !important;
+    margin-right: 0;
+  }
+
+  .right-sidebar {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -2744,32 +2764,59 @@ a.pager-link:hover {
     max-width: 80px !important;
   }
 
-  /* Nested Akinator submenu inside the copied mobile dropdown */
+  /* Akinator submenu inside the copied mobile dropdown:
+     the parent becomes a plain list item and its two modes follow as indented items */
   .mobile-dropdown-menu .menu-dropdown {
-    position: relative !important;
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  .mobile-dropdown-menu .menu-dropdown > a {
-    padding: 6px 12px !important;
+  .mobile-dropdown-menu .menu-dropdown > a.menu-item,
+  .mobile-dropdown-menu .menu-dropdown > a.menu-item:hover {
     display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: auto !important;
+    padding: 8px 12px !important;
+    margin: 0 !important;
+    font-size: 12px !important;
+    font-weight: normal !important;
+    line-height: normal !important;
+    text-align: left !important;
+    color: #000 !important;
+    background: none !important;
+    border: none !important;
     border-bottom: 1px solid #808080 !important;
-    background: #E8E8E8 !important;
-    font-weight: bold !important;
+    cursor: default !important;
   }
 
   .mobile-dropdown-menu .menu-dropdown .menu-content {
     position: static !important;
     display: block !important;
+    width: auto !important;
     margin: 0 !important;
-    background: #F0F0F0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: none !important;
   }
 
   .mobile-dropdown-menu .menu-dropdown .menu-content a {
-    padding: 4px 20px !important;
-    font-size: 11px !important;
-    border-left: 2px solid #C0C0C0 !important;
-    background: #F8F8F8 !important;
+    padding-left: 28px !important;
+    white-space: nowrap !important;
+  }
+
+  .mobile-dropdown-menu .menu-dropdown .menu-content a::before {
+    content: '└ ';
+  }
+
+  .mobile-dropdown-menu .menu-dropdown .menu-content a:last-child {
+    border-bottom: 1px solid #808080 !important;
   }
 }
