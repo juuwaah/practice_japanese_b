@@ -4,26 +4,28 @@
 
 {% block window_title %}{{ _('daily_onomatopoeia_challenge') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
 {% block content %}
-    <div style="text-align: center; margin-bottom: 12px;">
+    <div class="page-heading page-heading-compact">
       <h1>{{ _('todays_japanese_onomatopoeia') }}</h1>
     </div>
-    
-    <div style="text-align: center; margin: 16px 0;">
-      <div style="font-size: 24px; font-weight: bold; padding: 8px; border: 2px solid #000; background: #F0F0F0; display: inline-block;">
-        {{ onomatope }}
-      </div>
+
+    <div class="ono-word-wrap">
+      <div class="ono-word">{{ onomatope }}</div>
     </div>
 
-    <div style="text-align: center; margin-bottom: 16px;">
-      <p style="font-size: 10px; font-weight: bold;">{{ _('what_does_this_mean') }}</p>
+    <div class="ono-question">
+      <p>{{ _('what_does_this_mean') }}</p>
     </div>
 
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 16px;">
+    <div class="ono-options">
       {% for opt in options %}
-        <form method="post" style="width: 100%; max-width: 400px;">
+        <form method="post" class="ono-option-form">
           <input type="hidden" name="selected" value="{{ opt }}">
-          <button type="submit" class="quiz-option-btn" style="width: 100%; text-align: left; padding: 8px 12px;">
+          <button type="submit" class="quiz-option-btn ono-option-btn">
             {{ loop.index }}. {{ opt }}
           </button>
         </form>
@@ -34,56 +36,45 @@
       <div class="result-message {% if correct %}result-correct{% else %}result-incorrect{% endif %}">
         {{ _('correct_well_done') if correct else _('incorrect_try_again') }}
       </div>
-      
-      <!-- Onomatopoeia image display -->
+
       {% if quiz.get('image_urls') %}
-      <div style="margin-top: 16px; text-align: center; padding: 8px; border: 2px solid #000; background: #FFFFFF;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <div class="ono-images">
+        <div class="ono-images-row">
           {% for image_url in quiz['image_urls'] %}
-          <img src="{{ image_url }}" 
-               alt="{{ onomatope }} example" 
-               style="max-width: 150px; max-height: 120px; border: 1px solid #808080; image-rendering: pixelated;">
+          <img src="{{ image_url }}" alt="{{ onomatope }} example" class="ono-image">
           {% endfor %}
         </div>
       </div>
       {% endif %}
-      
-      <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F8F8F8;">
-        <div style="font-weight: bold; margin-bottom: 4px; font-size: 10px;">{{ _('example_sentences') }}:</div>
-        <ul style="text-align: left; margin-left: 16px;">
+
+      <div class="ono-examples">
+        <div class="ono-examples-title">{{ _('example_sentences') }}:</div>
+        <ul class="ono-example-list">
           {% for jp, hiragana, en in example_pairs %}
-            <li style="margin-bottom: 6px;">
-              <div style="font-weight: bold;">{{ jp }}</div>
+            <li>
+              <div class="ono-example-jp">{{ jp }}</div>
               {% if hiragana %}
-              <div style="font-size: 9px; color: #666666; margin-top: 2px;">({{ hiragana }})</div>
+              <div class="ono-example-kana">({{ hiragana }})</div>
               {% endif %}
-              <div style="font-size: 8px; color: #404040; margin-top: 2px;">{{ en }}</div>
+              <div class="ono-example-en">{{ en }}</div>
             </li>
           {% endfor %}
         </ul>
-        
-        <!-- Blog article link button -->
+
         {% if blog_link and blog_title %}
-        <div style="margin-top: 12px; text-align: center; border-top: 1px dashed #999; padding-top: 8px;">
-          <div style="font-size: 9px; color: #666; margin-bottom: 4px;">{{ _('detailed_explanation') }}:</div>
+        <div class="ono-blog">
+          <div class="ono-blog-label">{{ _('detailed_explanation') }}:</div>
           <a href="{{ blog_link }}" target="_blank" class="blog-link-btn">
             📝 {{ blog_title }}
           </a>
         </div>
         {% endif %}
-        
-        <!-- Educational description for AdSense compliance -->
-        <div style="margin-top: 12px; padding: 6px; border-top: 1px dashed #999; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333;">
-          {{ _('onomatopoeia_importance_text') }}
-        </div>
-      </div>
-      
-    {% endif %}
 
-    <!-- Educational description always visible for non-answered state -->
-    {% if not answered %}
-    <div style="margin-top: 16px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
-      {{ _('onomatopoeia_importance_text') }}
-    </div>
+        <!-- Educational description for AdSense compliance -->
+        <div class="ono-note-inline">{{ _('onomatopoeia_importance_text') }}</div>
+      </div>
+    {% else %}
+    <!-- Educational description for AdSense compliance -->
+    <div class="edu-note ono-note">{{ _('onomatopoeia_importance_text') }}</div>
     {% endif %}
 {% endblock %}

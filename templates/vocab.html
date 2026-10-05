@@ -4,80 +4,70 @@
 
 {% block window_title %}{{ _('vocabulary_quiz') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/vocab.css') }}">
+{% endblock %}
+
 {% block content %}
     <!-- Educational description for AdSense compliance -->
-    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+    <div class="edu-note vocab-intro">
       {{ _('vocab_quiz_description_detailed') }}
     </div>
 
-    <div style="text-align: center; margin-bottom: 12px;">
+    <div class="page-heading page-heading-compact">
       <h1>{{ _('vocabulary_quiz') }}</h1>
     </div>
 
 {% if message %}
-  <div class="error-message">
-    {{ message }}
-  </div>
+  <div class="error-message">{{ message }}</div>
 {% endif %}
 
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 16px; background: #F0F0F0;">
-  <form method="post">
-    <div style="margin-bottom: 8px;">
-      <label style="font-size: 9px; font-weight: bold;">{{ _('jlpt_level') }}:</label>
-      <select name="level" style="width: 80px; font-size: 9px; margin-left: 4px;">
+<div class="vocab-panel">
+  <form method="post" data-loading="{{ _('loading_thinking') }}">
+    <div class="vocab-level-row">
+      <label class="vocab-label">{{ _('jlpt_level') }}:</label>
+      <select name="level" class="vocab-level-select">
         {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
           <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
         {% endfor %}
       </select>
     </div>
 
-    <div style="text-align: center;">
-      <button type="submit" name="action" value="generate" style="padding: 4px 16px; font-size: 9px;">{{ _('generate_quiz_press_r') }}</button>
+    <div class="vocab-center">
+      <button type="submit" name="action" value="generate" class="vocab-generate-btn">{{ _('generate_quiz_press_r') }}</button>
     </div>
   </form>
 </div>
 
 {% if question_data %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-      {{ _('question') }}:
-    </div>
-    
-    <div style="border: 1px solid #000; padding: 6px; background: #F8F8F8; margin-bottom: 8px;">
+  <div class="vocab-card">
+    <div class="vocab-card-title">{{ _('question') }}:</div>
+
+    <div class="vocab-question">
       {% if question %}
         {# Split question into meaning and Japanese sentence #}
         {% set qlines = question.split('\n') %}
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-align: center;">
-          {{ qlines[0] }}
-        </div>
+        <div class="vocab-question-meaning">{{ qlines[0] }}</div>
         {% if qlines|length > 1 %}
-          <div style="font-size: 11px; text-align: center; font-family: monospace;">
-            {{ qlines[1] }}
-          </div>
+          <div class="vocab-question-sentence">{{ qlines[1] }}</div>
         {% endif %}
       {% endif %}
     </div>
-    
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">
-      {{ _('choose_correct_word') }}:
-    </div>
-    
-    <form method="post" style="margin: 0;">
+
+    <div class="vocab-choose-label">{{ _('choose_correct_word') }}:</div>
+
+    <form method="post" class="vocab-answer-form" data-loading="{{ _('loading_checking') }}">
       <input type="hidden" name="level" value="{{ level }}">
       <input type="hidden" name="question" value="{{ question }}">
       <input type="hidden" name="answer" value="{{ answer }}">
       <input type="hidden" name="options" value='{{ options|tojson }}'>
       <input type="hidden" name="action" value="submit">
-      {% if question_data %}
-        <input type="hidden" name="kanji" value="{{ question_data.kanji }}">
-        <input type="hidden" name="word" value="{{ question_data.word }}">
-      {% endif %}
-      
-      <div style="display: flex; flex-direction: column; gap: 4px;">
+      <input type="hidden" name="kanji" value="{{ question_data.kanji }}">
+      <input type="hidden" name="word" value="{{ question_data.word }}">
+
+      <div class="vocab-options">
         {% for option in options %}
-          <button type="submit" name="user_answer" value="{{ option }}" 
-                  style="width: 100%; text-align: left; padding: 4px 8px; font-size: 9px; 
-                         background: #F0F0F0; border: 1px solid #000;">
+          <button type="submit" name="user_answer" value="{{ option }}" class="vocab-option-btn">
             {{ option }}
           </button>
         {% endfor %}
@@ -87,39 +77,33 @@
 {% endif %}
 
 {% if result %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; 
-              background: {% if '✅' in result %}#FFFFFF{% else %}#F0F0F0{% endif %};">
-    <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px;">
-      {{ result }}
-    </div>
-    
+  <div class="vocab-card {% if '✅' not in result %}vocab-card-wrong{% endif %}">
+    <div class="vocab-result-text">{{ result }}</div>
+
     {% if explanation %}
-      <div style="border: 1px solid #000; padding: 4px; background: #F8F8F8; margin-bottom: 6px;">
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('explanation') }}:</div>
+      <div class="vocab-explanation">
+        <div class="vocab-box-title">{{ _('explanation') }}:</div>
         {% set lines = explanation.split('\n') %}
-        <div style="font-size: 9px;">{{ lines[0] }}</div>
+        <div class="vocab-explanation-main">{{ lines[0] }}</div>
         {% for line in lines[1:] if line.startswith('- ') %}
-          <div style="font-size: 8px; margin-left: 8px;">{{ line }}</div>
+          <div class="vocab-explanation-line">{{ line }}</div>
         {% endfor %}
       </div>
     {% endif %}
-    
+
     {% if examples %}
-      <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0;">
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('examples') }}:</div>
+      <div class="vocab-examples">
+        <div class="vocab-box-title">{{ _('examples') }}:</div>
         {% for ex in examples %}
-          <div style="font-size: 8px; font-family: monospace; margin-bottom: 2px;">
-            {{ ex }}
-          </div>
+          <div class="vocab-example">{{ ex }}</div>
         {% endfor %}
       </div>
     {% endif %}
-    
-    <div style="text-align: center; margin-top: 8px;">
-      <form method="post" style="display: inline;">
+
+    <div class="vocab-next">
+      <form method="post" class="vocab-next-form" data-loading="{{ _('loading_thinking') }}">
         <input type="hidden" name="level" value="{{ level }}">
-        <button type="submit" name="action" value="generate" 
-                style="padding: 4px 12px; font-size: 9px;">
+        <button type="submit" name="action" value="generate" class="vocab-next-btn">
           {{ _('next_question_press_r') }}
         </button>
       </form>
@@ -127,9 +111,11 @@
   </div>
 {% endif %}
 
-<div style="text-align: center; margin-top: 16px;">
-  <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px;">
-    <div style="font-weight: bold; margin-bottom: 2px;">{{ _('quick_keys') }}:</div>
+<p class="ai-disclaimer">ⓘ {{ _('ai_disclaimer') }}</p>
+
+<div class="quick-keys">
+  <div class="quick-keys-box">
+    <div class="quick-keys-title">{{ _('quick_keys') }}:</div>
     <div>{{ _('quick_keys_vocab') }}</div>
   </div>
 </div>

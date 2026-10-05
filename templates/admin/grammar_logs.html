@@ -93,12 +93,12 @@
                                 </small>
                             </td>
                             <td>
-                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                <div class="admin-bs-truncate-200">
                                     <small>{{ log.original_sentence[:50] }}{% if log.original_sentence|length > 50 %}...{% endif %}</small>
                                 </div>
                             </td>
                             <td>
-                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                <div class="admin-bs-truncate-200">
                                     <small>{{ log.user_translation[:50] }}{% if log.user_translation|length > 50 %}...{% endif %}</small>
                                 </div>
                             </td>
@@ -130,19 +130,19 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <strong>元の文:</strong>
-                                                <div class="border p-2 mb-3" style="background-color: #f8f9fa;">
+                                                <div class="border p-2 mb-3 admin-bs-bg-light">
                                                     {{ log.original_sentence }}
                                                 </div>
                                                 
                                                 <strong>ユーザーの回答:</strong>
-                                                <div class="border p-2 mb-3" style="background-color: #f8f9fa;">
+                                                <div class="border p-2 mb-3 admin-bs-bg-light">
                                                     {{ log.user_translation }}
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 {% if log.parsed_model_answer and log.parsed_model_answer|length > 0 %}
-                                                <strong>GPT Model Answer:</strong>
-                                                <div class="border p-2 mb-3" style="background-color: #e8f5e8;">
+                                                <strong>AI Model Answer:</strong>
+                                                <div class="border p-2 mb-3 admin-bs-bg-model">
                                                     {% for answer in log.parsed_model_answer %}
                                                     <div>• {{ answer|e }}</div>
                                                     {% endfor %}
@@ -151,7 +151,7 @@
                                                 
                                                 {% if log.feedback %}
                                                 <strong>フィードバック:</strong>
-                                                <div class="border p-2" style="background-color: #fff3cd;">
+                                                <div class="border p-2 admin-bs-bg-feedback">
                                                     {{ log.feedback }}
                                                 </div>
                                                 {% endif %}

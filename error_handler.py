@@ -62,7 +62,7 @@ def handle_claude_errors(func):
         except anthropic.APIError as e:
             if "credit" in str(e).lower() or "billing" in str(e).lower():
                 log_system_error("quota", str(e), kwargs.get('feature'))
-                return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
+                return {"error": get_localized_error_message("ai_quota_exceeded"), "type": "quota"}
             log_system_error("api_error", str(e), kwargs.get('feature'))
             return {"error": get_localized_error_message("general_system_error"), "type": "api_error"}
         except Exception as e:
@@ -107,7 +107,7 @@ def retry_with_backoff(max_retries=3, base_delay=1):
                     if attempt == max_retries - 1:
                         if "credit" in str(e).lower() or "billing" in str(e).lower():
                             log_system_error("quota", str(e), func.__name__)
-                            return {"error": get_localized_error_message("openai_quota_exceeded"), "type": "quota"}
+                            return {"error": get_localized_error_message("ai_quota_exceeded"), "type": "quota"}
                         log_system_error("api_connection", str(e), func.__name__)
                         return {"error": get_localized_error_message("api_connection_error"), "type": "connection"}
                     delay = base_delay * (2 ** attempt)

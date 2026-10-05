@@ -4,107 +4,83 @@
 
 {% block window_title %}{{ _('my_grammar_logs') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grammar_logs.css') }}">
+{% endblock %}
+
+{% macro detail_box(label, body_class='') %}
+  <div class="glog-detail-item">
+    <strong>{{ label }}:</strong>
+    <div class="glog-detail-box {{ body_class }}">{{ caller() }}</div>
+  </div>
+{% endmacro %}
+
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
+<div class="page-heading">
   <h1>📊 {{ _('my_grammar_logs') }}</h1>
-  <div style="margin-top: 8px;">
-    <a href="{{ url_for('grammar.grammar_index') }}" 
-       style="font-size: 9px; text-decoration: underline; color: #000;">
-      ← {{ _('back_to_grammar_quiz') }}
-    </a>
+  <div class="glog-back">
+    <a href="{{ url_for('grammar.grammar_index') }}">← {{ _('back_to_grammar_quiz') }}</a>
   </div>
 </div>
 
 {% if logs.items %}
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  <div style="overflow-x: auto;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+<div class="glog-panel">
+  <div class="glog-table-wrap">
+    <table class="glog-table">
       <thead>
-        <tr style="background: #E0E0E0;">
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('date') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('level') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('direction') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('original_sentence') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('your_translation') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">{{ _('score') }}</th>
-          <th style="border: 1px solid #888; padding: 4px;">詳細</th>
+        <tr>
+          <th>{{ _('date') }}</th>
+          <th>{{ _('level') }}</th>
+          <th>{{ _('direction') }}</th>
+          <th>{{ _('original_sentence') }}</th>
+          <th>{{ _('your_translation') }}</th>
+          <th>{{ _('score') }}</th>
+          <th>詳細</th>
         </tr>
       </thead>
       <tbody>
         {% for log in logs.items %}
         <tr>
-          <td style="border: 1px solid #888; padding: 4px;">
-            {{ log.created_at.strftime('%Y-%m-%d %H:%M') }}
-          </td>
-          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
-            <span style="background: #E0E0E0; padding: 2px 4px; border-radius: 2px;">{{ log.jlpt_level }}</span>
-          </td>
-          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
-            {% if log.direction == 'en_to_ja' %}
-              ENG→JPN
-            {% else %}
-              JPN→ENG
-            {% endif %}
-          </td>
-          <td style="border: 1px solid #888; padding: 4px;">
+          <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td class="glog-center"><span class="glog-level">{{ log.jlpt_level }}</span></td>
+          <td class="glog-center">{{ 'ENG→JPN' if log.direction == 'en_to_ja' else 'JPN→ENG' }}</td>
+          <td>
             {{ log.original_sentence[:100] }}
             {% if log.original_sentence|length > 100 %}...{% endif %}
           </td>
-          <td style="border: 1px solid #888; padding: 4px;">
+          <td>
             {{ log.user_translation[:100] }}
             {% if log.user_translation|length > 100 %}...{% endif %}
           </td>
-          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+          <td class="glog-center">
             {% if log.score %}
-              <span style="color: {% if log.score >= 80 %}#008000{% elif log.score >= 60 %}#FFA500{% else %}#FF0000{% endif %};">
+              <span class="{% if log.score >= 80 %}glog-score-high{% elif log.score >= 60 %}glog-score-mid{% else %}glog-score-low{% endif %}">
                 {{ "%.0f"|format(log.score) }}%
               </span>
             {% else %}
               -
             {% endif %}
           </td>
-          <td style="border: 1px solid #888; padding: 4px; text-align: center;">
-            <button onclick="toggleDetails('log{{ log.id }}')" 
-                    style="background: #E0E0E0; border: 1px solid #888; padding: 2px 6px; font-size: 7px; cursor: pointer;">
-              詳細
-            </button>
+          <td class="glog-center">
+            <button type="button" class="glog-toggle" onclick="toggleDetails('log{{ log.id }}')">詳細</button>
           </td>
         </tr>
-        <tr id="log{{ log.id }}" style="display: none;">
-          <td colspan="7" style="border: 1px solid #888; padding: 8px; background: #F8F8F8;">
-            <div style="font-size: 9px;">
-              <div style="margin-bottom: 8px;">
-                <strong>元の文（完全版）:</strong>
-                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFFFFF;">
-                  {{ log.original_sentence }}
-                </div>
-              </div>
-              
-              <div style="margin-bottom: 8px;">
-                <strong>あなたの回答（完全版）:</strong>
-                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFFFFF;">
-                  {{ log.user_translation }}
-                </div>
-              </div>
-              
+        <tr id="log{{ log.id }}" class="glog-detail-row">
+          <td colspan="7">
+            <div class="glog-detail">
+              {% call detail_box('元の文（完全版）') %}{{ log.original_sentence }}{% endcall %}
+              {% call detail_box('あなたの回答（完全版）') %}{{ log.user_translation }}{% endcall %}
+
               {% if log.parsed_model_answer and log.parsed_model_answer|length > 0 %}
-              <div style="margin-bottom: 8px;">
-                <strong>模範解答 (GPT):</strong>
-                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #E8F5E8;">
-                  {% for answer in log.parsed_model_answer %}
-                  <div style="margin-bottom: 2px;">• {{ answer|e }}</div>
-                  {% endfor %}
-                </div>
-              </div>
+              {% call detail_box('模範解答 (AI)', 'glog-detail-box-model') %}
+                {% for answer in log.parsed_model_answer %}
+                <div class="glog-model-answer">• {{ answer|e }}</div>
+                {% endfor %}
+              {% endcall %}
               {% endif %}
-              
+
               {% if log.feedback %}
-              <div style="margin-bottom: 8px;">
-                <strong>フィードバック:</strong>
-                <div style="border: 1px solid #CCC; padding: 4px; margin-top: 2px; background: #FFF3CD;">
-                  {{ log.feedback }}
-                </div>
-              </div>
+              {% call detail_box('フィードバック', 'glog-detail-box-feedback') %}{{ log.feedback }}{% endcall %}
               {% endif %}
             </div>
           </td>
@@ -117,65 +93,42 @@
 
 <!-- ページネーション -->
 {% if logs.pages > 1 %}
-<div style="text-align: center; margin: 16px 0;">
-  <div style="border: 1px solid #000; padding: 4px; background: #F0F0F0; display: inline-block;">
+<div class="pager">
+  <div class="pager-box">
     {% if logs.has_prev %}
-      <a href="{{ url_for('grammar.grammar_logs', page=logs.prev_num) }}" 
-         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
-                text-decoration: none; color: #000; font-size: 8px;">
-        {{ _('previous') }}
-      </a>
+      <a href="{{ url_for('grammar.grammar_logs', page=logs.prev_num) }}" class="pager-link">{{ _('previous') }}</a>
     {% endif %}
-    
+
     {% for page_num in logs.iter_pages() %}
       {% if page_num %}
         {% if page_num != logs.page %}
-          <a href="{{ url_for('grammar.grammar_logs', page=page_num) }}" 
-             style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
-                    text-decoration: none; color: #000; font-size: 8px;">
-            {{ page_num }}
-          </a>
+          <a href="{{ url_for('grammar.grammar_logs', page=page_num) }}" class="pager-link">{{ page_num }}</a>
         {% else %}
-          <span style="padding: 2px 6px; margin: 0 2px; background: #000000; color: #FFFFFF; 
-                       border: 1px solid #000; font-size: 8px;">
-            {{ page_num }}
-          </span>
+          <span class="pager-link pager-current">{{ page_num }}</span>
         {% endif %}
       {% else %}
-        <span style="padding: 2px 6px; margin: 0 2px; font-size: 8px;">…</span>
+        <span class="pager-gap">…</span>
       {% endif %}
     {% endfor %}
-    
+
     {% if logs.has_next %}
-      <a href="{{ url_for('grammar.grammar_logs', page=logs.next_num) }}" 
-         style="padding: 2px 6px; margin: 0 2px; background: #FFFFFF; border: 1px solid #000; 
-                text-decoration: none; color: #000; font-size: 8px;">
-        {{ _('next') }}
-      </a>
+      <a href="{{ url_for('grammar.grammar_logs', page=logs.next_num) }}" class="pager-link">{{ _('next') }}</a>
     {% endif %}
   </div>
 </div>
 {% endif %}
 
-
 {% else %}
-<div style="border: 2px solid #000; padding: 20px; text-align: center; background: #F0F0F0;">
-  <div style="font-size: 12px; margin-bottom: 8px;">📝</div>
-  <div style="font-size: 10px;">{{ _('no_grammar_logs_yet') }}</div>
-  <div style="font-size: 8px; color: #666; margin-top: 4px;">
-    {{ _('start_grammar_quiz_to_see_logs') }}
-  </div>
+<div class="glog-empty">
+  <div class="glog-empty-icon">📝</div>
+  <div class="glog-empty-title">{{ _('no_grammar_logs_yet') }}</div>
+  <div class="glog-empty-text">{{ _('start_grammar_quiz_to_see_logs') }}</div>
 </div>
 {% endif %}
 
 <script>
 function toggleDetails(logId) {
-  var element = document.getElementById(logId);
-  if (element.style.display === 'none') {
-    element.style.display = 'table-row';
-  } else {
-    element.style.display = 'none';
-  }
+  document.getElementById(logId).classList.toggle('is-open');
 }
 </script>
 {% endblock %}

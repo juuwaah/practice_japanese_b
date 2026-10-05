@@ -4,66 +4,59 @@
 
 {% block window_title %}{{ _('flashcard_setup') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
+{% endblock %}
+
 {% block content %}
     <!-- Educational description for AdSense compliance -->
-    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+    <div class="edu-note fc-intro">
       {{ _('flashcard_description_detailed') }}
     </div>
 
-    <div style="text-align: center; margin-bottom: 16px;">
+    <div class="page-heading">
       <h1>{{ _('flashcard_setup') }}</h1>
     </div>
 
-
 {% if review_count > 0 %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF; text-align: center;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">
-      {{ _('review_available') }}
-    </div>
-    <div style="font-size: 10px;">
-      {{ review_count }} {{ _('words_ready_for_review') }}
-    </div>
+  <div class="fc-review">
+    <div class="fc-review-title">{{ _('review_available') }}</div>
+    <div class="fc-review-count">{{ review_count }} {{ _('words_ready_for_review') }}</div>
   </div>
 {% endif %}
 
 <!-- Statistics Section -->
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F8F8F8;">
-  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-    📊 {{ _('your_flashcard_stats') }}
-  </div>
-  
-  <div style="display: flex; justify-content: space-around; margin-bottom: 8px;">
-    <div style="text-align: center;">
-      <div style="font-size: 14px; font-weight: bold; color: #008080;">{{ total_learned }}</div>
-      <div style="font-size: 7px;">{{ _('total_studied') }}</div>
+<div class="fc-stats">
+  <div class="fc-section-title">📊 {{ _('your_flashcard_stats') }}</div>
+
+  <div class="fc-stats-row">
+    <div class="fc-stat">
+      <div class="fc-stat-num fc-stat-total">{{ total_learned }}</div>
+      <div class="fc-stat-label">{{ _('total_studied') }}</div>
     </div>
-    <div style="text-align: center;">
-      <div style="font-size: 14px; font-weight: bold; color: #008000;">{{ well_learned }}</div>
-      <div style="font-size: 7px;">{{ _('well_learned') }}</div>
+    <div class="fc-stat">
+      <div class="fc-stat-num fc-stat-learned">{{ well_learned }}</div>
+      <div class="fc-stat-label">{{ _('well_learned') }}</div>
     </div>
-    <div style="text-align: center;">
-      <div style="font-size: 14px; font-weight: bold; color: #800080;">{{ review_count }}</div>
-      <div style="font-size: 7px;">{{ _('due_for_review') }}</div>
+    <div class="fc-stat">
+      <div class="fc-stat-num fc-stat-review">{{ review_count }}</div>
+      <div class="fc-stat-label">{{ _('due_for_review') }}</div>
     </div>
   </div>
-  
-  <div style="font-size: 8px; border-top: 1px dotted #808080; padding-top: 4px;">
-    {{ _('by_level') }}: 
+
+  <div class="fc-level-stats">
+    {{ _('by_level') }}:
     {% for level in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
-      <span style="background: #E0E0E0; padding: 1px 3px; margin: 0 1px; border-radius: 2px;">
-        {{ level }}: {{ level_stats[level] }}
-      </span>
+      <span class="fc-level-chip">{{ level }}: {{ level_stats[level] }}</span>
     {% endfor %}
   </div>
 </div>
 
-<div style="border: 1px solid #000; padding: 12px; background: #F0F0F0; max-width: 300px; margin: 0 auto;">
+<div class="fc-form-box">
   <form method="GET" action="{{ url_for('flashcard.study') }}">
-    <div style="margin-bottom: 12px;">
-      <label for="level" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
-        {{ _('jlpt_level') }}:
-      </label>
-      <select name="level" id="level" style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000;">
+    <div class="fc-field">
+      <label for="level" class="fc-label">{{ _('jlpt_level') }}:</label>
+      <select name="level" id="level" class="fc-input">
         <option value="N5">N5 (Beginner)</option>
         <option value="N4">N4 (Elementary)</option>
         <option value="N3">N3 (Intermediate)</option>
@@ -71,57 +64,50 @@
         <option value="N1">N1 (Advanced)</option>
       </select>
     </div>
-    
-    <div style="margin-bottom: 12px;">
-      <label for="count" style="font-size: 9px; font-weight: bold; display: block; margin-bottom: 4px;">
-        {{ _('number_of_cards') }}:
-      </label>
-      <input type="number" name="count" id="count" min="1" max="100" value="10" 
-             style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
+
+    <div class="fc-field">
+      <label for="count" class="fc-label">{{ _('number_of_cards') }}:</label>
+      <input type="number" name="count" id="count" min="1" max="100" value="10" class="fc-input">
     </div>
-    
-    <div style="margin-bottom: 16px;">
-      <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px;">{{ _('card_display_mode') }}:</div>
-      
-      <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 4px; background: #F8F8F8;">
+
+    <div class="fc-field fc-field-last">
+      <div class="fc-mode-title">{{ _('card_display_mode') }}:</div>
+
+      <div class="fc-mode-option">
         <input type="radio" name="front_mode" id="kanji_mode" value="kanji" checked>
-        <label for="kanji_mode" style="font-size: 8px; margin-left: 4px; font-weight: normal;">
+        <label for="kanji_mode" class="fc-mode-label">
           {{ _('front_kanji_reading') }}<br>
-          <span style="margin-left: 12px;">{{ _('back_meaning_type') }}</span>
+          <span class="fc-mode-indent">{{ _('back_meaning_type') }}</span>
         </label>
       </div>
-      
-      <div style="border: 1px dotted #808080; padding: 4px; background: #F8F8F8;">
+
+      <div class="fc-mode-option fc-mode-option-last">
         <input type="radio" name="front_mode" id="meaning_mode" value="meaning">
-        <label for="meaning_mode" style="font-size: 8px; margin-left: 4px; font-weight: normal;">
+        <label for="meaning_mode" class="fc-mode-label">
           {{ _('front_meaning_type') }}<br>
-          <span style="margin-left: 12px;">{{ _('back_kanji_reading') }}</span>
+          <span class="fc-mode-indent">{{ _('back_kanji_reading') }}</span>
         </label>
       </div>
     </div>
-    
-    <div style="text-align: center;">
-      <button type="submit" style="padding: 6px 20px; font-size: 9px; font-weight: bold;">
-        {{ _('start_learning') }}
-      </button>
+
+    <div class="fc-center">
+      <button type="submit" class="fc-start-btn">{{ _('start_learning') }}</button>
     </div>
   </form>
 </div>
 
-<div style="border: 1px solid #000; padding: 8px; margin-top: 16px; background: #F8F8F8;">
-  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-    {{ _('how_to_use') }}:
-  </div>
-  <div style="font-size: 8px; line-height: 1.4;">
-    <div style="margin-bottom: 3px;">• Click the card to flip it and see the answer</div>
-    <div style="margin-bottom: 3px;">• Choose "✅ Learned" if you know the word well</div>
-    <div style="margin-bottom: 3px;">• Choose "❌ Not Learned" if you need more practice</div>
+<div class="fc-howto">
+  <div class="fc-section-title">{{ _('how_to_use') }}:</div>
+  <div class="fc-howto-body">
+    <div class="fc-howto-item">• Click the card to flip it and see the answer</div>
+    <div class="fc-howto-item">• Choose "✅ Learned" if you know the word well</div>
+    <div class="fc-howto-item">• Choose "❌ Not Learned" if you need more practice</div>
     <div>• The system schedules reviews based on your performance</div>
   </div>
 </div>
 
-<div style="border: 1px dotted #808080; padding: 6px; margin-top: 8px; background: #F0F0F0; font-size: 8px; color: #404040;">
-  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('spaced_repetition') }}:</div>
+<div class="fc-sr">
+  <div class="fc-sr-title">{{ _('spaced_repetition') }}:</div>
   <div>{{ _('spaced_repetition_desc') }}</div>
 </div>
 {% endblock %}

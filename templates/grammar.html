@@ -4,63 +4,60 @@
 
 {% block window_title %}{{ _('translation_practice') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grammar.css') }}">
+{% endblock %}
+
 {% block content %}
     <!-- Educational description for AdSense compliance -->
-    <div style="margin-bottom: 8px; padding: 4px 6px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.3; color: #333; text-align: left;">
+    <div class="edu-note grammar-intro">
       {{ _('grammar_quiz_description') }}
     </div>
 
-    <div style="text-align: center; margin-bottom: 8px;">
-      <h1 style="margin: 2px 0; display: inline-block;">{{ _('translation_practice') }}</h1>
+    <div class="grammar-heading">
+      <h1>{{ _('translation_practice') }}</h1>
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('grammar.grammar_logs') }}"
-           style="font-size: 9px; text-decoration: underline; color: #000; margin-left: 8px;">
-          📊 {{ _('view_my_logs') }}
-        </a>
+        <a href="{{ url_for('grammar.grammar_logs') }}" class="grammar-logs-link">📊 {{ _('view_my_logs') }}</a>
       {% else %}
-        <div style="margin-top: 2px; font-size: 8px; color: #666;">
-          {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}" style="text-decoration: underline; color: #0066CC;">{{ _('google_login_here') }}</a>
+        <div class="grammar-guest-msg">
+          {{ _('grammar_guest_login_message') }} <a href="{{ url_for('login') }}">{{ _('google_login_here') }}</a>
         </div>
       {% endif %}
     </div>
 
 {% if message %}
-  <div class="error-message">
-    {{ message }}
-  </div>
+  <div class="error-message">{{ message }}</div>
 {% endif %}
 
-<div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #F0F0F0;">
-  <form method="post">
-    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
-      <span style="white-space: nowrap;">
-        <label style="font-size: 9px; font-weight: bold;">{{ _('jlpt_level') }}:</label>
-        <select name="level" style="width: 70px; font-size: 9px; margin-left: 4px;">
+<div class="grammar-panel">
+  <form method="post" data-loading="{{ _('loading_thinking') }}">
+    <div class="grammar-controls">
+      <span class="grammar-control">
+        <label class="grammar-label">{{ _('jlpt_level') }}:</label>
+        <select name="level" class="grammar-level-select">
           {% for lvl in ['N5', 'N4', 'N3', 'N2', 'N1'] %}
             <option value="{{ lvl }}" {% if level == lvl %}selected{% endif %}>{{ lvl }}</option>
           {% endfor %}
         </select>
       </span>
 
-      <span style="white-space: nowrap;">
+      <span class="grammar-control">
         {% for code, label in directions.items() %}
           <input type="radio" name="direction" value="{{ code }}" id="{{ code }}"
             {% if direction == code %}checked{% endif %}>
-          <label for="{{ code }}" style="font-size: 9px; font-weight: normal; margin-right: 10px;">{{ label }}</label>
+          <label for="{{ code }}" class="grammar-direction-label">{{ label }}</label>
         {% endfor %}
       </span>
 
-      <button type="submit" name="action" value="generate" style="padding: 3px 12px; font-size: 9px;">{{ _('generate_press_r') }}</button>
+      <button type="submit" name="action" value="generate" class="grammar-generate-btn">{{ _('generate_press_r') }}</button>
     </div>
   </form>
 </div>
 
 {% if original %}
-  <div style="border: 2px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #FFFFFF;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px; text-decoration: underline;">
-      {{ _('original') }}:
-    </div>
-    <div style="font-size: 10px; font-family: monospace; padding: 4px; border: 1px dotted #808080; background: #F8F8F8;">
+  <div class="grammar-original">
+    <div class="grammar-section-title">{{ _('original') }}:</div>
+    <div class="grammar-original-text">
       {% if direction == "ja-en" and original_with_furigana %}
         {{ original_with_furigana }}
       {% else %}
@@ -69,78 +66,70 @@
     </div>
   </div>
 
-  <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 8px; background: #F0F0F0;">
-    <form method="post">
+  <div class="grammar-panel">
+    <form method="post" data-loading="{{ _('loading_evaluating') }}">
       <input type="hidden" name="level" value="{{ level }}">
       <input type="hidden" name="direction" value="{{ direction }}">
       <input type="hidden" name="original" value="{{ original }}">
 
-      <div style="margin-bottom: 4px;">
-        <label style="font-size: 9px; font-weight: bold;">{{ _('your_translation') }}:</label>
-        <div style="margin-top: 2px;">
-          <textarea name="translation" id="translation-textarea" rows="2" style="width: 100%; font-size: 9px; padding: 2px;">{{ translation }}</textarea>
+      <div class="grammar-answer-field">
+        <label class="grammar-label">{{ _('your_translation') }}:</label>
+        <div class="grammar-answer-input">
+          <textarea name="translation" id="translation-textarea" rows="2">{{ translation }}</textarea>
         </div>
       </div>
 
-      <div style="text-align: center;">
-        <button type="submit" name="action" value="score" style="padding: 3px 16px; font-size: 9px;">{{ _('submit_answer_shift_enter') }}</button>
+      <div class="grammar-submit-row">
+        <button type="submit" name="action" value="score" class="grammar-submit-btn">{{ _('submit_answer_shift_enter') }}</button>
       </div>
     </form>
   </div>
 {% endif %}
 
 {% if grammar is not none %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-      {{ _('score_results') }}:
+  <div class="grammar-result">
+    <div class="grammar-section-title grammar-result-title">{{ _('score_results') }}:</div>
+
+    <div class="grammar-scores">
+      <div>Grammar: {{ grammar }} / 3</div>
+      <div>{{ _('meaning') }}: {{ meaning }} / 3</div>
     </div>
-    
-    <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 6px; background: #F8F8F8; font-size: 8px;">
-      <div style="font-weight: bold; margin-bottom: 2px;">Grammar: {{ grammar }} / 3</div>
-      <div style="font-weight: bold; margin-bottom: 2px;">{{ _('meaning') }}: {{ meaning }} / 3</div>
-    </div>
-    
+
     {% if model_answer %}
-      <div style="border: 1px solid #000; padding: 4px; margin-bottom: 6px; background: #F8F8F8;">
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('model_answers') }}:</div>
-        {% if model_answer %}
-          {% for ans in model_answer %}
-            <div style="font-size: 9px; font-family: monospace; margin-bottom: 2px;">• {{ ans }}</div>
-          {% endfor %}
-        {% endif %}
+      <div class="grammar-box grammar-box-solid">
+        <div class="grammar-box-title">{{ _('model_answers') }}:</div>
+        {% for ans in model_answer %}
+          <div class="grammar-model-answer">• {{ ans }}</div>
+        {% endfor %}
       </div>
     {% endif %}
-    
+
     {% if casual_answer %}
-      <div style="border: 1px dotted #808080; padding: 4px; margin-bottom: 6px; background: #F8F8F8;">
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('casual_language') }}:</div>
-        <div style="font-size: 9px; font-family: monospace;">
-          {{ casual_answer }}
-        </div>
+      <div class="grammar-box">
+        <div class="grammar-box-title">{{ _('casual_language') }}:</div>
+        <div class="grammar-box-text">{{ casual_answer }}</div>
       </div>
     {% endif %}
-    
+
     {% if feedback %}
-      <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0;">
-        <div style="font-size: 9px; font-weight: bold; margin-bottom: 2px;">{{ _('feedback') }}:</div>
-        <div style="font-size: 8px;">{{ feedback }}</div>
+      <div class="grammar-box grammar-box-feedback">
+        <div class="grammar-box-title">{{ _('feedback') }}:</div>
+        <div class="grammar-feedback-text">{{ feedback }}</div>
       </div>
     {% endif %}
   </div>
 {% elif grammar is none and translation %}
-  <div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #FFFFFF;">
-    <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-      {{ _('translation_submitted') }}:
-    </div>
-    <div style="font-size: 8px; padding: 4px; background: #F8F8F8;">
-      {{ _('no_scoring_jpn_to_eng') }}
-    </div>
+  <div class="grammar-result">
+    <div class="grammar-section-title grammar-result-title">{{ _('translation_submitted') }}:</div>
+    <div class="grammar-no-score">{{ _('no_scoring_jpn_to_eng') }}</div>
   </div>
 {% endif %}
 
-<div style="text-align: center; margin-top: 16px;">
-  <div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px;">
-    <div style="font-weight: bold; margin-bottom: 2px;">{{ _('quick_keys') }}:</div>
+<p class="ai-disclaimer">ⓘ {{ _('ai_disclaimer') }}</p>
+
+<div class="quick-keys">
+  <div class="quick-keys-box">
+    <div class="quick-keys-title">{{ _('quick_keys') }}:</div>
     <div>{{ _('quick_keys_grammar') }}</div>
   </div>
 </div>

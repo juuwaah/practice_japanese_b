@@ -6,182 +6,7 @@
 {% block window_title %}{{ _('blog') }}{% endblock %}
 
 {% block extra_head %}
-<style>
-/* ブログコンテンツエリアは通常サイズを維持 */
-.blog-container {
-    zoom: 0.5 !important; /* 外側のzoom 2.0を相殺して元サイズに */
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    /* 背景は透明にしてbaseの背景を表示 */
-    background: transparent;
-}
-
-/* 重複しているのでこのスタイルは削除済み */
-
-.blog-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.blog-header h1 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.blog-controls {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #e8e8e8;
-    border: 2px solid #333;
-    border-radius: 0;
-}
-
-.search-box {
-    margin-bottom: 15px;
-}
-
-.search-input {
-    width: 70%;
-    padding: 10px;
-    border: 2px solid #333;
-    border-radius: 0;
-    background: white;
-}
-
-.search-btn {
-    padding: 10px 20px;
-    background: #333;
-    color: white;
-    border: 2px solid #333;
-    border-radius: 0;
-    margin-left: 10px;
-    box-shadow: 2px 2px 0 #666;
-}
-
-.search-btn:hover {
-    background: #555;
-    box-shadow: 1px 1px 0 #666;
-}
-
-.tags-section {
-    margin-top: 15px;
-}
-
-.tag-pill {
-    display: inline-block;
-    padding: 5px 12px;
-    margin: 3px;
-    background: #e9ecef;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    text-decoration: none;
-    color: #495057;
-}
-
-.tag-pill:hover {
-    background: #007bff;
-    color: white;
-}
-
-.tag-pill.active {
-    background: #007bff;
-    color: white;
-}
-
-.blog-posts {
-    list-style: none !important;
-    padding: 0 !important;
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 20px !important; /* 元のサイズに戻す */
-    width: 100% !important;
-    max-width: none !important;
-}
-
-.blog-post-item {
-    padding: 20px; /* 元のサイズに戻す */
-    border: 2px solid #333;
-    border-radius: 0;
-    background: #f5f5f5;
-    box-shadow: 2px 2px 0 #000;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.blog-post-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 4px 4px 0 #000;
-}
-
-/* モバイル対応 - 強制適用 */
-@media (max-width: 768px) {
-    .blog-posts {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 15px !important;
-        width: 100% !important;
-        max-width: none !important;
-    }
-}
-
-/* デスクトップでの強制グリッド - zoomを考慮 */
-@media (min-width: 769px) {
-    .blog-posts {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 20px !important;
-        width: 100% !important;
-        max-width: none !important;
-    }
-}
-
-.blog-post-title {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-}
-
-.blog-post-title a {
-    text-decoration: none;
-    color: #333;
-}
-
-.blog-post-title a:hover {
-    color: #007bff;
-}
-
-.blog-post-meta {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-}
-
-.blog-post-tags {
-    margin-top: 10px;
-}
-
-.blog-tag {
-    display: inline-block;
-    padding: 3px 8px;
-    margin-right: 5px;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    text-decoration: none;
-    color: #666;
-}
-
-.blog-tag:hover {
-    background: #007bff;
-    color: white;
-}
-
-.no-posts {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-}
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blog_index.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -217,7 +42,7 @@
       <h4>🏷️ {{ _('filter_by_tags') if _('filter_by_tags') else 'タグで絞り込み' }}</h4>
       <div class="tags-container">
         {% if tag_filter %}
-        <a href="{{ url_for('blog.blog_index', q=search_query) }}" class="tag-pill" style="background: #dc3545; color: white;">
+        <a href="{{ url_for('blog.blog_index', q=search_query) }}" class="tag-pill tag-pill-clear">
           ✕ {{ _('clear_filter') if _('clear_filter') else 'フィルターをクリア' }}
         </a>
         {% endif %}
@@ -234,7 +59,7 @@
 
   <!-- 検索結果情報 -->
   {% if search_query or tag_filter %}
-  <div style="text-align: center; margin: 20px 0; padding: 10px; background: #e3f2fd; border-radius: 5px;">
+  <div class="blog-results-info">
     {% if search_query and tag_filter %}
       "{{ search_query }}" + {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('search_results') if _('search_results') else 'の検索結果' }}: {{ blog_posts|length }}{{ _('articles_found') if _('articles_found') else '件の記事' }}
     {% elif search_query %}
@@ -243,7 +68,7 @@
       {{ _('tag') if _('tag') else 'タグ' }}"{{ tag_filter }}"{{ _('articles') if _('articles') else 'の記事' }}: {{ blog_posts|length }}{{ _('items') if _('items') else '件' }}
     {% endif %}
     <br>
-    <a href="{{ url_for('blog.blog_index') }}" style="color: #007bff;">
+    <a href="{{ url_for('blog.blog_index') }}">
       → {{ _('show_all_articles') if _('show_all_articles') else '全ての記事を表示' }}
     </a>
   </div>

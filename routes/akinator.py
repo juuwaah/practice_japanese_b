@@ -11,11 +11,11 @@ load_dotenv()
 JLPT Kotoba Akinator - How to play
 
 This app has two modes:
-1. AI guesses: The user thinks of a JLPT word, and the AI (ChatGPT) asks questions to guess it. The user answers with "はい (Yes)", "いいえ (No)", "わからない (Don't know)", or "ときどき (Sometimes)". The game ends when the user presses the "正解！" button after the AI guesses correctly.
+1. AI guesses: The user thinks of a JLPT word, and the AI (Claude) asks questions to guess it. The user answers with "はい (Yes)", "いいえ (No)", "わからない (Don't know)", or "ときどき (Sometimes)". The game ends when the user presses the "正解！" button after the AI guesses correctly.
 2. User guesses: The AI thinks of a JLPT word, and the user asks questions in Japanese to narrow it down. The user can guess by asking "○○ですか？", ask for a hint (ヒント), or give up (降参/こたえ).
 
 本アプリは2つのモードがあります：
-1. AIが当てる: ユーザーがJLPT単語を考え、AI（ChatGPT）が質問して当てます。ユーザーは「はい」「いいえ」「わからない」「ときどき」で答え、AIが正解を当てたら「正解！」ボタンを押して終了します。
+1. AIが当てる: ユーザーがJLPT単語を考え、AI（Claude）が質問して当てます。ユーザーは「はい」「いいえ」「わからない」「ときどき」で答え、AIが正解を当てたら「正解！」ボタンを押して終了します。
 2. あなたが当てる: AIがJLPT単語を考え、ユーザーが日本語で質問して単語を絞り込みます。「○○ですか？」で推測、ヒントや降参も使えます。
 """
 
@@ -372,17 +372,17 @@ def akinator_game():
         history = []
         session['akinator_history'] = history
 
-    # ChatGPTがアキネーターモード
+    # AIがアキネーターモード
     if role == 'gpt':
         if request.method == 'GET' and not history:
-            # 最初のGET時はChatGPTから質問を出す
+            # 最初のGET時はAIから質問を出す
             history.append({'role': 'gpt', 'text': ask_claude(build_akinator_gpt_prompt(history, level))})
             session['akinator_history'] = history
         elif request.method == 'POST' and not session.get('akinator_gameover', False):
             user_guess = request.form.get('user_guess', '').strip()
             msg = (request.form.get('message') or '').strip()
             if user_guess:
-                # ユーザーの推測。この時点では正解単語を知らないので、ChatGPTに判定してもらう
+                # ユーザーの推測。この時点では正解単語を知らないので、AIに判定してもらう
                 history.append({'role': 'user', 'text': f'答えは「{user_guess}」ですか？'})
                 judge_prompt = f"""
 あなたはアキネーターです。ユーザーが「{user_guess}」と推測しました。
@@ -469,7 +469,7 @@ def akinator_game():
                 session['akinator_history'] = history
                 return render_game(history, show_word=True)
 
-            # ChatGPTは必ず四択で返す（質問しない）
+            # AIは必ず四択で返す（質問しない）
             prompt = f"""
 あなたは日本語語彙アキネーターの回答者です。今、JLPT {level}レベルの日本語名詞「{word}」（意味: {meaning}）を思い浮かべています。
 

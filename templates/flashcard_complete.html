@@ -4,162 +4,111 @@
 
 {% block window_title %}{{ _('study_session_complete') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/flashcard.css') }}">
+{% endblock %}
+
+{% macro word_table(title, words) %}
+  <div class="fcc-word-section">
+    <div class="fcc-word-title">{{ title }} ({{ words|length }})</div>
+    <div class="fcc-table-wrap">
+      <table class="fcc-table">
+        <thead>
+          <tr>
+            <th>{{ _('kanji') }}</th>
+            <th>{{ _('reading') }}</th>
+            <th>{{ _('meaning') }}</th>
+            <th>{{ _('type') }}</th>
+            <th>{{ _('study_count') }}</th>
+            <th>{{ _('next_review') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for word in words %}
+          <tr>
+            <td>{{ word.kanji if word.kanji else '-' }}</td>
+            <td>{{ word.word }}</td>
+            <td>{{ word.meaning }}</td>
+            <td>{{ word.type }}</td>
+            <td>{{ word.study_count }}</td>
+            <td>{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
+<div class="page-heading">
   <h1>{{ _('session_complete') }}</h1>
 </div>
 
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF; text-align: center;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">
-    {{ _('great_job') }}
-  </div>
-  <div style="font-size: 9px; margin-bottom: 8px;">
-    {{ _('flashcard_session_completed') }}
-  </div>
-  <div style="font-size: 8px; color: #404040;">
-    {{ _('progress_saved_automatically') }}
-  </div>
+<div class="fcc-box fcc-center">
+  <div class="fcc-box-title">{{ _('great_job') }}</div>
+  <div class="fcc-hero-text">{{ _('flashcard_session_completed') }}</div>
+  <div class="fcc-hero-note">{{ _('progress_saved_automatically') }}</div>
 </div>
 
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F0F0F0;">
-  <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">
-    {{ _('session_summary') }}:
-  </div>
-  
-  <div style="font-size: 8px; margin-bottom: 4px;">
-    {{ _('cards_studied') }}: <span style="font-weight: bold;">{{ total_learned + total_not_learned }}</span>
-  </div>
-  <div style="font-size: 8px; margin-bottom: 4px;">
-    {{ _('learned') }}: <span style="font-weight: bold;">{{ total_learned }}</span>
-  </div>
-  <div style="font-size: 8px;">
-    {{ _('need_review') }}: <span style="font-weight: bold;">{{ total_not_learned }}</span>
-  </div>
+<div class="fcc-summary">
+  <div class="fc-section-title">{{ _('session_summary') }}:</div>
+  <div class="fcc-summary-line">{{ _('cards_studied') }}: <span class="fcc-num">{{ total_learned + total_not_learned }}</span></div>
+  <div class="fcc-summary-line">{{ _('learned') }}: <span class="fcc-num">{{ total_learned }}</span></div>
+  <div class="fcc-summary-line fcc-summary-line-last">{{ _('need_review') }}: <span class="fcc-num">{{ total_not_learned }}</span></div>
 </div>
 
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF; text-align: center;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">
-    {{ _('session_summary') }}
-  </div>
-  <div style="display: flex; justify-content: center; gap: 2em; margin: 1em 0;">
-    <div style="text-align: center;">
-      <div style="font-size: 2em; color: #000;">{{ total_learned }}</div>
+<div class="fcc-box fcc-center">
+  <div class="fcc-box-title">{{ _('session_summary') }}</div>
+  <div class="fcc-totals">
+    <div class="fcc-total">
+      <div class="fcc-total-num">{{ total_learned }}</div>
       <div>☑︎　{{ _('learned') }}</div>
     </div>
-    <div style="text-align: center;">
-      <div style="font-size: 2em; color: #000;">{{ total_not_learned }}</div>
+    <div class="fcc-total">
+      <div class="fcc-total-num">{{ total_not_learned }}</div>
       <div>×　{{ _('need_review') }}</div>
     </div>
-    <div style="text-align: center;">
-      <div style="font-size: 2em; color: #000;">{{ total_learned + total_not_learned }}</div>
+    <div class="fcc-total">
+      <div class="fcc-total-num">{{ total_learned + total_not_learned }}</div>
       <div>{{ _('total') }}</div>
     </div>
   </div>
 </div>
 
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  
-  {% if learned_words %}
-  <div style="margin: 1em 0;">
-    <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 4px;">{{ _('learned_words') }} ({{ learned_words|length }})</div>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0; font-size: 8px;">
-        <thead>
-          <tr style="background: #e0e0e0;">
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('kanji') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('reading') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('meaning') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('type') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('study_count') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('next_review') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for word in learned_words %}
-          <tr>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.kanji if word.kanji else '-' }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.word }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.meaning }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.type }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.study_count }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
-  
-  {% if not_learned_words %}
-  <div style="margin: 1em 0;">
-    <div style="font-size: 11px; font-weight: bold; color: #000; margin-bottom: 4px;">{{ _('words_needing_review') }} ({{ not_learned_words|length }})</div>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; margin: 0.5em 0; font-size: 8px;">
-        <thead>
-          <tr style="background: #e0e0e0;">
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('kanji') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('reading') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('meaning') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('type') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('study_count') }}</th>
-            <th style="border: 1px solid #888; padding: 4px;">{{ _('next_review') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for word in not_learned_words %}
-          <tr>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.kanji if word.kanji else '-' }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.word }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.meaning }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.type }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.study_count }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">{{ word.next_review.strftime('%Y-%m-%d') if word.next_review else 'N/A' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  {% endif %}
+<div class="fcc-box">
+  {% if learned_words %}{{ word_table(_('learned_words'), learned_words) }}{% endif %}
+  {% if not_learned_words %}{{ word_table(_('words_needing_review'), not_learned_words) }}{% endif %}
 </div>
 
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">{{ _('review_schedule') }} ({{ forgetting_curve_data.jlpt_level }})</div>
-  <div style="margin: 1em 0;">
-    <canvas id="forgettingCurveChart" width="600" height="300" style="border: 1px solid #888; background: white;"></canvas>
+<div class="fcc-box">
+  <div class="fcc-box-title">{{ _('review_schedule') }} ({{ forgetting_curve_data.jlpt_level }})</div>
+  <div class="fcc-chart-wrap">
+    <canvas id="forgettingCurveChart" width="600" height="300" class="fcc-chart"></canvas>
   </div>
-  <div style="font-size: 9px; color: #666;">
+  <div class="fcc-chart-desc">
     <p>{{ _('complete_review_schedule_desc') }}</p>
     <p>{{ _('total_words_with_schedule') }}: {{ all_review_words|length if all_review_words else 0 }}</p>
-    <div style="margin-top: 8px; padding: 6px; background: #f9f9f9; border: 1px solid #ddd; font-size: 8px; color: #555;">
-      ℹ️ {{ _('ebbinghaus_forgetting_curve_note') }}
-    </div>
+    <div class="fcc-chart-note">ℹ️ {{ _('ebbinghaus_forgetting_curve_note') }}</div>
   </div>
 </div>
 
-
-<div style="border: 1px dotted #808080; padding: 6px; background: #F0F0F0; font-size: 8px; color: #404040; text-align: center;">
-  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('spaced_repetition_info') }}:</div>
+<div class="fc-sr fcc-sr">
+  <div class="fc-sr-title">{{ _('spaced_repetition_info') }}:</div>
   <div>{{ _('spaced_repetition_desc_complete') }}</div>
 </div>
 
 {% if next_review_time %}
-  <div style="text-align: center; margin-top: 12px;">
-    <div style="border: 1px solid #000; padding: 4px; background: #F8F8F8; font-size: 8px; display: inline-block;">
-      <div style="font-weight: bold; margin-bottom: 2px;">{{ _('next_review') }}:</div>
+  <div class="fcc-next">
+    <div class="fcc-next-box">
+      <div class="fc-sr-title">{{ _('next_review') }}:</div>
       <div>{{ next_review_time.strftime('%Y-%m-%d %H:%M') if next_review_time else _('no_reviews_scheduled') }}</div>
     </div>
   </div>
 {% endif %}
 
-<div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-  <a href="{{ url_for('flashcard.flashcard_index') }}" 
-     style="display: inline-block; background: #FFFFFF; border: 2px solid #000; 
-            padding: 12px 24px; font-size: 12px; text-decoration: none; color: #000;
-            font-weight: bold;">
-    🏠 {{ _('back_to_flashcard_home') }}
-  </a>
+<div class="fcc-back">
+  <a href="{{ url_for('flashcard.flashcard_index') }}" class="fcc-back-btn">🏠 {{ _('back_to_flashcard_home') }}</a>
 </div>
 
 <script>

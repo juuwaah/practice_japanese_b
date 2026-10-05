@@ -4,50 +4,32 @@
 
 {% block window_title %}{{ _('user_authentication') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
+<div class="page-heading">
   <h1>{{ _('login') }}</h1>
 </div>
 
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="error-message">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
+  {% for message in messages %}
+    <div class="error-message">{{ message }}</div>
+  {% endfor %}
 {% endwith %}
 
-<div style="max-width: 300px; margin: 0 auto;">
-    <!-- Google Login Button -->
-    <div style="margin-bottom:16px;">
-        <a href="{{ url_for('google.login') }}" 
-           style="display:block; padding:8px 16px; background:#4285F4; color:#FFFFFF; text-decoration:none; 
-                  border:1px solid #000; font-size:10px; font-weight:bold; text-align:center; cursor:pointer;">
-            {{ _('login_with_google') }}
-        </a>
-        
-        <!-- Privacy Notice -->
-        <div style="margin-top:8px; padding:6px; background:#f5f5f5; border:1px solid #ddd; font-size:7px; color:#666; line-height:1.2;">
-            {{ _('google_login_privacy_notice')|safe }}
-        </div>
-        
-        <!-- Grammar Quiz Access Note -->
-        <div style="margin-top:6px; padding:4px; background:#e8f4f8; border:1px solid #cce7f0; font-size:7px; color:#2c5282; line-height:1.2;">
-            ℹ️ {{ _('grammar_quiz_access_note') }}
-        </div>
-    </div>
-    
-    
-    <div style="border-top:1px dotted #808080; padding-top:12px; margin-top:12px; text-align:center;">
-        <div style="font-size:8px; color:#404040;">
-            {{ _('continue_as_guest') }}
-        </div>
-        <a href="{{ url_for('home') }}" 
-           style="font-size:9px; text-decoration:underline; color:#000; margin-top:4px; display:inline-block;">
-            {{ _('browse_as_guest') }}
-        </a>
-    </div>
+<div class="login-box">
+  <div class="login-google">
+    <a href="{{ url_for('google.login') }}" class="login-google-btn">{{ _('login_with_google') }}</a>
+
+    <div class="login-note">{{ _('google_login_privacy_notice')|safe }}</div>
+    <div class="login-note login-note-info">ℹ️ {{ _('grammar_quiz_access_note') }}</div>
+  </div>
+
+  <div class="login-guest">
+    <div class="login-guest-text">{{ _('continue_as_guest') }}</div>
+    <a href="{{ url_for('home') }}" class="login-guest-link">{{ _('browse_as_guest') }}</a>
+  </div>
 </div>
 {% endblock %}

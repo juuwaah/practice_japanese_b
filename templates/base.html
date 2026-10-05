@@ -17,211 +17,13 @@
     
     <!-- Extra head content for specific pages -->
     {% block extra_head %}{% endblock %}
-    
-    
-    <!-- Sidebar removed - clean full-width layout -->
-    
-    
-    <!-- Mobile responsive styles moved to style-retro.css -->
-    <!-- <style>
-    /* Mobile responsive menu - only apply on small screens with strict conditions */
-    @media (max-width: 768px) and (orientation: portrait),
-           (max-width: 480px) {
-      
-      /* Create mobile layout container */
-      body {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: flex-start !important;
-        min-height: 100vh !important;
-      }
-      
-      /* Mobile navigation sidebar - left 12% of screen */
-      .menu-bar {
-        position: static !important;
-        width: 12% !important;
-        min-width: 80px !important;
-        max-width: 120px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        background: #C0C0C0 !important;
-        border: 2px solid #808080 !important;
-        padding: 4px !important;
-        margin: 8px 2px 8px 8px !important;
-        box-sizing: border-box !important;
-        flex-shrink: 0 !important;
-      }
-      
-      /* Stack menu items vertically */
-      .menu-dropdown {
-        width: 100% !important;
-        margin-bottom: 4px !important;
-        display: block !important;
-      }
-      
-      /* Adjust menu item appearance for mobile */
-      .menu-item {
-        display: block !important;
-        width: 100% !important;
-        padding: 2px 4px !important;
-        background: #E0E0E0 !important;
-        border: 1px solid #808080 !important;
-        text-align: left !important;
-        font-size: 8px !important;
-        margin-bottom: 1px !important;
-        word-wrap: break-word !important;
-        white-space: normal !important;
-        line-height: 1.0 !important;
-      }
-      
-      /* Menu content positioning for mobile */
-      .menu-content {
-        position: relative !important;
-        display: none !important;
-        background: #F0F0F0 !important;
-        border: 1px solid #808080 !important;
-        padding: 4px !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        z-index: 1000 !important;
-      }
-      
-      /* Show menu content when hovering */
-      .menu-dropdown:hover .menu-content {
-        display: block !important;
-      }
-      
-      /* Menu links styling for mobile */
-      .menu-content a {
-        display: block !important;
-        padding: 3px 4px !important;
-        font-size: 7px !important;
-        border-bottom: 1px dotted #C0C0C0 !important;
-        text-decoration: none !important;
-        color: #000 !important;
-        word-wrap: break-word !important;
-        white-space: normal !important;
-      }
-      
-      .menu-content a:hover {
-        background: #D0D0D0 !important;
-      }
-      
-      .menu-content a:last-child {
-        border-bottom: none !important;
-      }
-      
-      /* External links section - below menu bar in same column */
-      .external-links-section {
-        position: static !important;
-        width: 12% !important;
-        min-width: 80px !important;
-        max-width: 120px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        padding: 4px !important;
-        background: #F8F8F8 !important;
-        border: 1px solid #C0C0C0 !important;
-        margin: 0 2px 8px 8px !important;
-        box-sizing: border-box !important;
-        flex-shrink: 0 !important;
-      }
-      
-      /* External link containers */
-      .external-link-container {
-        width: 100% !important;
-        margin-bottom: 8px !important;
-        text-align: center !important;
-      }
-      
-      /* External link buttons */
-      .external-link-btn {
-        width: 100% !important;
-        padding: 4px 2px !important;
-        font-size: 7px !important;
-        display: block !important;
-        word-wrap: break-word !important;
-        white-space: normal !important;
-        line-height: 1.0 !important;
-      }
-      
-      /* Button descriptions */
-      .btn-description {
-        font-size: 6px !important;
-        margin-top: 1px !important;
-        line-height: 1.0 !important;
-      }
-      
-      /* Container for menu and external links */
-      .mobile-sidebar {
-        display: flex !important;
-        flex-direction: column !important;
-        width: 12% !important;
-        min-width: 80px !important;
-        max-width: 120px !important;
-        flex-shrink: 0 !important;
-      }
-      
-      /* Main content area - use remaining 85%+ space */
-      .main-content {
-        flex: 1 !important;
-        width: 88% !important;
-        padding: 8px !important;
-        margin: 8px 8px 8px 4px !important;
-        box-sizing: border-box !important;
-        min-width: 0 !important;
-      }
-      
-      /* Hide tool palette on mobile as it's not touch-friendly */
-      .tool-palette {
-        display: none !important;
-      }
-    }
-    
-    /* Very small screens - more compact */
-    @media (max-width: 480px) {
-      .menu-bar,
-      .external-links-section,
-      .mobile-sidebar {
-        width: 15% !important;
-        min-width: 70px !important;
-        max-width: 100px !important;
-      }
-      
-      .menu-item {
-        padding: 4px 4px !important;
-        font-size: 10px !important;
-      }
-      
-      .menu-content a {
-        padding: 4px 4px !important;
-        font-size: 8px !important;
-      }
-      
-      .external-link-btn {
-        padding: 4px 2px !important;
-        font-size: 9px !important;
-      }
-      
-      .btn-description {
-        font-size: 7px !important;
-      }
-      
-      .main-content {
-        width: 85% !important;
-        padding: 4px !important;
-        margin: 4px 4px 4px 2px !important;
-      }
-    }
-    </style> -->
 </head>
-<body class="font-{{ get_current_font() }}">
+<body class="font-{{ get_current_font() }} {% block body_class %}{% endblock %}">
   <!-- Mobile Top Menu Bar (horizontal layout) -->
   <div class="mobile-top-menu">
-    <div class="mobile-menu-btn" id="mobile-file-menu">File</div>
-    <div class="mobile-menu-btn" id="mobile-quiz-menu">Quiz</div>
-    <div class="mobile-menu-btn" id="mobile-support-menu">Support</div>
+    <div class="mobile-menu-btn" id="mobile-file-menu" data-menu="file">File</div>
+    <div class="mobile-menu-btn" id="mobile-quiz-menu" data-menu="quiz">Quiz</div>
+    <div class="mobile-menu-btn" id="mobile-support-menu" data-menu="support">Support</div>
     <a href="{{ url_for('blog.blog_index') }}" class="mobile-menu-btn" id="mobile-blog-menu">Blog</a>
     <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1754630335.010799&ep=w1" target="_blank" class="mobile-menu-btn" id="mobile-preply-menu">{{ _('preply_coupon') }}</a>
   </div>
@@ -233,15 +35,13 @@
   <!-- Top Menu Bar (like Adobe Illustrator 1987) -->
   <div class="menu-bar">
     <!-- Site Logo -->
-    <div style="margin-right: 8px; display: flex; align-items: center;">
-      <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" 
-           alt="Japanese with B" 
-           style="height: 32px; width: auto;">
+    <div class="menu-logo">
+      <img src="{{ url_for('static', filename='favicon1_io/logo.png') }}" alt="Japanese with B">
     </div>
     
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('file') }}</span>
-      <div class="menu-content">
+      <div class="menu-content" data-menu="file">
         <a href="{{ url_for('home') }}">{{ _('home') }}</a>
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('logout') }}">{{ _('logout') }}</a>
@@ -253,13 +53,13 @@
     
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('quiz') }}</span>
-      <div class="menu-content">
+      <div class="menu-content" data-menu="quiz">
         <a href="{{ url_for('grammar.grammar_index') }}">{{ _('grammar') }}</a>
         <a href="{{ url_for('vocab.vocab_index') }}">{{ _('vocabulary') }}</a>
         <a href="{{ url_for('flashcard.flashcard_index') }}">{{ _('flashcards') }}</a>
-        <div class="menu-dropdown" style="position: relative; height: 100%;">
-          <a href="#" class="menu-item" style="border-bottom: 1px dotted #C0C0C0;">{{ _('akinator') }}</a>
-          <div class="menu-content" style="position: absolute; left: 100%; top: 0; margin-left: 2px; display: none;">
+        <div class="menu-dropdown">
+          <a href="#" class="menu-item">{{ _('akinator') }}</a>
+          <div class="menu-content">
             <a href="{{ url_for('akinator.akinator_index') }}?role=user">{{ _('you_are_akinator') }}</a>
             <a href="{{ url_for('akinator.akinator_index') }}?role=gpt">{{ _('ai_is_akinator') }}</a>
           </div>
@@ -269,12 +69,12 @@
     </div>
     
     <div class="menu-dropdown">
-      <span class="menu-item" id="settings-menu-direct" onclick="openSettingsModal(); return false;" style="cursor: pointer;">{{ _('settings') }}</span>
+      <span class="menu-item" id="settings-menu-direct">{{ _('settings') }}</span>
     </div>
     
     <div class="menu-dropdown">
       <span class="menu-item">{{ _('support_menu') }}</span>
-      <div class="menu-content">
+      <div class="menu-content" data-menu="support">
         <a href="{{ url_for('about') }}">{{ _('about') }}</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
         <a href="{{ url_for('admin.dashboard') }}">{{ _('admin_dashboard') }}</a>
@@ -292,29 +92,16 @@
     </div>
     
     <!-- Tool buttons and capybara on the right -->
-    <div style="margin-left: auto; display: flex; height: 100%; align-items: center; gap: 4px;">
-      <!-- Sitemap Tool -->
-      <div class="menu-tool-btn" id="sitemap-tool" title="Sitemap" onclick="console.log('Sitemap clicked!'); loadSitemap();">
-        🔍
-      </div>
-      <!-- Feedback Tool (only when logged in) -->
+    <div class="menu-tools">
+      <div class="menu-tool-btn" id="sitemap-tool" title="Sitemap">🔍</div>
       {% if current_user.is_authenticated and current_user.auth_type != 'guest' %}
-      <div class="menu-tool-btn" id="feedback-tool" title="Feedback" onclick="console.log('Feedback clicked!'); document.getElementById('feedback-modal').classList.add('modal-show');">
-        🖐️
-      </div>
+      <div class="menu-tool-btn" id="feedback-tool" title="Feedback">🖐️</div>
       {% endif %}
-      <!-- Capybara mascot -->
-      <div style="margin-left: 8px; display: flex; align-items: center;" title="Capybara mascot">
-        <img src="{{ url_for('static', filename='favicon1_io/logo2.png') }}?v=2" 
-             alt="Capybara mascot" 
-             style="height: 32px; width: auto;">
+      <div class="menu-mascot" title="Capybara mascot">
+        <img src="{{ url_for('static', filename='favicon1_io/logo2.png') }}?v=2" alt="Capybara mascot">
       </div>
     </div>
   </div>
-
-
-
-
     </div> <!-- Close left-sidebar -->
     
     <!-- Main content wrapper -->
@@ -329,125 +116,52 @@
       <div class="main-content">
         {% if hide_sidebar %}
           <!-- Full-width layout for specific pages -->
-          <div style="width: 100%; margin-bottom: 12px;">
+          <div class="full-width-layout">
             {% block content %}{% endblock %}
-            
-            <!-- Contact Information for full-width pages -->
-            <div class="desktop-contact-section" style="text-align: center; margin-top: 24px; padding: 8px; 
-                        border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
-              Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
+            <div class="desktop-contact-section">
+              Contact: <a href="mailto:jpn.with.b@gmail.com">jpn.with.b@gmail.com</a>
             </div>
           </div>
         {% else %}
-          <!-- Two-column layout with sidebar -->
-          <div class="sidebar-layout sidebar-v3" id="sidebar-{{ range(1000, 9999) | random }}" style="display: flex !important; gap: 10px !important; margin-bottom: 12px !important; width: 100% !important; overflow-x: hidden !important; padding-right: 8px !important;">
-            <!-- Main Content (2/3 width) -->
-            <div class="main-content-column sidebar-main-v3" style="flex: 0 0 66.67% !important; width: 66.67% !important; min-width: 0 !important; max-width: 66.67% !important; box-sizing: border-box !important; margin-right: 8px !important;">
+          <!-- Two-column layout: content (2/3) + right sidebar (1/3) -->
+          <div class="sidebar-layout">
+            <div class="main-content-column">
               {{ self.content() }}
-              
-              <!-- Contact Information -->
-              <div class="desktop-contact-section" style="text-align: center; margin-top: 24px; padding: 8px; 
-                          border-top: 1px solid #C0C0C0; font-size: 8px; color: #666;">
-                Contact: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
+              <div class="desktop-contact-section">
+                Contact: <a href="mailto:jpn.with.b@gmail.com">jpn.with.b@gmail.com</a>
               </div>
             </div>
-            
-            <!-- Right Sidebar (1/3 width) -->
-            <div class="right-sidebar sidebar-right-v3" style="flex: 0 0 33.33% !important; width: 33.33% !important; min-width: 200px !important; box-sizing: border-box !important; font-size: 0.75em !important; overflow-x: hidden !important; position: relative !important; left: -20px !important; margin-right: 20px !important; padding-right: 10px !important; padding-left: 16px !important; transform: scale(0.9) !important; transform-origin: top left !important;">
-              
-              <!-- Recommended Practice Section -->
-              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
-                          background: #F8F8F8; border: 2px solid #C0C0C0; 
-                          box-shadow: 2px 2px 0px #808080;">
-                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
-                           border-bottom: 1px solid #C0C0C0; color: #000;">
-                  📚 Recommended Practice
-                </h3>
-                <div style="font-size: 12px; line-height: 1.4;">
-                  <div style="margin-bottom: 8px;">
-                    <a href="{{ url_for('grammar.grammar_index') }}" 
-                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
-                      Grammar Quiz
-                    </a>
-                  </div>
-                  <div style="margin-bottom: 8px;">
-                    <a href="{{ url_for('vocab.vocab_index') }}" 
-                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
-                      Vocabulary Quiz
-                    </a>
-                  </div>
-                  <div style="margin-bottom: 8px;">
-                    <a href="{{ url_for('flashcard.flashcard_index') }}" 
-                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
-                      Flashcards
-                    </a>
-                  </div>
-                  <div>
-                    <a href="{{ url_for('youtube_listening.listening_levels') }}" 
-                       style="color: #0066CC; text-decoration: none; font-weight: bold;">
-                      YouTube Listening
-                    </a>
-                  </div>
+
+            <div class="right-sidebar">
+              <div class="sidebar-section sidebar-section-light">
+                <h3>📚 Recommended Practice</h3>
+                <div class="sidebar-links">
+                  <div><a href="{{ url_for('grammar.grammar_index') }}">Grammar Quiz</a></div>
+                  <div><a href="{{ url_for('vocab.vocab_index') }}">Vocabulary Quiz</a></div>
+                  <div><a href="{{ url_for('flashcard.flashcard_index') }}">Flashcards</a></div>
+                  <div><a href="{{ url_for('youtube_listening.listening_levels') }}">YouTube Listening</a></div>
                 </div>
               </div>
-              
-              <!-- Patreon Support Section -->
-              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
-                          background: #F0F0F0; border: 2px solid #808080; 
-                          box-shadow: 2px 2px 0px #404040;">
-                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
-                           border-bottom: 1px solid #808080; color: #000;">
-                  Support Development
-                </h3>
-                <div style="font-size: 12px; line-height: 1.4; text-align: center;">
-                  <p style="margin-bottom: 12px; color: #333;">
-                    Support us on Patreon to keep this site free and improve features.
-                  </p>
-                  <a href="https://www.patreon.com/japanesewithb" target="_blank"
-                     style="display: inline-block; background: #E0E0E0; color: black; 
-                            padding: 8px 16px; text-decoration: none; font-weight: bold; 
-                            border: 2px solid #808080; box-shadow: 2px 2px 0px #404040;">
-                    Support on Patreon
-                  </a>
-                </div>
-              </div>
-              
-              <!-- Latest Blog Posts Section -->
-              <div class="sidebar-section" style="margin-bottom: 20px; padding: 12px; 
-                          background: #F0F0F0; border: 2px solid #808080; 
-                          box-shadow: 2px 2px 0px #404040;">
-                <h3 style="font-size: 14px; margin: 0 0 12px 0; padding-bottom: 6px; 
-                           border-bottom: 1px solid #808080; color: #000;">
-                  📰 Latest Blog Posts
-                </h3>
-                <div style="font-size: 11px; line-height: 1.3;">
+
+              <div class="sidebar-section">
+                <h3>📰 Latest Blog Posts</h3>
+                <div class="sidebar-posts">
                   {% set latest_posts = get_latest_blog_posts() %}
-                  {% if latest_posts %}
-                    {% for post in latest_posts %}
-                    <div style="margin-bottom: 6px;">
-                      <a href="{{ url_for('blog.blog_post', document_id=post.get('id', post.get('document_id', ''))) }}" 
-                         style="color: #000; text-decoration: underline; font-weight: normal; font-size: 10px;">
-                        • {{ post.get('name', post.get('title', 'Untitled'))[:40] }}{% if (post.get('name', post.get('title', ''))|length) > 40 %}...{% endif %}
+                  {% for post in latest_posts %}
+                    {% set post_title = post.get('name', post.get('title', 'Untitled')) %}
+                    <div class="sidebar-post">
+                      <a href="{{ url_for('blog.blog_post', document_id=post.get('id', post.get('document_id', ''))) }}">
+                        • {{ post_title[:40] }}{% if post_title|length > 40 %}...{% endif %}
                       </a>
                     </div>
-                    {% endfor %}
                   {% else %}
-                    <div style="font-size: 10px; color: #666;">
-                      No blog posts available
-                    </div>
-                  {% endif %}
-                  
-                  <div style="text-align: center; margin-top: 12px;">
-                    <a href="{{ url_for('blog.blog_index') }}" 
-                       style="display: inline-block; background: #E0E0E0; color: black; 
-                              padding: 4px 8px; text-decoration: none; font-weight: bold; 
-                              border: 2px solid #808080; box-shadow: 2px 2px 0px #404040; font-size: 10px;">
-                      View All Posts
-                    </a>
+                    <div class="sidebar-empty">No blog posts available</div>
+                  {% endfor %}
+                  <div class="sidebar-more">
+                    <a href="{{ url_for('blog.blog_index') }}" class="sidebar-more-btn">View All Posts</a>
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
         {% endif %}
@@ -456,7 +170,7 @@
   </div>
 
   <!-- Global Loading Indicator -->
-  <div id="global-loading" class="global-loading" style="display: none;">
+  <div id="global-loading" class="global-loading">
     <div class="loading-content">
       <div class="retro-spinner"></div>
       <div class="loading-text">Processing...</div>
@@ -466,7 +180,7 @@
   <!-- Status Bar -->
   <div class="status-bar">
     <span>{{ _('ready') }}</span>
-    <span style="margin-left: auto;">
+    <span class="status-bar-user">
       {% if current_user.is_authenticated %}
         {{ _('user') }}: {{ current_user.username }}
       {% else %}
@@ -512,7 +226,7 @@
       <div class="feedback-content">
         <form id="feedback-form" method="POST" action="/feedback">
           <!-- Privacy Notice -->
-          <div style="margin-bottom: 8px; padding: 6px; background: #f0f8ff; border: 1px solid #cce7f0; font-size: 7px; color: #2c5282; line-height: 1.2;">
+          <div class="feedback-privacy-notice">
             ℹ️ {{ _('feedback_privacy_notice') }}
           </div>
           <div class="feedback-field">
@@ -536,10 +250,10 @@
         <button id="sitemap-close" class="sitemap-close-btn">×</button>
       </div>
       <div class="sitemap-content">
-        <div id="sitemap-loading" style="text-align: center; padding: 20px; font-size: 10px;">
+        <div id="sitemap-loading" class="sitemap-loading">
           {{ _('loading') }}
         </div>
-        <div id="sitemap-data" style="display: none;"></div>
+        <div id="sitemap-data" class="sitemap-data"></div>
       </div>
     </div>
   </div>
@@ -552,10 +266,10 @@
         <button id="settings-close" class="settings-close-btn">×</button>
       </div>
       <div class="settings-content">
-        <div style="padding: 12px;">
+        <div class="settings-inner">
           <!-- Language Setting -->
           <div class="settings-group">
-            <h3 style="font-size: 11px; margin: 0 0 6px 0; font-weight: bold;">{{ _('language') }}</h3>
+            <h3>{{ _('language') }}</h3>
             <div class="settings-options">
               <button class="settings-btn" onclick="changeLanguage('en')">English</button>
               <button class="settings-btn" onclick="changeLanguage('ja')">日本語</button>
@@ -564,8 +278,8 @@
           </div>
           
           <!-- Font Setting -->
-          <div class="settings-group" style="margin-top: 16px;">
-            <h3 style="font-size: 11px; margin: 0 0 6px 0; font-weight: bold;">{{ _('font') }}</h3>
+          <div class="settings-group">
+            <h3>{{ _('font') }}</h3>
             <div class="settings-options">
               <button class="settings-btn" onclick="changeFont('notosans')">Noto Sans JP (Modern)</button>
               <button class="settings-btn" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</button>
@@ -582,169 +296,77 @@
   {% block scripts %}{% endblock %}
 
   <script>
-
-
-    // Mobile tool palette interaction
+    // ---- Mobile bottom toolbar (language / font / feedback / sitemap) ----
     document.querySelectorAll('.mobile-tool-btn').forEach(tool => {
       tool.addEventListener('click', function(e) {
-        // Don't prevent default for link buttons
-        if (this.tagName.toLowerCase() === 'a') {
-          return; // Let the link work normally
-        }
-        
         e.preventDefault();
-        
-        // Special handling for mobile feedback tool
+        e.stopPropagation();
+
         if (this.id === 'mobile-feedback-tool') {
-          e.stopPropagation();
-          const loginLink = document.querySelector('a[href*="login"]');
-          const logoutLink = document.querySelector('a[href*="logout"]');
-          const isLoggedIn = !loginLink || logoutLink;
-          
-          if (!isLoggedIn) {
-            alert('フィードバック、感想を送るにはログインしてください');
-            window.location.href = '/login';
-            return;
-          }
-          
-          // Show feedback modal with standard class approach
-          const feedbackModal = document.getElementById('feedback-modal');
-          if (feedbackModal) {
-            feedbackModal.classList.add('modal-show');
-          } else {
-          }
-          return;
-        }
-        
-        // Special handling for mobile sitemap tool
-        if (this.id === 'mobile-sitemap-tool') {
-          e.stopPropagation();
+          openFeedbackModal();
+        } else if (this.id === 'mobile-sitemap-tool') {
           loadSitemap();
-          return;
-        }
-        
-        // Special handling for mobile language tool
-        if (this.id === 'mobile-language-tool') {
-          e.stopPropagation();
-          showMobileLanguageMenu(this);
-          return;
-        }
-        
-        // Special handling for mobile font tool
-        if (this.id === 'mobile-font-tool') {
-          e.stopPropagation();
-          showMobileFontMenu(this);
-          return;
-        }
-        
-        
-        // For link buttons, don't prevent default to allow navigation
-      });
-    });
-
-    // Mobile top menu interaction
-    document.querySelectorAll('.mobile-menu-btn').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        // If this is a link button (like Blog), let it navigate normally
-        if (this.tagName.toLowerCase() === 'a') {
-          return; // Let the link work normally
-        }
-        
-        // For dropdown buttons, show corresponding menu from desktop version
-        let targetMenu = null;
-        const allMenus = document.querySelectorAll('.menu-bar > .menu-dropdown');
-        
-        // Map by button text to menu content - search by actual menu text content
-        if (this.id === 'mobile-file-menu') {
-          // Find File menu by looking for menu containing "Home" or file-related links
-          for (let menu of allMenus) {
-            const menuContent = menu.querySelector('.menu-content');
-            if (menuContent && (menuContent.innerHTML.includes('home') || menuContent.innerHTML.includes('logout') || menuContent.innerHTML.includes('login'))) {
-              targetMenu = menuContent;
-              break;
-            }
-          }
-        } else if (this.id === 'mobile-quiz-menu') {
-          // Find Quiz menu by looking for menu containing grammar/vocab/flashcard links
-          for (let menu of allMenus) {
-            const menuContent = menu.querySelector('.menu-content');
-            if (menuContent && (menuContent.innerHTML.includes('grammar') || menuContent.innerHTML.includes('vocab') || menuContent.innerHTML.includes('akinator'))) {
-              targetMenu = menuContent;
-              break;
-            }
-          }
-        } else if (this.id === 'mobile-support-menu') {
-          // Find Support menu by looking for menu containing "about" or support-related links
-          for (let menu of allMenus) {
-            const menuContent = menu.querySelector('.menu-content');
-            if (menuContent && (menuContent.innerHTML.includes('about') || menuContent.innerHTML.includes('admin') || menuContent.innerHTML.includes('support'))) {
-              targetMenu = menuContent;
-              break;
-            }
-          }
-        }
-        
-        if (targetMenu) {
-          showMobileDropdown(null, this, targetMenu);
+        } else if (this.id === 'mobile-language-tool') {
+          togglePopupMenu('mobile-language-menu', this, [
+            ['English', "changeLanguage('en')"],
+            ['日本語', "changeLanguage('ja')"],
+            ['Español', "changeLanguage('es')"]
+          ]);
+        } else if (this.id === 'mobile-font-tool') {
+          togglePopupMenu('mobile-font-menu', this, [
+            ['Noto Sans JP (Modern)', "changeFont('notosans')"],
+            ['DotGothic16 (Pixel)', "changeFont('dotgothic')"],
+            ['Klee One (Textbook)', "changeFont('klee')"]
+          ]);
         }
       });
     });
 
-    // Show mobile dropdown menu
-    function showMobileDropdown(selector, triggerBtn, sourceMenu = null) {
-      // Remove any existing dropdown
-      const existing = document.querySelector('.mobile-dropdown-menu');
-      if (existing) existing.remove();
-      
-      // Use passed sourceMenu or find by selector
-      if (!sourceMenu) {
-        sourceMenu = document.querySelector(selector);
+    // Popup menu above the mobile bottom toolbar; clicking the button again or outside closes it
+    function togglePopupMenu(className, triggerBtn, options) {
+      const existing = document.querySelector('.' + className);
+      if (existing) {
+        existing.remove();
+        return;
       }
-      if (!sourceMenu) return;
-      
-      const dropdown = document.createElement('div');
-      dropdown.className = 'mobile-dropdown-menu';
-      dropdown.innerHTML = sourceMenu.innerHTML;
-      
-      // Re-attach event listeners for copied elements
-      const copiedSettingsLink = dropdown.querySelector('#settings-menu-link');
-      if (copiedSettingsLink) {
-        copiedSettingsLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          // Close the mobile dropdown first
-          dropdown.remove();
-          // Open settings modal directly
-          const settingsModal = document.getElementById('settings-modal');
-          if (settingsModal) {
-            settingsModal.classList.add('modal-show');
-          }
-        });
-      }
-      
-      dropdown.style.position = 'fixed';
-      dropdown.style.top = '60px'; // Below top menu
-      dropdown.style.left = '50%';
-      dropdown.style.transform = 'translateX(-50%)';
-      dropdown.style.backgroundColor = '#C0C0C0';
-      dropdown.style.border = '2px outset #C0C0C0';
-      dropdown.style.padding = '8px';
-      dropdown.style.fontSize = '12px';
-      dropdown.style.zIndex = '11000';
-      dropdown.style.minWidth = '150px';
-      dropdown.style.maxWidth = '300px';
-      dropdown.style.textAlign = 'left';
-      
-      document.body.appendChild(dropdown);
-      
-      // Close dropdown when clicking outside
+
+      const menu = document.createElement('div');
+      menu.className = 'mobile-popup-menu ' + className;
+      menu.innerHTML = options
+        .map(([label, action]) => `<div class="mobile-popup-option" onclick="${action}">${label}</div>`)
+        .join('');
+      document.body.appendChild(menu);
+      closeOnOutsideClick(menu, triggerBtn);
+    }
+
+    function closeOnOutsideClick(menu, triggerBtn) {
       setTimeout(() => {
-        document.addEventListener('click', function closeMobileDropdown(e) {
-          if (!dropdown.contains(e.target) && e.target !== triggerBtn) {
-            dropdown.remove();
-            document.removeEventListener('click', closeMobileDropdown);
+        document.addEventListener('click', function handler(e) {
+          if (!menu.contains(e.target) && e.target !== triggerBtn) {
+            menu.remove();
+            document.removeEventListener('click', handler);
           }
         });
       }, 100);
+    }
+
+    // ---- Mobile top menu: reuse the desktop dropdown contents ----
+    document.querySelectorAll('.mobile-menu-btn[data-menu]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const sourceMenu = document.querySelector('.menu-bar .menu-content[data-menu="' + this.dataset.menu + '"]');
+        if (sourceMenu) showMobileDropdown(this, sourceMenu);
+      });
+    });
+
+    function showMobileDropdown(triggerBtn, sourceMenu) {
+      const existing = document.querySelector('.mobile-dropdown-menu');
+      if (existing) existing.remove();
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'mobile-dropdown-menu';
+      dropdown.innerHTML = sourceMenu.innerHTML;
+      document.body.appendChild(dropdown);
+      closeOnOutsideClick(dropdown, triggerBtn);
     }
 
     // Force mobile toolbar display ONLY on actual mobile devices
@@ -791,9 +413,7 @@
               box-shadow: 0 -1px 2px rgba(0,0,0,0.2) !important;
               gap: 2px !important;
             `;
-          } catch (e) {
-          }
-        } else {
+          } catch (e) {}
         }
         
         if (topMenu) {
@@ -821,9 +441,7 @@
               gap: 2px !important;
               box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
             `;
-          } catch (e) {
-          }
-        } else {
+          } catch (e) {}
         }
       } else {
         // Force hide on non-mobile devices (PC/Desktop)
@@ -955,137 +573,83 @@
     window.addEventListener('load', initializeToolbarHiding);
     document.addEventListener('DOMContentLoaded', initializeToolbarHiding);
 
-    
-    // Feedback modal functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const modal = document.getElementById('feedback-modal');
-      const closeBtn = document.getElementById('feedback-close');
-      const cancelBtn = document.getElementById('feedback-cancel');
-      const form = document.getElementById('feedback-form');
-      
-      // Close modal functions
-      function closeModal() {
-        modal.classList.remove('modal-show');
-        form.reset();
+    // ---- Modals (feedback / sitemap / settings) ----
+    function openFeedbackModal() {
+      if (!document.querySelector('a[href*="logout"]')) {
+        alert('フィードバック、感想を送るにはログインしてください');
+        window.location.href = '/login';
+        return;
       }
-      
-      closeBtn.addEventListener('click', closeModal);
-      cancelBtn.addEventListener('click', closeModal);
-      
-      // Close when clicking outside the window
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          closeModal();
-        }
-      });
-      
-      // Handle form submission
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(form);
-        
-        fetch('/feedback', {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert('{{ _('feedback_success') }}');
-            closeModal();
-          } else {
-            alert('{{ _('feedback_error') }}');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('{{ _('feedback_error') }}');
-        });
-      });
-      
-      // Sitemap modal functionality
-      const sitemapModal = document.getElementById('sitemap-modal');
-      const sitemapCloseBtn = document.getElementById('sitemap-close');
-      
-      // Close sitemap modal function
-      function closeSitemapModal() {
-        sitemapModal.classList.remove('modal-show');
-      }
-      
-      sitemapCloseBtn.addEventListener('click', closeSitemapModal);
-      
-      // Close when clicking outside the window
-      sitemapModal.addEventListener('click', function(e) {
-        if (e.target === sitemapModal) {
-          closeSitemapModal();
-        }
-      });
+      document.getElementById('feedback-modal').classList.add('modal-show');
+    }
 
-      // Settings modal functionality  
+    function openSettingsModal() {
+      document.getElementById('settings-modal').classList.add('modal-show');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const feedbackModal = document.getElementById('feedback-modal');
+      const feedbackForm = document.getElementById('feedback-form');
+      const sitemapModal = document.getElementById('sitemap-modal');
       const settingsModal = document.getElementById('settings-modal');
-      const settingsCloseBtn = document.getElementById('settings-close');
-      const settingsMenuLink = document.getElementById('settings-menu-link');
-      
-      
-      // Open settings modal function  
-      function openSettingsModal() {
-        settingsModal.classList.add('modal-show');
+
+      function closeFeedbackModal() {
+        feedbackModal.classList.remove('modal-show');
+        feedbackForm.reset();
       }
-      
-      // Close settings modal function
-      function closeSettingsModal() {
-        settingsModal.classList.remove('modal-show');
-      }
-      
-      // Add event listener only if element exists (old settings link)
-      if (settingsMenuLink) {
-        settingsMenuLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          openSettingsModal();
-        });
-      }
-      
-      // Add event listener for direct settings menu
-      const settingsMenuDirect = document.getElementById('settings-menu-direct');
-      if (settingsMenuDirect) {
-        settingsMenuDirect.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Direct settings clicked');
-          openSettingsModal();
-        });
-      }
-      
-      settingsCloseBtn.addEventListener('click', closeSettingsModal);
-      
-      // Close when clicking outside the window
-      settingsModal.addEventListener('click', function(e) {
-        if (e.target === settingsModal) {
-          closeSettingsModal();
-        }
+
+      // Close buttons and click-outside-to-close
+      document.getElementById('feedback-close').addEventListener('click', closeFeedbackModal);
+      document.getElementById('feedback-cancel').addEventListener('click', closeFeedbackModal);
+      feedbackModal.addEventListener('click', e => { if (e.target === feedbackModal) closeFeedbackModal(); });
+
+      document.getElementById('sitemap-close').addEventListener('click', () => sitemapModal.classList.remove('modal-show'));
+      sitemapModal.addEventListener('click', e => { if (e.target === sitemapModal) sitemapModal.classList.remove('modal-show'); });
+
+      document.getElementById('settings-close').addEventListener('click', () => settingsModal.classList.remove('modal-show'));
+      settingsModal.addEventListener('click', e => { if (e.target === settingsModal) settingsModal.classList.remove('modal-show'); });
+
+      // Desktop menu bar buttons
+      document.getElementById('settings-menu-direct').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openSettingsModal();
       });
-      
-      
-      // PayPal button is now functional - no placeholder needed
+      document.getElementById('sitemap-tool').addEventListener('click', loadSitemap);
+      const feedbackTool = document.getElementById('feedback-tool');
+      if (feedbackTool) {
+        feedbackTool.addEventListener('click', () => feedbackModal.classList.add('modal-show'));
+      }
+
+      feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/feedback', { method: 'POST', body: new FormData(feedbackForm) })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('{{ _('feedback_success') }}');
+              closeFeedbackModal();
+            } else {
+              alert('{{ _('feedback_error') }}');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('{{ _('feedback_error') }}');
+          });
+      });
     });
-    
+
     // Load sitemap data
     window.loadSitemap = function() {
       const modal = document.getElementById('sitemap-modal');
       const loading = document.getElementById('sitemap-loading');
       const dataDiv = document.getElementById('sitemap-data');
-      
-      if (!modal) {
-        return;
-      }
-      
-      // Show modal with standard class approach
+
       modal.classList.add('modal-show');
-      
-      if (loading) loading.style.display = 'block';
-      if (dataDiv) dataDiv.style.display = 'none';
-      
+      loading.style.display = 'block';
+      dataDiv.style.display = 'none';
+
       fetch('/sitemap_data')
         .then(response => response.json())
         .then(data => {
@@ -1093,102 +657,49 @@
           html += '<pre>┌─────────────────────────────────────────────┐\n';
           html += '│              🗺️  SITEMAP                   │\n';
           html += '└─────────────────────────────────────────────┘\n\n';
-          
-          Object.keys(data).forEach((category, categoryIndex) => {
+
+          Object.keys(data).forEach(category => {
             if (data[category].length === 0) return;
-            
+
             html += `## 📁 ${category}\n`;
             html += '├─────────────────────────────────────────────\n';
-            
+
             data[category].forEach((item, index) => {
               const isLast = index === data[category].length - 1;
               const prefix = isLast ? '└──' : '├──';
               html += `${prefix} <a href="${item.url}">[${item.name}]</a>\n`;
               html += `${isLast ? '    ' : '│   '} └─ ${item.description}\n`;
             });
-            
+
             html += '\n';
           });
-          
+
           html += '─────────────────────────────────────────────\n';
           html += '💡 Tip: Click links to navigate to each page\n';
           html += '</pre></div>';
-          
+
           dataDiv.innerHTML = html;
           loading.style.display = 'none';
           dataDiv.style.display = 'block';
         })
         .catch(error => {
           console.error('Error loading sitemap:', error);
-          dataDiv.innerHTML = '<p style="text-align: center; color: #FF0000; font-size: 10px;">Failed to load sitemap</p>';
+          dataDiv.innerHTML = '<p class="sitemap-error">Failed to load sitemap</p>';
           loading.style.display = 'none';
           dataDiv.style.display = 'block';
         });
-    }
-    
-    // Language menu functionality
-    let languageMenuOpen = false;
-    
-    window.showLanguageMenu = function(toolElement) {
-      // Remove any existing language menu
-      const existingMenu = document.querySelector('.language-menu');
-      if (existingMenu) {
-        existingMenu.remove();
-        languageMenuOpen = false;
-        return;
-      }
-      
-      const menu = document.createElement('div');
-      menu.className = 'language-menu';
-      menu.innerHTML = `
-        <div class="language-option" onclick="changeLanguage('en')">English</div>
-        <div class="language-option" onclick="changeLanguage('ja')">日本語</div>
-        <div class="language-option" onclick="changeLanguage('es')">Español</div>
-      `;
-      
-      const rect = toolElement.getBoundingClientRect();
-      menu.style.position = 'fixed';
-      menu.style.left = (rect.right + 5) + 'px';
-      menu.style.top = rect.top + 'px';
-      menu.style.backgroundColor = '#C0C0C0';
-      menu.style.border = '2px outset #C0C0C0';
-      menu.style.padding = '2px';
-      menu.style.fontSize = '10px';
-      menu.style.zIndex = '11000';
-      menu.style.minWidth = '80px';
-      
-      document.body.appendChild(menu);
-      languageMenuOpen = true;
-      
-      // Close menu when clicking outside
-      setTimeout(() => {
-        document.addEventListener('click', function closeLanguageMenu(e) {
-          if (!menu.contains(e.target) && e.target !== toolElement) {
-            menu.remove();
-            languageMenuOpen = false;
-            document.removeEventListener('click', closeLanguageMenu);
-          }
-        });
-      }, 100);
-    }
-    
-    // Language switching function
+    };
+
+    // ---- Language / font switching ----
     function changeLanguage(langCode) {
-      // Remove language menu
-      const menu = document.querySelector('.language-menu');
-      if (menu) menu.remove();
-      
       fetch('/language', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({language: langCode})
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // Reload current page instead of going to home
           window.location.reload();
         } else {
           alert('Failed to change language');
@@ -1200,63 +711,13 @@
       });
     }
 
-    // Font menu functionality
-    let fontMenuOpen = false;
-    
-    window.showFontMenu = function(toolElement) {
-      // Remove any existing font menu
-      const existingMenu = document.querySelector('.font-menu');
-      if (existingMenu) {
-        existingMenu.remove();
-        fontMenuOpen = false;
-        return;
-      }
-      
-      const menu = document.createElement('div');
-      menu.className = 'font-menu';
-      menu.innerHTML = `
-        <div class="font-option" onclick="changeFont('notosans')">Noto Sans JP (Modern)</div>
-        <div class="font-option" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</div>
-        <div class="font-option" onclick="changeFont('klee')">Klee One (Textbook)</div>
-      `;
-      
-      const rect = toolElement.getBoundingClientRect();
-      menu.style.position = 'fixed';
-      menu.style.left = (rect.right + 5) + 'px';
-      menu.style.top = rect.top + 'px';
-      menu.style.backgroundColor = '#C0C0C0';
-      menu.style.border = '2px outset #C0C0C0';
-      menu.style.padding = '2px';
-      menu.style.fontSize = '10px';
-      menu.style.zIndex = '11000';
-      menu.style.minWidth = '120px';
-      
-      document.body.appendChild(menu);
-      fontMenuOpen = true;
-      
-      // Close menu when clicking outside
-      setTimeout(() => {
-        document.addEventListener('click', function closeFontMenu(e) {
-          if (!menu.contains(e.target) && e.target !== toolElement) {
-            menu.remove();
-            fontMenuOpen = false;
-            document.removeEventListener('click', closeFontMenu);
-          }
-        });
-      }, 100);
-    }
-    
-    // Font switching function
     function changeFont(fontFamily) {
-      // Remove font menu
-      const menu = document.querySelector('.font-menu');
+      const menu = document.querySelector('.mobile-font-menu');
       if (menu) menu.remove();
-      
+
       fetch('/font', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({font_family: fontFamily})
       })
       .then(response => response.json())
@@ -1274,96 +735,42 @@
         alert('Error changing font');
       });
     }
-    
-    // Global Loading Indicator Functions
+
+    // ---- Global loading indicator ----
     window.showLoading = function(message = 'Processing...') {
       const loadingEl = document.getElementById('global-loading');
-      const textEl = loadingEl.querySelector('.loading-text');
-      textEl.textContent = message;
+      loadingEl.querySelector('.loading-text').textContent = message;
       loadingEl.style.display = 'flex';
     };
-    
-    window.hideLoading = function() {
-      const loadingEl = document.getElementById('global-loading');
-      loadingEl.style.display = 'none';
-    };
-    
-    // Menu tool palette interaction
-    document.addEventListener('DOMContentLoaded', function() {
-      // Wait for all functions to be defined
-      setTimeout(() => {
-        document.querySelectorAll('.menu-tool-btn').forEach(tool => {
-          tool.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Menu tool clicked:', this.id);
-            
-            // Special handling for language tool
-            if (this.id === 'language-tool') {
-              console.log('Language tool clicked');
-              if (typeof showLanguageMenu === 'function') {
-                showLanguageMenu(this);
-              } else {
-                console.error('showLanguageMenu function not found');
-              }
-              return;
-            }
-            
-            // Special handling for font tool
-            if (this.id === 'font-tool') {
-              console.log('Font tool clicked');
-              if (typeof showFontMenu === 'function') {
-                showFontMenu(this);
-              } else {
-                console.error('showFontMenu function not found');
-              }
-              return;
-            }
-            
-            // Special handling for sitemap tool
-            if (this.id === 'sitemap-tool') {
-              loadSitemap();
-              return;
-            }
-            
-            // Special handling for feedback tool
-            if (this.id === 'feedback-tool') {
-              const feedbackModal = document.getElementById('feedback-modal');
-              feedbackModal.classList.add('modal-show');
-              return;
-            }
-          });
-        });
-      }, 100);
-    });
 
-    // Auto-show loading for form submissions and page navigation
+    window.hideLoading = function() {
+      document.getElementById('global-loading').style.display = 'none';
+    };
+
+    // Show the loading indicator on form submit and slow page navigation.
+    // A form (or its submit button) can set data-loading="..." to customize the message.
     document.addEventListener('DOMContentLoaded', function() {
-      const forms = document.querySelectorAll('form');
-      forms.forEach(form => {
+      document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', function(e) {
-          // Show loading for all form submissions
-          const hasAI = form.classList.contains('ai-form') || 
-                       form.querySelector('[name="question"]') || 
-                       form.querySelector('[name="answer"]') ||
-                       form.querySelector('[name="translation"]');
-          
-          if (hasAI) {
-            showLoading('AI is thinking...');
-          } else {
-            showLoading('Loading...');
+          const custom = (e.submitter && e.submitter.dataset.loading) || form.dataset.loading;
+          if (custom) {
+            showLoading(custom);
+            return;
           }
+          const hasAI = form.classList.contains('ai-form') ||
+                        form.querySelector('[name="question"]') ||
+                        form.querySelector('[name="answer"]') ||
+                        form.querySelector('[name="translation"]');
+          showLoading(hasAI ? {{ _('loading_thinking')|tojson }} : 'Loading...');
         });
       });
-      
-      // Show loading for navigation links that might take time
+
       const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="mailto:"]):not([href^="javascript:"]):not([target="_blank"])');
       links.forEach(link => {
-        link.addEventListener('click', function(e) {
-          // Skip if it's a sort/filter link (quick operations)
-          if (this.classList.contains('sort-link') || 
-              this.classList.contains('filter-btn') || 
+        link.addEventListener('click', function() {
+          // Skip sort/filter links (quick operations)
+          if (this.classList.contains('sort-link') ||
+              this.classList.contains('filter-btn') ||
               this.href.includes('sort=') ||
               this.href.includes('level=')) {
             return;
@@ -1371,184 +778,14 @@
           showLoading('Loading...');
         });
       });
-    });
 
-    // Mobile Language menu functionality
-    let mobileLanguageMenuOpen = false;
-    
-    function showMobileLanguageMenu(toolElement) {
-      // Remove any existing language menu
-      const existingMenu = document.querySelector('.mobile-language-menu');
-      if (existingMenu) {
-        existingMenu.remove();
-        mobileLanguageMenuOpen = false;
-        return;
-      }
-      
-      const menu = document.createElement('div');
-      menu.className = 'mobile-language-menu';
-      menu.innerHTML = `
-        <div class="mobile-language-option" onclick="changeLanguage('en')">English</div>
-        <div class="mobile-language-option" onclick="changeLanguage('ja')">日本語</div>
-        <div class="mobile-language-option" onclick="changeLanguage('es')">Español</div>
-      `;
-      
-      menu.style.position = 'fixed';
-      menu.style.bottom = '100px';
-      menu.style.left = '50%';
-      menu.style.transform = 'translateX(-50%)';
-      menu.style.backgroundColor = '#C0C0C0';
-      menu.style.border = '2px outset #C0C0C0';
-      menu.style.padding = '8px';
-      menu.style.fontSize = '14px';
-      menu.style.zIndex = '11000';
-      menu.style.minWidth = '120px';
-      menu.style.textAlign = 'center';
-      
-      document.body.appendChild(menu);
-      mobileLanguageMenuOpen = true;
-      
-      // Close menu when clicking outside
-      setTimeout(() => {
-        document.addEventListener('click', function closeMobileLanguageMenu(e) {
-          if (!menu.contains(e.target) && e.target !== toolElement) {
-            menu.remove();
-            mobileLanguageMenuOpen = false;
-            document.removeEventListener('click', closeMobileLanguageMenu);
-          }
-        });
-      }, 100);
-    }
-
-    // Mobile Font menu functionality
-    let mobileFontMenuOpen = false;
-    
-    function showMobileFontMenu(toolElement) {
-      // Remove any existing font menu
-      const existingMenu = document.querySelector('.mobile-font-menu');
-      if (existingMenu) {
-        existingMenu.remove();
-        mobileFontMenuOpen = false;
-        return;
-      }
-      
-      const menu = document.createElement('div');
-      menu.className = 'mobile-font-menu';
-      menu.innerHTML = `
-        <div class="mobile-font-option" onclick="changeFont('notosans')">Noto Sans JP (Modern)</div>
-        <div class="mobile-font-option" onclick="changeFont('dotgothic')">DotGothic16 (Pixel)</div>
-        <div class="mobile-font-option" onclick="changeFont('klee')">Klee One (Textbook)</div>
-      `;
-      
-      menu.style.position = 'fixed';
-      menu.style.bottom = '100px';
-      menu.style.left = '50%';
-      menu.style.transform = 'translateX(-50%)';
-      menu.style.backgroundColor = '#C0C0C0';
-      menu.style.border = '2px outset #C0C0C0';
-      menu.style.padding = '8px';
-      menu.style.fontSize = '14px';
-      menu.style.zIndex = '11000';
-      menu.style.minWidth = '200px';
-      menu.style.textAlign = 'center';
-      
-      document.body.appendChild(menu);
-      mobileFontMenuOpen = true;
-      
-      // Close menu when clicking outside
-      setTimeout(() => {
-        document.addEventListener('click', function closeMobileFontMenu(e) {
-          if (!menu.contains(e.target) && e.target !== toolElement) {
-            menu.remove();
-            mobileFontMenuOpen = false;
-            document.removeEventListener('click', closeMobileFontMenu);
-          }
-        });
-      }, 100);
-    }
-    
-    // Prevent Akinator parent link from navigating
-    document.addEventListener('DOMContentLoaded', function() {
+      // Akinator parent item only opens its submenu
       const akinatorLink = document.querySelector('.menu-content .menu-dropdown > a[href="#"]');
       if (akinatorLink) {
-        akinatorLink.addEventListener('click', function(e) {
-          e.preventDefault();
-          return false;
-        });
+        akinatorLink.addEventListener('click', e => e.preventDefault());
       }
     });
   </script>
-
-  <style>
-    /* Fix for nested menu dropdown (Akinator submenu) */
-    .menu-content .menu-dropdown {
-      position: relative;
-    }
-    
-    .menu-content .menu-dropdown:hover .menu-content {
-      display: block !important;
-      position: absolute;
-      left: 100%;
-      top: 0;
-      margin-left: 2px;
-      z-index: 12002;
-    }
-    
-    /* Prevent Akinator parent link from navigating */
-    .menu-content .menu-dropdown > a[href="#"] {
-      cursor: pointer;
-    }
-    
-    .menu-content .menu-dropdown > a[href="#"]:hover {
-      background-color: #000000;
-      color: #FFFFFF;
-    }
-
-    /* Mobile-specific fixes */
-    @media (max-width: 768px) {
-      
-      /* Fix Preply button overflow on mobile */
-      #mobile-preply-menu {
-        font-size: 8px !important;
-        padding: 4px 2px !important;
-        text-overflow: ellipsis !important;
-        overflow: hidden !important;
-        white-space: nowrap !important;
-        min-width: 0 !important;
-        max-width: 80px !important;
-      }
-      
-      /* Ensure mobile dropdown menus copy nested content properly */
-      .mobile-dropdown-menu .menu-dropdown {
-        position: relative !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      
-      .mobile-dropdown-menu .menu-dropdown > a {
-        padding: 6px 12px !important;
-        display: block !important;
-        border-bottom: 1px solid #808080 !important;
-        background: #E8E8E8 !important;
-        font-weight: bold !important;
-      }
-      
-      .mobile-dropdown-menu .menu-dropdown .menu-content {
-        position: static !important;
-        display: block !important;
-        margin: 0 !important;
-        background: #F0F0F0 !important;
-      }
-      
-      .mobile-dropdown-menu .menu-dropdown .menu-content a {
-        padding: 4px 20px !important;
-        font-size: 11px !important;
-        background: #F8F8F8 !important;
-        border-left: 2px solid #C0C0C0 !important;
-      }
-    }
-    
-  </style>
 
 
 </body>

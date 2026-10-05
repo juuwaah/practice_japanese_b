@@ -1,0 +1,283 @@
+/* Blog post page */
+
+.blog-post-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.blog-post-nav {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.blog-post-nav a,
+.blog-post-nav a:hover {
+  font-size: 9px;
+  text-decoration: underline;
+  color: #000;
+}
+
+.blog-post-heading {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.blog-post-heading h1 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+article.blog-article {
+  border: 2px solid #000;
+  padding: 16px;
+  background: #FFFFFF;
+  line-height: 1.6;
+}
+
+.blog-post-tags-box {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px dashed #999;
+}
+
+.blog-post-tags-label {
+  font-size: 9px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.blog-post-fav {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed #999;
+  text-align: center;
+}
+
+form.blog-inline-form {
+  display: inline;
+}
+
+.blog-login-prompt {
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed #999;
+  background: #F9F9F9;
+  margin-bottom: 12px;
+}
+
+.blog-login-prompt-text {
+  font-size: 9px;
+  color: #666;
+}
+
+.blog-admin-reply {
+  margin-top: 8px;
+}
+
+input.blog-admin-reply-input {
+  width: 200px;
+  font-size: 8px;
+  padding: 2px;
+}
+
+button.blog-admin-reply-btn {
+  font-size: 8px;
+  padding: 2px 4px;
+}
+
+.blog-no-comments {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 9px;
+  border: 1px dashed #CCC;
+}
+
+.blog-post-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+a.blog-back-btn,
+a.blog-back-btn:hover {
+  background: #F0F0F0;
+  border: 1px solid #000;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #000;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+  .blog-post-nav,
+  .blog-post-heading,
+  .blog-post-tags-label,
+  .blog-login-prompt {
+    margin-bottom: 16px !important;
+  }
+}
+
+/* ---- Article body (HTML exported from Google Docs) ---- */
+/* ブログコンテンツスタイル */
+.blog-content h1 {
+  font-size: 16px;
+  margin: 20px 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #000;
+  line-height: 1.4;
+}
+
+.blog-content h2 {
+  font-size: 14px;
+  margin: 18px 0 10px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #666;
+  line-height: 1.4;
+}
+
+.blog-content h3 {
+  font-size: 12px;
+  margin: 16px 0 8px 0;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.blog-content h4 {
+  font-size: 11px;
+  margin: 14px 0 6px 0;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.blog-content p {
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.blog-content strong {
+  font-weight: bold;
+}
+
+.blog-content em {
+  font-style: italic;
+}
+
+.blog-content u {
+  text-decoration: underline;
+}
+
+.blog-content a {
+  color: #0066CC;
+  text-decoration: underline;
+}
+
+.blog-content a:hover {
+  color: #004499;
+}
+
+.blog-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+  font-size: 10px;
+}
+
+.blog-content th,
+.blog-content td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.blog-content th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.blog-content tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* 日本語フォント対応 */
+.blog-content {
+  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Meiryo', sans-serif;
+}
+
+/* 改行とスペーシング */
+.blog-content br {
+  line-height: 1.2;
+}
+
+.blog-content span {
+  word-break: break-word;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .blog-post-wrap {
+    max-width: calc(100% - 16px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+  }
+  
+  article {
+    padding: 12px !important;
+  }
+  
+  .blog-content h1 {
+    font-size: 14px !important;
+  }
+  
+  .blog-content h2 {
+    font-size: 13px !important;
+  }
+  
+  .blog-content h3 {
+    font-size: 11px !important;
+  }
+  
+  .blog-content h4 {
+    font-size: 10px !important;
+  }
+  
+  .blog-content p {
+    font-size: 9px !important;
+    line-height: 1.5 !important;
+  }
+  
+  .blog-content table {
+    font-size: 8px !important;
+  }
+  
+  .blog-content th,
+  .blog-content td {
+    padding: 4px !important;
+  }
+  
+  .blog-post-heading h1 {
+    font-size: 14px !important;
+  }
+}
+
+/* 非常に小さい画面対応 */
+@media (max-width: 480px) {
+  .blog-content h1 {
+    font-size: 13px !important;
+  }
+  
+  .blog-content h2 {
+    font-size: 12px !important;
+  }
+  
+  .blog-content p {
+    font-size: 8px !important;
+  }
+  
+  .blog-post-heading h1 {
+    font-size: 13px !important;
+  }
+}

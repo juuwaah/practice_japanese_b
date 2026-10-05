@@ -4,63 +4,57 @@
 
 {% block window_title %}{{ _('about_this_application') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+{% endblock %}
+
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
+<div class="page-heading">
   <h1>{{ _('about_this_app') }}</h1>
 </div>
 
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F8F8F8;">
-  <h2 style="margin-bottom: 6px;">{{ _('application_info') }}</h2>
-  <p style="font-size: 9px; line-height: 1.4;">
-    {{ _('app_description_full') | safe }}
-  </p>
+<div class="about-box">
+  <h2>{{ _('application_info') }}</h2>
+  <p>{{ _('app_description_full') | safe }}</p>
 </div>
 
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #F0F0F0;">
-  <h2 style="margin-bottom: 6px;">{{ _('developer') }}</h2>
-  <p style="font-size: 9px; line-height: 1.4; margin-bottom: 8px;">
+<div class="about-box about-box-gray">
+  <h2>{{ _('developer') }}</h2>
+  <p class="about-developer">
     {{ _('developer_info') | safe }}
-    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1752248656.92274&ep=" target="_blank" 
-       style="font-size: 8px; background: #000; color: #FFF; padding: 2px 6px; text-decoration: none;">
+    <a href="https://preply.com/en/?pref=MTM4ODQxODM=&id=1752248656.92274&ep=" target="_blank" class="about-preply-btn">
       {{ _('get_30_percent_discount') }}
     </a>
   </p>
-  
-  <h3 style="font-size: 10px; margin: 8px 0 4px 0; font-weight: bold;">{{ _('contact') }}</h3>
-  <p style="font-size: 9px; margin-bottom: 8px;">
-    Email: <a href="mailto:jpn.with.b@gmail.com" style="color: #0066CC; text-decoration: underline;">jpn.with.b@gmail.com</a>
+
+  <h3>{{ _('contact') }}</h3>
+  <p class="about-contact">
+    Email: <a href="mailto:jpn.with.b@gmail.com" class="about-mail">jpn.with.b@gmail.com</a>
   </p>
-  
-  <h3 style="font-size: 10px; margin: 8px 0 4px 0; font-weight: bold;">{{ _('other_apps') }}</h3>
-  <p style="font-size: 9px;">
-    <a href="https://web-production-d260e.up.railway.app/" target="_blank" 
-       style="font-size: 9px; text-decoration: underline;">
-      {{ _('n_back_test') }}
-    </a>
+
+  <h3>{{ _('other_apps') }}</h3>
+  <p class="about-app-link">
+    <a href="https://web-production-d260e.up.railway.app/" target="_blank">{{ _('n_back_test') }}</a>
   </p>
-  <p style="font-size: 9px; margin-top: 6px;">
-    <a href="https://web-production-c4c86.up.railway.app/" target="_blank" 
-       style="font-size: 9px; text-decoration: underline;">
-      {{ _('file_encoder_decoder') }}
-    </a>
+  <p class="about-app-link about-app-link-next">
+    <a href="https://web-production-c4c86.up.railway.app/" target="_blank">{{ _('file_encoder_decoder') }}</a>
   </p>
 </div>
 
-
-
-<div class="privacy-terms" style="border: 1px dotted #808080; padding: 6px; background: #F0F0F0; font-size: 8px; color: #404040;">
-  <h3 style="font-size: 8px; margin-bottom: 4px;">{{ _('privacy_terms') }}</h3>
-  <p style="font-size: 8px; line-height: 1.3; margin-bottom: 6px;">
-    This application uses Google account authentication. Administrators can view login information but do not use it for any purpose other than feedback management. 
-    This site is completely unofficial and is not authorized by JLPT testing organizations, the Japan Educational Exchanges and Services (JEES), or the Japan Foundation. 
+<div class="privacy-terms">
+  <h3>{{ _('privacy_terms') }}</h3>
+  <p>
+    This application uses Google account authentication. Administrators can view login information but do not use it for any purpose other than feedback management.
+    This site is completely unofficial and is not authorized by JLPT testing organizations, the Japan Educational Exchanges and Services (JEES), or the Japan Foundation.
     This app is a personal creation by an individual developer.
   </p>
-  
-  <h4 style="font-size: 8px; margin: 6px 0 4px 0; font-weight: bold;">APIs and Services Used:</h4>
-  <ul style="font-size: 8px; margin: 0; padding-left: 12px; line-height: 1.3;">
-    <li>OpenAI GPT-4 API - AI-powered question generation and quiz content</li>
+
+  <h4>APIs and Services Used:</h4>
+  <ul>
+    <li>Anthropic Claude API - AI-powered question generation, answer evaluation, and quiz content</li>
     <li>YouTube Data API v3 - Channel information and video metadata</li>
     <li>Google Sheets API - Quiz data storage and management</li>
+    <li>Google Drive API - Blog article content</li>
     <li>Google OAuth 2.0 - User authentication</li>
     <li>Google Fonts - Typography (Noto Sans JP, DotGothic16, Klee One)</li>
     <li>Flask web framework with various extensions</li>
@@ -68,19 +62,10 @@
 </div>
 
 <!-- YouTube著作権免責事項 -->
-<div style="border: 1px solid #000; padding: 8px; margin-bottom: 12px; background: #FFF8E1;">
-  <h3 style="font-size: 9px; margin-bottom: 6px; color: #333;">{{ _('youtube_content_disclaimer') }}</h3>
-  
-  <p style="font-size: 8px; line-height: 1.3; margin-bottom: 6px;">
-    {{ _('youtube_disclaimer_text_1') | safe }}
-  </p>
-  
-  <p style="font-size: 8px; line-height: 1.3; margin-bottom: 6px;">
-    {{ _('youtube_disclaimer_text_2') | safe }}
-  </p>
-  
-  <p style="font-size: 8px; line-height: 1.3; margin: 0;">
-    {{ _('youtube_disclaimer_text_3') | safe }}
-  </p>
+<div class="about-youtube">
+  <h3>{{ _('youtube_content_disclaimer') }}</h3>
+  <p>{{ _('youtube_disclaimer_text_1') | safe }}</p>
+  <p>{{ _('youtube_disclaimer_text_2') | safe }}</p>
+  <p class="about-youtube-last">{{ _('youtube_disclaimer_text_3') | safe }}</p>
 </div>
 {% endblock %}

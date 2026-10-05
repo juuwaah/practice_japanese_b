@@ -1,0 +1,136 @@
+/* My grammar logs page */
+
+.glog-back {
+  margin-top: 8px;
+}
+
+.glog-back a,
+.glog-back a:hover {
+  font-size: 9px;
+  text-decoration: underline;
+  color: #000;
+}
+
+.glog-panel {
+  border: 2px solid #000;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #FFFFFF;
+}
+
+.glog-table-wrap {
+  overflow-x: auto;
+}
+
+table.glog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8px;
+}
+
+.glog-table thead tr {
+  background: #E0E0E0;
+}
+
+.glog-table th,
+.glog-table td {
+  border: 1px solid #888;
+  padding: 4px;
+}
+
+.glog-table td.glog-center {
+  text-align: center;
+}
+
+.glog-level {
+  background: #E0E0E0;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.glog-score-high { color: #008000; }
+.glog-score-mid  { color: #FFA500; }
+.glog-score-low  { color: #FF0000; }
+
+button.glog-toggle,
+button.glog-toggle:hover,
+button.glog-toggle:active {
+  background: #E0E0E0;
+  border: 1px solid #888;
+  padding: 2px 6px;
+  font-size: 7px;
+  cursor: pointer;
+}
+
+/* Expandable detail row */
+.glog-detail-row {
+  display: none;
+}
+
+.glog-detail-row.is-open {
+  display: table-row;
+}
+
+.glog-table .glog-detail-row td {
+  padding: 8px;
+  background: #F8F8F8;
+}
+
+.glog-detail {
+  font-size: 9px;
+}
+
+.glog-detail-item {
+  margin-bottom: 8px;
+}
+
+.glog-detail-box {
+  border: 1px solid #CCC;
+  padding: 4px;
+  margin-top: 2px;
+  background: #FFFFFF;
+}
+
+.glog-detail-box-model {
+  background: #E8F5E8;
+}
+
+.glog-detail-box-feedback {
+  background: #FFF3CD;
+}
+
+.glog-model-answer {
+  margin-bottom: 2px;
+}
+
+/* Empty state */
+.glog-empty {
+  border: 2px solid #000;
+  padding: 20px;
+  text-align: center;
+  background: #F0F0F0;
+}
+
+.glog-empty-icon {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.glog-empty-title {
+  font-size: 10px;
+}
+
+.glog-empty-text {
+  font-size: 8px;
+  color: #666;
+  margin-top: 4px;
+}
+
+@media screen and (max-width: 768px) {
+  .glog-panel,
+  .glog-detail-item,
+  .glog-model-answer,
+  .glog-empty-icon {
+    margin-bottom: 16px !important;
+  }
+}

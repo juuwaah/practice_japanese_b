@@ -4,83 +4,58 @@
 
 {% block window_title %}{{ _('support_development') }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/donation.css') }}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 500px; margin: 0 auto; padding: 20px;">
-  <div style="text-align: center; margin-bottom: 24px;">
-    <h1 style="font-size: 14px; margin-bottom: 8px;">{{ _('support_development') }}</h1>
-    <p style="font-size: 10px; color: #606060; line-height: 1.4; margin: 0;">
-      {{ _('support_description') }}
-    </p>
+<div class="donation-page">
+  <div class="donation-header">
+    <h1>{{ _('support_development') }}</h1>
+    <p>{{ _('support_description') }}</p>
   </div>
 
-
-  <!-- Donation Options -->
-  <div style="display: grid; gap: 16px; margin-bottom: 24px;">
-    <!-- Buy Me a Coffee -->
-    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
-      <div style="display: flex; align-items: center; margin-bottom: 12px;">
-        <span style="font-size: 20px; margin-right: 8px;">☕</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('buy_me_coffee') }}</h3>
+  <div class="donation-options">
+    <div class="donation-card">
+      <div class="donation-card-head">
+        <span class="donation-icon">☕</span>
+        <h3>{{ _('buy_me_coffee') }}</h3>
       </div>
-      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
-        {{ _('buy_me_coffee_desc') }}
-      </p>
-      <a href="https://buymeacoffee.com/japanesewithb" target="_blank" 
-         style="display: inline-block; padding: 8px 16px; background: #FFDD00; color: #000; 
-                text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
-                font-weight: bold; cursor: pointer;">
+      <p>{{ _('buy_me_coffee_desc') }}</p>
+      <a href="https://buymeacoffee.com/japanesewithb" target="_blank" class="donation-btn donation-btn-coffee">
         {{ _('visit_buy_me_coffee') }}
       </a>
     </div>
 
-    <!-- PayPal -->
-    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
-      <div style="display: flex; align-items: center; margin-bottom: 12px;">
-        <span style="font-size: 20px; margin-right: 8px;">💳</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('paypal') }}</h3>
+    <div class="donation-card">
+      <div class="donation-card-head">
+        <span class="donation-icon">💳</span>
+        <h3>{{ _('paypal') }}</h3>
       </div>
-      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3;">
-        {{ _('paypal_desc') }}
-      </p>
-      <a href="https://www.paypal.com/ncp/payment/PCB595CBVLF7J" target="_blank"
-         style="display: inline-block; padding: 8px 16px; background: #0070BA; color: #FFFFFF; 
-                text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; font-weight: bold; cursor: pointer;">
+      <p>{{ _('paypal_desc') }}</p>
+      <a href="https://www.paypal.com/ncp/payment/PCB595CBVLF7J" target="_blank" class="donation-btn donation-btn-paypal">
         {{ _('donate_with_paypal') }}
       </a>
     </div>
 
-    <!-- Patreon -->
-    <div style="border: 2px outset #C0C0C0; padding: 16px; background: #F0F0F0;">
-      <div style="display: flex; align-items: center; margin-bottom: 12px;">
-        <span style="font-size: 20px; margin-right: 8px;">🎯</span>
-        <h3 style="font-size: 11px; margin: 0; font-weight: bold;">{{ _('patreon_support') }}</h3>
+    <div class="donation-card">
+      <div class="donation-card-head">
+        <span class="donation-icon">🎯</span>
+        <h3>{{ _('patreon_support') }}</h3>
       </div>
-      <p style="font-size: 9px; margin: 0 0 12px 0; color: #606060; line-height: 1.3; white-space: pre-line;">
-        {{ _('patreon_desc') }}
-      </p>
-      <a href="https://www.patreon.com/japanesewithb" target="_blank" 
-         style="display: inline-block; padding: 8px 16px; background: #F96854; color: #FFFFFF; 
-                text-decoration: none; border: 2px outset #C0C0C0; font-size: 10px; 
-                font-weight: bold; cursor: pointer;">
+      <p class="donation-desc-multiline">{{ _('patreon_desc') }}</p>
+      <a href="https://www.patreon.com/japanesewithb" target="_blank" class="donation-btn donation-btn-patreon">
         {{ _('support_on_patreon') }}
       </a>
     </div>
   </div>
 
-
-  <!-- Thank You Message -->
-  <div style="text-align: center; padding: 12px; background: #F0F8FF; border: 1px solid #4285F4;">
-    <p style="font-size: 8px; margin: 0; color: #2C5CC5;">
-      💙 {{ _('thank_you_message') }}
-    </p>
+  <div class="donation-thanks">
+    <p>💙 {{ _('thank_you_message') }}</p>
   </div>
 
-  <!-- Back to App -->
-  <div style="text-align: center; margin-top: 20px;">
-    <a href="{{ url_for('home') }}" 
-       style="font-size: 9px; text-decoration: underline; color: #000;">
-      {{ _('back_to_app') }}
-    </a>
+  <div class="donation-back">
+    <a href="{{ url_for('home') }}">{{ _('back_to_app') }}</a>
   </div>
 </div>
 {% endblock %}

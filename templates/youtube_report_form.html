@@ -1,0 +1,72 @@
+{# Video report button + form. Expects `report_quiz` (quiz dict) and `ja` (bool). #}
+<div class="yt-report">
+    <button type="button" onclick="showReportForm()">📢 {{ '動画に関する申立て' if ja else 'Report Video Issue' }}</button>
+</div>
+
+<div id="report-form-container" class="yt-report-form">
+    <h6>{{ '動画に関する申立て' if ja else 'Report Video Issue' }}</h6>
+    <p>
+        {% if ja %}著作権や不適切なコンテンツに関するご連絡がございましたら、下記フォームよりお知らせください。
+        {% else %}If you have concerns about copyright infringement or inappropriate content, please let us know using the form below.{% endif %}
+    </p>
+
+    <form id="report-form" method="POST" action="/youtube_report">
+        <input type="hidden" name="video_id" value="{{ report_quiz.video_id }}">
+        <input type="hidden" name="quiz_title" value="{{ report_quiz.title }}">
+        <input type="hidden" name="quiz_id" value="{{ report_quiz.id }}">
+
+        <div class="yt-report-field">
+            <label for="report-type">{{ '申立て内容' if ja else 'Issue Type' }}:</label>
+            <select name="report_type" id="report-type" required>
+                <option value="">{{ '選択してください' if ja else 'Please select' }}</option>
+                <option value="copyright">{{ '著作権侵害' if ja else 'Copyright Infringement' }}</option>
+                <option value="inappropriate">{{ '不適切なコンテンツ' if ja else 'Inappropriate Content' }}</option>
+                <option value="privacy">{{ 'プライバシーの問題' if ja else 'Privacy Concerns' }}</option>
+                <option value="other">{{ 'その他' if ja else 'Other' }}</option>
+            </select>
+        </div>
+
+        <div class="yt-report-field">
+            <label for="report-message">{{ '詳細' if ja else 'Details' }}:</label>
+            <textarea name="message" id="report-message" rows="4" required
+                      placeholder="{{ '申立て内容の詳細をお書きください...' if ja else 'Please provide details about the issue...' }}"></textarea>
+        </div>
+
+        <div class="yt-report-buttons">
+            <button type="submit">{{ '送信' if ja else 'Submit' }}</button>
+            <button type="button" onclick="hideReportForm()">{{ 'キャンセル' if ja else 'Cancel' }}</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function showReportForm() {
+    document.getElementById('report-form-container').style.display = 'block';
+}
+
+function hideReportForm() {
+    document.getElementById('report-form-container').style.display = 'none';
+    document.getElementById('report-form').reset();
+}
+
+document.getElementById('report-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation(); // no page navigation, so skip the global loading overlay
+    const errorMessage = {{ ('送信中にエラーが発生しました。もう一度お試しください。' if ja else 'An error occurred while submitting. Please try again.')|tojson }};
+
+    fetch('/youtube_report', { method: 'POST', body: new FormData(this) })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert({{ ('申立てを受け付けました。ご連絡ありがとうございます。' if ja else 'Thank you for your report. We have received your submission.')|tojson }});
+                hideReportForm();
+            } else {
+                alert(errorMessage);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(errorMessage);
+        });
+});
+</script>

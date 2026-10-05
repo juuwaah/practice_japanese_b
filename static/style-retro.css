@@ -126,24 +126,13 @@ h1, h2, h3 {
 }
 
 /* 日本語文字に対する特別なスタイリング - Special styling for Japanese characters */
-*:lang(ja), .japanese-text, [lang="ja"] {
+*:lang(ja), [lang="ja"] {
   font-size: calc(var(--current-font-size) * 1.15) !important;
 }
 
 /* 英語文字に対する特別なスタイリング - Special styling for English characters */
-*:lang(en), .english-text, [lang="en"] {
+*:lang(en), [lang="en"] {
   font-size: var(--english-font-size) !important;
-}
-
-/* 混在テキスト用の調整 - Mixed text adjustment */
-.mixed-text .japanese-char {
-  font-size: 1.15em;
-  vertical-align: baseline;
-}
-
-.mixed-text .english-char {
-  font-size: 1em;
-  vertical-align: baseline;
 }
 
 /* フォント切り替え - Font Switching */
@@ -192,7 +181,7 @@ body.font-notosans *:not(.tool-icon) {
 }
 
 /* 英語の単語や文字を含む要素の調整 - Adjustment for elements containing English words */
-.quiz-option-btn, button, input[type="submit"], .card-main-text {
+.quiz-option-btn, button, input[type="submit"] {
   font-size: var(--english-font-size);
 }
 
@@ -225,10 +214,11 @@ body {
   -moz-osx-font-smoothing: unset;
   font-variant-ligatures: none;
   font-feature-settings: 'liga' 0;
-  /* Transform removed to allow position: fixed to work properly */
-  /* transform: scale(var(--current-scale)); */
-  /* transform-origin: top left; */
   letter-spacing: var(--current-letter-spacing);
+  /* Fixed footer layout */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   /* デフォルトでブラウザズーム175%相当（本文実質16px＝Web標準） */
   zoom: 1.75;
 }
@@ -249,7 +239,7 @@ body {
 .menu-bar {
   background-color: #FFFFFF;
   border-bottom: 1px solid #000000;
-  height: 40px;
+  height: auto;
   margin: 0; /* Full width background */
   display: flex;
   align-items: center;
@@ -257,6 +247,8 @@ body {
   padding: 0 20px; /* Minimal padding on sides */
   font-size: 9px;
   font-weight: bold;
+  flex-wrap: wrap;
+  min-height: 20px;
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -386,6 +378,7 @@ a.menu-item:hover {
   top: 0 !important;
   margin-left: 2px !important;
   display: none !important;
+  z-index: 12002;
 }
 
 .menu-content .menu-dropdown:hover .menu-content {
@@ -396,16 +389,32 @@ a.menu-item:hover {
   border-bottom: none;
 }
 
-
-/* External Links Section Below Tool Palette */
-.external-links-section {
-  position: fixed;
-  left: 8px;
-  top: 150px; /* Position directly below left tool palette */
-  width: 48px;
-  z-index: 10000;
+/* Logo, tool buttons and mascot in the menu bar */
+.menu-logo,
+.menu-mascot {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+}
+
+.menu-logo {
+  margin-right: 8px;
+}
+
+.menu-mascot {
+  margin-left: 8px;
+}
+
+.menu-logo img,
+.menu-mascot img {
+  height: 32px;
+  width: auto;
+}
+
+.menu-tools {
+  margin-left: auto;
+  display: flex;
+  height: 100%;
+  align-items: center;
   gap: 4px;
 }
 
@@ -417,119 +426,14 @@ a.menu-item:hover {
     padding: 8px;
   }
 }
-  
-  /* Ensure external links don't affect main content positioning */
-  .external-links-section {
-    z-index: 9999; /* Keep above content but don't affect layout flow */
-  }
-}
-
-.external-link-btn {
-  width: 48px;
-  height: 48px;
-  border: 2px outset #C0C0C0;
-  box-shadow: 1px 1px 0px #808080;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  font-size: 7px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 1;
-  padding: 2px;
-  transition: all 0.1s ease;
-}
-
-.external-link-btn:hover {
-  border: 2px inset #C0C0C0;
-  transform: translate(1px, 1px);
-}
-
-.external-link-btn:active {
-  border: 2px inset #C0C0C0;
-  transform: translate(2px, 2px);
-  box-shadow: none;
-}
-
-/* Preply Button - Pink */
-.preply-btn {
-  background-color: #FF7BAC;
-  color: #FFFFFF;
-}
-
-.preply-btn:hover {
-  background-color: #FF69A3;
-  color: #FFFFFF;
-}
-
-/* Patreon Button - Gray */
-.patreon-btn {
-  background-color: #F0F0F0;
-  color: #000000;
-}
-
-.patreon-btn:hover {
-  background-color: #E0E0E0;
-  color: #000000;
-}
-
-.external-link-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.btn-text {
-  font-size: 8px;
-  font-weight: bold;
-}
-
-.btn-description {
-  font-size: 6px;
-  font-weight: normal;
-  line-height: 1.2;
-  margin-top: 2px;
-  text-align: center;
-  max-width: 60px;
-  word-wrap: break-word;
-  color: #404040;
-}
-
-.tool-icon {
-  width: 16px;
-  height: 16px;
-  border: 1px solid #808080;
-  margin: 2px;
-  background-color: #FFFFFF;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8px;
-  font-weight: bold;
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--current-font-family);
-}
-
-.tool-icon:hover {
-  border: 1px solid #000000;
-  background-color: #C0C0C0;
-}
-
-.tool-icon.active {
-  background-color: #0080FF;
-  color: #FFFFFF;
-  border: 1px solid #0066CC;
-}
 
 /* Main content area */
 .main-content-wrapper {
-  margin-left: 68px; /* Space for tool palette */
+  flex: 1;
+  margin-left: 56px;
+  margin-top: 40px; /* Space below the fixed menu bar */
   padding: 8px;
-  margin-top: 50px; /* Increased space between menu bar and main content (20px * 2.5) */
+  padding-bottom: 30px; /* Space for footer */
 }
 
 .main-content {
@@ -724,16 +628,6 @@ li {
   padding: 8px;
 }
 
-.card-main-text {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.card-sub-text {
-  font-size: 12px;
-  color: #404040;
-}
 
 /* Status bar at bottom */
 .status-bar {
@@ -752,7 +646,7 @@ li {
 }
 
 /* Disable text selection for UI elements */
-.menu-bar, .tool-palette, .title-bar, .status-bar {
+.menu-bar, .title-bar, .status-bar {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -788,26 +682,6 @@ li {
   z-index: 999;
 }
 
-/* Hide elements that don't fit the retro aesthetic */
-.modern-only {
-  display: none;
-}
-
-/* Mobile toolbars - TEMPORARILY ALLOW VISIBILITY for testing */
-/*.mobile-bottom-toolbar,
-.mobile-top-menu {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  width: 0 !important;
-  height: 0 !important;
-  z-index: -1 !important;
-  overflow: hidden !important;
-}*/
-
 /* Desktop screens - ensure mobile elements stay hidden */
 @media (min-width: 769px) {
   .mobile-bottom-toolbar,
@@ -825,21 +699,6 @@ li {
     overflow: hidden !important;
   }
 }
-
-/* Force hide mobile toolbars by default - TEMPORARILY DISABLED for testing */
-/*.mobile-bottom-toolbar,
-.mobile-top-menu {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
-  width: 0 !important;
-  height: 0 !important;
-  z-index: -1 !important;
-  overflow: hidden !important;
-}*/
 
 /* Show mobile toolbars only on mobile screens */
 @media (max-width: 768px) {
@@ -951,18 +810,6 @@ input[type="radio"]:checked::after {
 input[type="checkbox"]:focus, input[type="radio"]:focus {
   outline: 1px dotted #000;
   outline-offset: 1px;
-}
-
-/* Fixed Footer Layout for Retro Design */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main-content-wrapper {
-  flex: 1;
-  padding-bottom: 30px; /* Space for footer */
 }
 
 /* Feedback Modal - 1980s Style */
@@ -1102,64 +949,6 @@ body {
 
 .feedback-btn-submit:hover {
   background-color: #006666;
-}
-
-/* Responsive adjustments for small screens */
-@media (max-width: 640px) {
-  .tool-palette {
-    position: fixed;
-    left: 4px;
-    top: 24px;
-    width: 44px;
-    max-height: calc(100vh - 50px);
-    z-index: 9999;
-    transform-origin: top left;
-  }
-  
-  .external-links-section {
-    left: 4px;
-    width: 44px;
-    top: 130px;
-  }
-  
-  .external-link-btn {
-    width: 44px;
-    height: 44px;
-  }
-}
-  
-  .main-content-wrapper {
-    margin-left: 56px;
-    margin-top: 40px; /* Increased space for multi-line menu on mobile */
-  }
-  
-  .menu-bar {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 20px;
-  }
-}
-
-/* Language Menu - High Priority */
-.language-menu {
-  z-index: 11000 !important;
-  position: fixed !important;
-}
-
-.language-option {
-  padding: 2px 6px;
-  cursor: pointer;
-  font-size: 9px;
-  border-bottom: 1px dotted #808080;
-}
-
-.language-option:hover {
-  background-color: #000000;
-  color: #FFFFFF;
-}
-
-.language-option:last-child {
-  border-bottom: none;
 }
 
 /* Sitemap Modal - 1980s Style */
@@ -1376,7 +1165,7 @@ body {
   height: 100%;
   background-color: rgba(128, 128, 128, 0.3);
   z-index: 15000;
-  display: flex;
+  display: none; /* showLoading() sets display: flex */
   align-items: center;
   justify-content: center;
 }
@@ -1486,20 +1275,6 @@ body {
     z-index: auto !important;
   }
   
-  /* External links section - below menu */
-  .external-links-section {
-    position: static !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    padding: 2px !important;
-    background: #F8F8F8 !important;
-    border: 1px solid #C0C0C0 !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-  }
-  
   /* Main content area - override margins */
   .main-content {
     flex: 1 !important;
@@ -1566,27 +1341,6 @@ body {
     white-space: normal !important;
   }
   
-  /* External link buttons */
-  .external-link-btn {
-    width: 100% !important;
-    padding: 3px 2px !important;
-    font-size: 7px !important;
-    display: block !important;
-    word-wrap: break-word !important;
-    white-space: normal !important;
-    line-height: 1.0 !important;
-  }
-  
-  .btn-description {
-    font-size: 6px !important;
-    margin-top: 1px !important;
-    line-height: 1.0 !important;
-  }
-  
-  /* Tool palette - hide on mobile */
-  .tool-palette {
-    display: none !important;
-  }
 
   /* Mobile top menu */
   .mobile-top-menu {
@@ -1690,46 +1444,6 @@ body {
     background: #F0F0F0 !important;
   }
 
-  /* Text buttons for Preply/Patreon - same size as tool icons */
-  .mobile-text-btn {
-    font-size: 9px;
-    font-weight: bold;
-    flex: 1;
-    min-width: 0;
-    height: 48px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    line-height: 1.0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #E0E0E0;
-    border: 2px outset #C0C0C0;
-    text-decoration: none;
-    color: #000;
-    cursor: pointer;
-    touch-action: manipulation;
-    box-sizing: border-box;
-    padding: 2px 4px;
-    text-align: center;
-  }
-
-  /* Link button hover and active states */
-  .mobile-text-btn:hover {
-    background: #F0F0F0 !important;
-    text-decoration: none !important;
-    color: #000 !important;
-  }
-
-  .mobile-text-btn:active {
-    border: 2px inset #C0C0C0 !important;
-    background: #D0D0D0 !important;
-    text-decoration: none !important;
-    color: #000 !important;
-  }
-
   /* Adjust main content to avoid toolbar overlap */
   .content-wrapper {
     margin-top: 60px !important; /* Space for top menu */
@@ -1740,8 +1454,7 @@ body {
   }
 
   /* Mobile menu styles */
-  .mobile-language-menu,
-  .mobile-font-menu,
+  .mobile-popup-menu,
   .mobile-dropdown-menu {
     border-radius: 0 !important;
     box-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
@@ -1765,27 +1478,19 @@ body {
     border-bottom: none !important;
   }
 
-  .mobile-language-option,
-  .mobile-font-option {
+  .mobile-popup-option {
     padding: 8px 12px !important;
     cursor: pointer !important;
     border-bottom: 1px solid #808080 !important;
     transition: background-color 0.1s !important;
   }
 
-  .mobile-language-option:hover,
-  .mobile-font-option:hover {
+  .mobile-popup-option:hover {
     background-color: #D0D0D0 !important;
   }
 
-  .mobile-language-option:last-child,
-  .mobile-font-option:last-child {
+  .mobile-popup-option:last-child {
     border-bottom: none !important;
-  }
-
-  /* Hide desktop external links section on mobile */
-  .external-links-section {
-    display: none !important;
   }
 
   /* Mobile toolbar bottom positioning - force visible */
@@ -1877,7 +1582,13 @@ body {
    SIDEBAR LAYOUT - CLEAN AND SIMPLE
    ====================================== */
 
-/* Desktop sidebar layout */
+/* Full-width layout (pages that set hide_sidebar) */
+.full-width-layout {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Two-column layout: content 2/3 + right sidebar 1/3 */
 .sidebar-layout {
   display: flex;
   gap: 10px;
@@ -1889,14 +1600,16 @@ body {
 
 .main-content-column {
   flex: 0 0 66.67%;
-  box-sizing: border-box;
+  width: 66.67%;
+  min-width: 0;
+  max-width: 66.67% !important; /* keep 2/3 even under the mobile max-width reset */
   margin-right: 8px;
 }
 
 .right-sidebar {
   flex: 0 0 33.33%;
+  width: 33.33%;
   min-width: 200px;
-  box-sizing: border-box;
   font-size: 0.75em;
   overflow-x: hidden;
   position: relative;
@@ -1907,69 +1620,128 @@ body {
   transform-origin: top left;
 }
 
-/* Sidebar content styling */
-.right-sidebar .sidebar-section {
-  padding: 8px;
-  margin-bottom: 15px;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+/* Sidebar boxes */
+.sidebar-section {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: #F0F0F0;
+  border: 2px solid #808080;
+  box-shadow: 2px 2px 0px #404040;
 }
 
-.right-sidebar .sidebar-section h3 {
-  font-size: 12px;
-  margin-bottom: 8px;
+.sidebar-section h3 {
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #808080;
+  color: #000;
 }
 
-.right-sidebar .sidebar-section div,
-.right-sidebar .sidebar-section p,
-.right-sidebar .sidebar-section a {
+.sidebar-section-light {
+  background: #F8F8F8;
+  border-color: #C0C0C0;
+  box-shadow: 2px 2px 0px #808080;
+}
+
+.sidebar-section-light h3 {
+  border-bottom-color: #C0C0C0;
+}
+
+.sidebar-section div,
+.sidebar-section a {
   font-size: 10px;
   line-height: 1.2;
 }
 
-/* Mobile sidebar layout */
-@media (max-width: 768px) {
-  .sidebar-layout {
-    gap: 6px;
-    padding-right: 4px;
+.sidebar-section .sidebar-links {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.sidebar-links > div:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.sidebar-links a {
+  color: #0066CC;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sidebar-section .sidebar-posts {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.sidebar-post {
+  margin-bottom: 6px;
+}
+
+.sidebar-post a {
+  color: #000;
+  text-decoration: underline;
+  font-weight: normal;
+}
+
+.sidebar-section .sidebar-empty {
+  font-size: 10px;
+  color: #666;
+}
+
+.sidebar-more {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.sidebar-more-btn {
+  display: inline-block;
+  background: #E0E0E0;
+  color: black;
+  padding: 4px 8px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid #808080;
+  box-shadow: 2px 2px 0px #404040;
+}
+
+.sidebar-post a:hover,
+.sidebar-more-btn:hover {
+  color: #FFFFFF;
+}
+
+@media screen and (max-width: 768px) {
+  .full-width-layout,
+  .sidebar-section,
+  .sidebar-links > div:not(:last-child),
+  .sidebar-post {
+    margin-bottom: 16px;
   }
-  
-  .main-content-column {
-    flex: 0 0 62%;
-    margin-right: 4px;
-  }
-  
-  .right-sidebar {
-    flex: 0 0 38%;
-    min-width: 150px;
-    transform: scale(0.85);
-    left: -10px;
-    padding-left: 8px;
-  }
-  
-  .right-sidebar .sidebar-section {
-    padding: 6px;
-    margin-bottom: 10px;
-  }
-  
-  .right-sidebar .sidebar-section h3 {
-    font-size: 10px;
-    margin-bottom: 6px;
-  }
-  
-  .right-sidebar .sidebar-section div,
-  .right-sidebar .sidebar-section p,
-  .right-sidebar .sidebar-section a {
+
+  .sidebar-section div,
+  .sidebar-section a {
     font-size: 8px;
     line-height: 1.1;
   }
+
+  .sidebar-section .sidebar-post a,
+  .sidebar-section .sidebar-more-btn {
+    font-size: 10px;
+  }
 }
 
-/* Clean modal system - show/hide with simple class toggle */
-.feedback-modal.modal-show,
-.sitemap-modal.modal-show, 
-.settings-modal.modal-show,
-.donation-modal.modal-show {
-  display: flex;
+/* Contact line under the main content (mobile uses .mobile-contact-section) */
+.desktop-contact-section {
+  text-align: center;
+  margin-top: 24px;
+  padding: 8px;
+  border-top: 1px solid #C0C0C0;
+  font-size: 8px;
+  color: #666;
+}
+
+.desktop-contact-section a {
+  color: #0066CC;
+  text-decoration: underline;
 }
 
 /* Blog link button - レトロデザイン */
@@ -2062,20 +1834,6 @@ body {
   border-left: 2px solid #808080;
   border-bottom: 1px solid #000;
   border-right: 1px solid #000;
-}
-
-/* Blog Tag Filter Section */
-.blog-tag-filter {
-  margin: 8px 0;
-  padding: 8px;
-  border: 1px solid #808080;
-  background: #F0F0F0;
-}
-
-.blog-tag-filter h4 {
-  margin: 0 0 4px 0;
-  font-size: 10px;
-  font-weight: bold;
 }
 
 /* Favorite Heart Button - レトロデザイン */
@@ -2325,121 +2083,9 @@ body {
   }
   
   .left-sidebar button,
-  .settings-btn,
-  .language-btn {
+  .settings-btn {
     display: none !important;
     visibility: hidden !important;
-  }
-  
-  /* Show tool palette on mobile but position it at bottom */
-  .tool-palette {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100vw !important;
-    height: 60px !important;
-    background-color: #C0C0C0 !important;
-    border-top: 2px solid #808080 !important;
-    display: flex !important;
-    justify-content: stretch !important;
-    align-items: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    z-index: 9999 !important;
-    gap: 0 !important;
-  }
-  
-  /* Tool icons on mobile - equal width tiles */
-  .tool-palette .tool-icon {
-    flex: 1 !important;
-    width: auto !important;
-    height: 60px !important;
-    border: none !important;
-    border-right: 1px solid #808080 !important;
-    margin: 0 !important;
-    background-color: #E0E0E0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-  }
-  
-  .tool-palette .tool-icon:last-child {
-    border-right: none !important;
-  }
-  
-  .tool-palette .tool-icon:hover {
-    background-color: #F0F0F0 !important;
-  }
-  
-  /* Hide other left elements */
-  .sidebar,
-  .left-panel {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  
-  /* Hide external links section - we'll use tool palette instead */
-  .external-links-section {
-    display: none !important;
-    visibility: hidden !important;
-  }
-  
-  /* External link containers - equal width tiles */
-  .external-link-container {
-    flex: 1 !important;
-    height: 60px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border-right: 1px solid #808080 !important;
-    box-sizing: border-box !important;
-  }
-  
-  .external-link-container:last-child {
-    border-right: none !important;
-  }
-  
-  /* External link buttons - full tile coverage */
-  .external-link-btn {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    text-decoration: none !important;
-    color: #000 !important;
-    background: #E0E0E0 !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 4px !important;
-    box-sizing: border-box !important;
-    font-family: inherit !important;
-  }
-  
-  .external-link-btn:hover {
-    background: #F0F0F0 !important;
-  }
-  
-  /* Button text styling */
-  .btn-text {
-    font-size: 12px !important;
-    font-weight: bold !important;
-    margin: 0 0 2px 0 !important;
-    color: #000 !important;
-  }
-  
-  .btn-description {
-    font-size: 8px !important;
-    text-align: center !important;
-    line-height: 1.1 !important;
-    color: #666 !important;
-    margin: 0 !important;
   }
   
   /* Main content adjustments - full width on mobile, ignore containers */
@@ -2474,7 +2120,7 @@ body {
   }
   
   /* Override any container restrictions */
-  .window, .content-area, .container {
+  .window, .container {
     width: 100vw !important;
     max-width: none !important;
     margin: 0 !important;
@@ -2504,14 +2150,6 @@ body {
     cursor: pointer !important;
   }
   
-  /* Voice input buttons */
-  .voice-input-btn {
-    font-size: 16px !important;
-    padding: 8px 12px !important;
-    min-width: 80px !important;
-    min-height: 44px !important;
-  }
-  
   /* Quiz option buttons */
   .quiz-option-btn {
     font-size: 14px !important;
@@ -2536,13 +2174,8 @@ body {
     margin-bottom: 12px !important;
   }
   
-  /* Content spacing */
-  div[style*="margin-bottom"] {
-    margin-bottom: 16px !important;
-  }
-  
-  /* External link buttons (Preply/Patreon) */
-  a[href*="preply"], a[href*="patreon"], .external-link-btn {
+  /* External links (Preply / Patreon on the Support page) */
+  a[href*="preply"], a[href*="patreon"] {
     font-size: 14px !important;
     padding: 12px 16px !important;
     min-height: 44px !important;
@@ -2563,7 +2196,6 @@ body {
   /* Override ALL existing margin-left rules on mobile */
   .main-content-wrapper,
   .main-content,
-  .content-area,
   .window,
   body,
   html {
@@ -2600,21 +2232,12 @@ body {
     box-sizing: border-box !important;
   }
   
-  /* Voice input containers */
-  .voice-input-container {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
-  }
-  
-  /* Buttons stack vertically when space is limited - exclude sidebar-layout */
-  div[style*="display: flex"]:not(.sidebar-layout) {
+  /* Mobile toolbars may wrap on very narrow screens */
+  .mobile-top-menu,
+  .mobile-bottom-toolbar {
     flex-wrap: wrap !important;
-    gap: 8px !important;
   }
-  
-  /* Protect sidebar-layout from mobile interference - mobile section only for exclusions */
-  
+
   /* Full width buttons on small screens */
   button, input[type="submit"], .quiz-option-btn {
     width: 100% !important;
@@ -2622,5 +2245,556 @@ body {
   }
 }
 
+/* ======================================
+   SMALL COMPONENTS (moved out of inline styles in base.html)
+   ====================================== */
 
+.status-bar-user {
+  margin-left: auto;
+}
 
+.feedback-privacy-notice {
+  margin-bottom: 8px;
+  padding: 6px;
+  background: #f0f8ff;
+  border: 1px solid #cce7f0;
+  font-size: 7px;
+  color: #2c5282;
+  line-height: 1.2;
+}
+
+@media screen and (max-width: 768px) {
+  .feedback-privacy-notice {
+    margin-bottom: 16px;
+  }
+}
+
+.sitemap-loading {
+  text-align: center;
+  padding: 20px;
+  font-size: 10px;
+}
+
+.sitemap-data {
+  display: none;
+}
+
+.sitemap-error {
+  text-align: center;
+  color: #FF0000;
+  font-size: 10px;
+}
+
+.settings-inner {
+  padding: 12px;
+}
+
+.settings-group h3 {
+  font-size: 11px;
+  margin: 0 0 6px 0;
+  font-weight: bold;
+}
+
+.settings-group + .settings-group {
+  margin-top: 16px;
+}
+
+/* Mobile top-menu dropdown (copies a desktop menu's links) */
+.mobile-dropdown-menu {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 8px;
+  font-size: 12px;
+  z-index: 11000;
+  min-width: 150px;
+  max-width: 300px;
+  text-align: left;
+}
+
+/* Mobile language / font popup above the bottom toolbar */
+.mobile-popup-menu {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 8px;
+  font-size: 14px;
+  z-index: 11000;
+  min-width: 120px;
+  text-align: center;
+}
+
+.mobile-font-menu {
+  min-width: 200px;
+}
+
+/* Centered page heading wrapper (around the page h1) */
+.page-heading {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.page-heading-compact {
+  margin-bottom: 12px;
+}
+
+/* Green "about this feature" description box shown at the top of study pages */
+.edu-note {
+  padding: 8px;
+  border: 1px solid #000;
+  background: #F0F8F0;
+  font-size: 8px;
+  line-height: 1.4;
+  color: #333;
+  text-align: left;
+}
+
+/* "Quick keys" hint box at the bottom of quiz pages */
+.quick-keys {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.quick-keys-box {
+  border: 1px dotted #808080;
+  padding: 4px;
+  background: #F0F0F0;
+  font-size: 8px;
+}
+
+.quick-keys-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+@media screen and (max-width: 768px) {
+  .page-heading,
+  .quick-keys-title {
+    margin-bottom: 16px !important;
+  }
+}
+
+/* Pagination (grammar logs, admin lists) */
+.pager {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.pager-box {
+  border: 1px solid #000;
+  padding: 4px;
+  background: #F0F0F0;
+  display: inline-block;
+}
+
+.pager-link,
+a.pager-link:hover {
+  padding: 2px 6px;
+  margin: 0 2px;
+  background: #FFFFFF;
+  border: 1px solid #000;
+  text-decoration: none;
+  color: #000;
+  font-size: 8px;
+}
+
+.pager-link.pager-current {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.pager-gap {
+  padding: 2px 6px;
+  margin: 0 2px;
+  font-size: 8px;
+}
+
+/* "AI can make mistakes" note on AI-judged pages */
+.ai-disclaimer {
+  margin: 8px 0 0;
+  padding: 4px 6px;
+  font-size: 8px;
+  line-height: 1.4;
+  color: #555;
+  text-align: center;
+}
+
+/* ======================================
+   YOUTUBE LISTENING QUIZ
+   ====================================== */
+
+/* 16:9 responsive player (Bootstrap is not loaded, so embed-responsive did nothing) */
+.yt-player {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+}
+
+.yt-player iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.yt-player-small {
+  max-width: 300px;
+  margin: 0;
+}
+
+.yt-quiz-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.yt-quiz-header {
+  margin-bottom: 12px;
+}
+
+.yt-quiz-header h1 {
+  margin-bottom: 4px;
+}
+
+.yt-section {
+  margin-bottom: 16px;
+}
+
+.yt-playback-range {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* Video report button + hidden form */
+.yt-report {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.yt-report-form {
+  display: none;
+  margin-top: 12px;
+  padding: 12px;
+  background: #F8F8F8;
+  border: 1px solid #808080;
+}
+
+.yt-report-form p {
+  font-size: 12px;
+  color: #404040;
+}
+
+.yt-report-field {
+  margin-bottom: 8px;
+}
+
+.yt-report-field select,
+.yt-report-field textarea {
+  width: 100%;
+}
+
+.yt-report-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Questions and choices */
+.yt-question {
+  margin-bottom: 16px;
+  padding: 8px;
+  border: 1px solid #000;
+  background: #FFFFFF;
+}
+
+.yt-question-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-bottom: 4px;
+}
+
+.yt-question-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.yt-question-video {
+  margin-bottom: 8px;
+}
+
+.yt-choice {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.yt-choice input[type="radio"] {
+  margin-top: 0.3rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.yt-choice label {
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Results */
+.yt-score {
+  text-align: center;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #808080;
+}
+
+.yt-score-perfect { background: #E0FFE0; }
+.yt-score-good    { background: #FFF8D0; }
+.yt-score-low     { background: #FFE0E0; }
+
+.yt-score-emoji {
+  font-size: 32px;
+  margin-bottom: 4px;
+}
+
+.yt-score h3 {
+  font-size: 1.5rem;
+}
+
+.yt-result {
+  margin-bottom: 16px;
+  border: 2px solid #000;
+  background: #FFFFFF;
+}
+
+.yt-result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #000;
+}
+
+.yt-result-header h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.yt-result-header.is-correct   { background: #E0FFE0; }
+.yt-result-header.is-incorrect { background: #FFE0E0; }
+
+.yt-result-body {
+  padding: 12px;
+}
+
+.yt-result-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  line-height: 1.5;
+  border: 2px solid #e9ecef;
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.yt-result-choice.is-correct {
+  border-color: #28a745;
+  background: #d4edda;
+  color: #155724;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.yt-result-choice.is-incorrect {
+  border-color: #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+  font-weight: 600;
+}
+
+.yt-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  border: 1px solid #000;
+  background: #FFFFFF;
+  white-space: nowrap;
+}
+
+.yt-badge-correct {
+  background: #28a745;
+  color: #FFFFFF;
+}
+
+.yt-badge-incorrect {
+  background: #dc3545;
+  color: #FFFFFF;
+}
+
+.yt-explanation {
+  margin-top: 12px;
+  padding: 12px;
+  background: #F0F0F0;
+  border-left: 4px solid #000;
+}
+
+.yt-explanation h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.yt-explanation p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.yt-other-questions {
+  margin-top: 12px;
+}
+
+.yt-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.yt-action-btn {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 1rem;
+  color: #000;
+  text-decoration: none;
+  background: #F0F0F0;
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0px #808080;
+}
+
+.yt-action-btn.is-current {
+  background: #000;
+  color: #FFF;
+}
+
+.yt-channel {
+  text-align: center;
+  padding: 12px;
+  border: 1px solid #808080;
+}
+
+.yt-channel p,
+.yt-channel h6 {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+
+/* 80年代ゲーム風レトロアイコン枠線 - 80s game style channel icon */
+.retro-channel-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  border: 2px solid #00ff41;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #808080,
+    2px 2px 0 #404040,
+    3px 3px 0 #202020;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+  padding: 1px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.retro-channel-icon-round {
+  border-radius: 50%;
+}
+
+.retro-channel-icon:hover {
+  border-color: #ff0080;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #808080,
+    2px 2px 0 #800040,
+    3px 3px 0 #400020,
+    0 0 8px #ff0080;
+  animation: retro-glow 0.5s ease-in-out;
+}
+
+@keyframes retro-glow {
+  0% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #404040, 3px 3px 0 #202020; }
+  50% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 12px #ff0080; }
+  100% { box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080, 2px 2px 0 #800040, 3px 3px 0 #400020, 0 0 8px #ff0080; }
+}
+
+@media (max-width: 768px) {
+  .yt-player {
+    max-width: 100% !important;
+  }
+
+  .yt-player-small {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+/* ======================================
+   MOBILE MENU FIXES (keep last: overrides the mobile sections above)
+   ====================================== */
+@media (max-width: 768px) {
+  /* Fix Preply button overflow on mobile */
+  #mobile-preply-menu {
+    font-size: 8px !important;
+    padding: 4px 2px !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    max-width: 80px !important;
+  }
+
+  /* Nested Akinator submenu inside the copied mobile dropdown */
+  .mobile-dropdown-menu .menu-dropdown {
+    position: relative !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .mobile-dropdown-menu .menu-dropdown > a {
+    padding: 6px 12px !important;
+    display: block !important;
+    border-bottom: 1px solid #808080 !important;
+    background: #E8E8E8 !important;
+    font-weight: bold !important;
+  }
+
+  .mobile-dropdown-menu .menu-dropdown .menu-content {
+    position: static !important;
+    display: block !important;
+    margin: 0 !important;
+    background: #F0F0F0 !important;
+  }
+
+  .mobile-dropdown-menu .menu-dropdown .menu-content a {
+    padding: 4px 20px !important;
+    font-size: 11px !important;
+    border-left: 2px solid #C0C0C0 !important;
+    background: #F8F8F8 !important;
+  }
+}

@@ -1,0 +1,380 @@
+/* Akinator game page */
+
+.aki-reset-row {
+  text-align: right;
+}
+
+a.aki-reset-link {
+  font-size: 8px;
+  background: #F0F0F0;
+  border: 1px solid #000;
+  padding: 2px 6px;
+  text-decoration: none;
+}
+
+/* Conversation log */
+.aki-chat {
+  border: 2px solid #000;
+  padding: 8px;
+  margin-bottom: 12px;
+  background: #F8F8F8;
+  min-height: 120px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.aki-chat-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  text-decoration: underline;
+}
+
+.aki-msg {
+  margin-bottom: 6px;
+  padding: 4px;
+  border: 1px dotted #808080;
+  background: #F0F0F0;
+}
+
+.aki-msg-user {
+  background: #FFFFFF;
+}
+
+.aki-msg-role {
+  font-size: 8px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.aki-msg-text {
+  font-size: 9px;
+}
+
+/* Input panels */
+.aki-panel {
+  border: 1px solid #000;
+  padding: 8px;
+  background: #F0F0F0;
+}
+
+.aki-input-row {
+  margin-bottom: 8px;
+}
+
+input.aki-input {
+  width: 100%;
+  padding: 2px 4px;
+  font-size: 9px;
+  border: 1px solid #000;
+  box-sizing: border-box;
+}
+
+.aki-chat-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+button.aki-chat-btn {
+  flex: 1;
+  padding: 4px;
+  font-size: 8px;
+}
+
+button.aki-submit-btn {
+  font-weight: bold;
+}
+
+button.aki-hint-btn,
+button.aki-hint-btn:hover {
+  background: #E0E0E0;
+}
+
+button.aki-giveup-btn,
+button.aki-giveup-btn:hover {
+  background: #D0D0D0;
+}
+
+.aki-guess-row {
+  text-align: center;
+  margin-top: 8px;
+}
+
+button.aki-guess-btn,
+button.aki-guess-btn:hover {
+  width: 80%;
+  padding: 6px;
+  font-size: 9px;
+  font-weight: bold;
+  background: #E0FFE0;
+  border: 2px solid #000;
+  margin-bottom: 4px;
+}
+
+.aki-guess-form-container {
+  display: none;
+  margin-top: 4px;
+}
+
+form.aki-guess-form {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+input.aki-guess-input {
+  flex: 1;
+  padding: 4px;
+  font-size: 8px;
+  border: 1px solid #000;
+}
+
+button.aki-guess-submit,
+button.aki-guess-submit:hover {
+  padding: 4px 8px;
+  font-size: 8px;
+  font-weight: bold;
+  background: #D0E0FF;
+  border: 1px solid #000;
+}
+
+/* AI-is-akinator quick answers */
+.aki-quick-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.aki-quick-buttons {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+form.aki-quick-form {
+  flex: 1;
+}
+
+button.aki-quick-btn,
+button.aki-quick-btn:hover {
+  width: 100%;
+  padding: 4px;
+  font-size: 8px;
+  background: #E0E0E0;
+}
+
+.aki-center {
+  text-align: center;
+}
+
+form.aki-correct-form {
+  display: inline-block;
+  width: 80%;
+}
+
+button.aki-correct-btn,
+button.aki-correct-btn:hover {
+  width: 100%;
+  padding: 6px;
+  font-size: 9px;
+  font-weight: bold;
+  background: #000;
+  color: #FFF;
+  border: 2px solid #000;
+}
+
+/* Game over */
+.akinator-game-over {
+  border: 2px solid #000;
+  padding: 12px;
+  background: #FFFFFF;
+  text-align: center;
+}
+
+.aki-over-title {
+  font-size: 10px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.aki-over-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+a.aki-over-btn,
+a.aki-over-btn:hover {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 9px;
+  background: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  text-decoration: none;
+  color: black;
+}
+
+/* Instructions */
+.aki-instructions {
+  border: 1px dotted #808080;
+  padding: 4px;
+  background: #F0F0F0;
+  font-size: 8px;
+  margin-top: 12px;
+}
+
+.aki-instructions-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.aki-edu {
+  margin-top: 12px;
+  padding: 6px;
+  border-color: #999;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  body {
+    margin: 0;
+    padding: 4px;
+  }
+
+  h1 {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  a.aki-reset-link {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+
+  .aki-chat {
+    min-height: 150px !important;
+    max-height: 250px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .aki-chat-title {
+    margin-bottom: 16px !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-msg {
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-msg-role {
+    margin-bottom: 16px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-msg-text {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-panel {
+    padding: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .aki-input-row,
+  .aki-quick-buttons,
+  .aki-over-title,
+  .aki-instructions-title {
+    margin-bottom: 16px !important;
+  }
+
+  input[type="text"] {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 12px 8px !important;
+    min-height: 44px !important; /* Touch target size */
+    box-sizing: border-box !important;
+  }
+
+  button {
+    font-size: 14px !important;
+    padding: 12px 8px !important;
+    min-height: 44px !important;
+    cursor: pointer;
+  }
+
+  form[method="post"] button {
+    padding: 12px 4px !important;
+    font-size: 12px !important;
+  }
+
+  button#guess-btn {
+    width: 90% !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  .aki-chat-buttons,
+  .aki-over-buttons {
+    gap: 8px !important;
+    flex-wrap: wrap;
+  }
+
+  .aki-quick-title {
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-instructions {
+    padding: 8px !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .aki-edu {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+
+  a.aki-over-btn {
+    padding: 12px 16px !important;
+    font-size: 12px !important;
+    margin: 4px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .aki-chat {
+    min-height: 200px !important;
+    max-height: 300px !important;
+  }
+
+  .aki-chat-buttons,
+  .aki-quick-buttons,
+  .aki-over-buttons {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .aki-chat-buttons button {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+  }
+
+  .aki-over-buttons {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .aki-over-buttons a {
+    text-align: center !important;
+  }
+}

@@ -1,0 +1,214 @@
+/* Grammar (translation practice) page */
+
+.grammar-intro {
+  margin-bottom: 8px;
+  padding: 4px 6px;
+  line-height: 1.3;
+}
+
+.grammar-heading {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.grammar-heading h1 {
+  margin: 2px 0;
+  display: inline-block;
+}
+
+a.grammar-logs-link,
+a.grammar-logs-link:hover {
+  font-size: 9px;
+  text-decoration: underline;
+  color: #000;
+  margin-left: 8px;
+}
+
+.grammar-guest-msg {
+  margin-top: 2px;
+  font-size: 8px;
+  color: #666;
+}
+
+.grammar-guest-msg a,
+.grammar-guest-msg a:hover {
+  text-decoration: underline;
+  color: #0066CC;
+}
+
+/* Gray form panels (generate / answer) */
+.grammar-panel {
+  border: 1px solid #000;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  background: #F0F0F0;
+}
+
+.grammar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.grammar-control {
+  white-space: nowrap;
+}
+
+label.grammar-label {
+  font-size: 9px;
+  font-weight: bold;
+}
+
+select.grammar-level-select {
+  width: 70px;
+  font-size: 9px;
+  margin-left: 4px;
+}
+
+label.grammar-direction-label {
+  font-size: 9px;
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+button.grammar-generate-btn {
+  padding: 3px 12px;
+  font-size: 9px;
+}
+
+/* Original sentence */
+.grammar-original {
+  border: 2px solid #000;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  background: #FFFFFF;
+}
+
+.grammar-section-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 2px;
+  text-decoration: underline;
+}
+
+.grammar-original-text {
+  font-size: 10px;
+  padding: 4px;
+  border: 1px dotted #808080;
+  background: #F8F8F8;
+}
+
+/* Answer form */
+.grammar-answer-field {
+  margin-bottom: 4px;
+}
+
+.grammar-answer-input {
+  margin-top: 2px;
+}
+
+#translation-textarea {
+  width: 100%;
+  font-size: 9px;
+  padding: 2px;
+}
+
+.grammar-submit-row {
+  text-align: center;
+}
+
+button.grammar-submit-btn {
+  padding: 3px 16px;
+  font-size: 9px;
+}
+
+/* Results */
+.grammar-result {
+  border: 2px solid #000;
+  padding: 8px;
+  margin-bottom: 12px;
+  background: #FFFFFF;
+}
+
+.grammar-section-title.grammar-result-title {
+  margin-bottom: 6px;
+}
+
+.grammar-scores {
+  border: 1px dotted #808080;
+  padding: 4px;
+  margin-bottom: 6px;
+  background: #F8F8F8;
+  font-size: 8px;
+}
+
+.grammar-scores > div {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.grammar-box {
+  border: 1px dotted #808080;
+  padding: 4px;
+  margin-bottom: 6px;
+  background: #F8F8F8;
+}
+
+.grammar-box-solid {
+  border: 1px solid #000;
+}
+
+.grammar-box-feedback {
+  margin-bottom: 0;
+  background: #F0F0F0;
+}
+
+.grammar-box-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.grammar-model-answer {
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.grammar-box-text {
+  font-size: 9px;
+}
+
+.grammar-feedback-text {
+  font-size: 8px;
+}
+
+.grammar-no-score {
+  font-size: 8px;
+  padding: 4px;
+  background: #F8F8F8;
+}
+
+@media screen and (max-width: 768px) {
+  .grammar-intro,
+  .grammar-heading,
+  .grammar-panel,
+  .grammar-original,
+  .grammar-section-title,
+  .grammar-answer-field,
+  .grammar-result,
+  .grammar-scores,
+  .grammar-scores > div,
+  .grammar-box:not(.grammar-box-feedback),
+  .grammar-box-title,
+  .grammar-model-answer {
+    margin-bottom: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .grammar-controls {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}

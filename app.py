@@ -324,7 +324,7 @@ def get_today_quiz():
     while len(examples_furigana) < len(examples):
         examples_furigana.append("")
     
-    # クイズデータを直接作成（OpenAI APIを使用しない）
+    # クイズデータを直接作成（AI APIを使用しない）
     quiz = {
         "onomatope": onomatope_word,
         "correct_meaning_en": onomatope_meaning,

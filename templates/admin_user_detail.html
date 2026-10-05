@@ -4,31 +4,32 @@
 
 {% block window_title %}ユーザー詳細: {{ user.display_name }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
 {% block content %}
-<div style="text-align: center; margin-bottom: 16px;">
+<div class="page-heading">
   <h1>👤 {{ user.display_name }} の詳細</h1>
-  <div style="margin-top: 8px;">
-    <a href="{{ url_for('admin.users') }}" 
-       style="font-size: 9px; text-decoration: underline; color: #000;">
-      ← ユーザー一覧に戻る
-    </a>
+  <div class="admin-back">
+    <a href="{{ url_for('admin.users') }}">← ユーザー一覧に戻る</a>
   </div>
 </div>
 
 <!-- ユーザー基本情報 -->
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">基本情報</div>
-  <div style="font-size: 9px; line-height: 1.4;">
+<div class="admin-box">
+  <div class="admin-box-title">基本情報</div>
+  <div class="admin-info">
     <div><strong>ID:</strong> {{ user.id }}</div>
     <div><strong>ユーザー名:</strong> {{ user.username or '未設定' }}</div>
     <div><strong>メール:</strong> {{ user.email }}</div>
     <div><strong>プロバイダ:</strong> {{ user.auth_type }}</div>
     <div><strong>登録日:</strong> {{ user.created_at.strftime('%Y/%m/%d %H:%M') }}</div>
     <div><strong>最終ログイン:</strong> {% if user.last_login %}{{ user.last_login.strftime('%Y/%m/%d %H:%M') }}{% else %}未ログイン{% endif %}</div>
-    <div><strong>権限:</strong> 
-      {% if user.is_admin %}<span style="color: #FF0000;">管理者</span>
-      {% elif user.is_patreon %}<span style="color: #FF6600;">Patreon</span>
-      {% else %}<span style="color: #666;">一般</span>
+    <div><strong>権限:</strong>
+      {% if user.is_admin %}<span class="admin-role-admin">管理者</span>
+      {% elif user.is_patreon %}<span class="admin-role-google">Google</span>
+      {% else %}<span class="admin-muted">一般</span>
       {% endif %}
     </div>
     <div><strong>言語設定:</strong> {{ user.language }}</div>
@@ -37,53 +38,49 @@
 </div>
 
 <!-- プライバシー通知 -->
-<div style="border: 1px solid #FF6600; padding: 8px; margin-bottom: 16px; background: #FFF8F0;">
-  <div style="font-size: 9px; color: #FF6600; font-weight: bold; margin-bottom: 4px;">📋 管理者用ログ閲覧機能</div>
-  <div style="font-size: 8px; color: #666; line-height: 1.3;">
+<div class="admin-notice">
+  <div class="admin-notice-title">📋 管理者用ログ閲覧機能</div>
+  <div class="admin-notice-text">
     このログは今後のレッスンデザインや機能改善のためにのみ使用され、第三者に提供されることはありません。
   </div>
 </div>
 
 <!-- 文法クイズログ -->
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">📝 文法クイズログ (最新50件)</div>
-  
+<div class="admin-box">
+  <div class="admin-box-title">📝 文法クイズログ (最新50件)</div>
+
   {% if grammar_logs %}
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
         <thead>
-          <tr style="background: #E0E0E0;">
-            <th style="border: 1px solid #888; padding: 4px;">日時</th>
-            <th style="border: 1px solid #888; padding: 4px;">レベル</th>
-            <th style="border: 1px solid #888; padding: 4px;">方向</th>
-            <th style="border: 1px solid #888; padding: 4px;">元文</th>
-            <th style="border: 1px solid #888; padding: 4px;">ユーザー回答</th>
-            <th style="border: 1px solid #888; padding: 4px;">スコア</th>
+          <tr>
+            <th>日時</th>
+            <th>レベル</th>
+            <th>方向</th>
+            <th>元文</th>
+            <th>ユーザー回答</th>
+            <th>スコア</th>
           </tr>
         </thead>
         <tbody>
           {% for log in grammar_logs %}
           <tr>
-            <td style="border: 1px solid #888; padding: 4px;">
-              {{ log.created_at.strftime('%m/%d %H:%M') }}
-            </td>
-            <td style="border: 1px solid #888; padding: 4px; text-align: center;">{{ log.jlpt_level }}</td>
-            <td style="border: 1px solid #888; padding: 4px; text-align: center;">
-              {% if log.direction == 'ja_to_en' %}日→英{% else %}英→日{% endif %}
-            </td>
-            <td style="border: 1px solid #888; padding: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+            <td>{{ log.created_at.strftime('%m/%d %H:%M') }}</td>
+            <td class="admin-center">{{ log.jlpt_level }}</td>
+            <td class="admin-center">{% if log.direction == 'ja_to_en' %}日→英{% else %}英→日{% endif %}</td>
+            <td class="admin-truncate">
               {{ log.original_sentence[:100] }}{% if log.original_sentence|length > 100 %}...{% endif %}
             </td>
-            <td style="border: 1px solid #888; padding: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+            <td class="admin-truncate">
               {{ log.user_translation[:100] }}{% if log.user_translation|length > 100 %}...{% endif %}
             </td>
-            <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            <td class="admin-center">
               {% if log.score %}
-                <span style="color: {% if log.score >= 80 %}#008000{% elif log.score >= 60 %}#FF8000{% else %}#FF0000{% endif %};">
+                <span class="{% if log.score >= 80 %}admin-score-high{% elif log.score >= 60 %}admin-score-mid{% else %}admin-score-low{% endif %}">
                   {{ "%.0f"|format(log.score) }}%
                 </span>
               {% else %}
-                <span style="color: #666;">-</span>
+                <span class="admin-muted">-</span>
               {% endif %}
             </td>
           </tr>
@@ -92,46 +89,38 @@
       </table>
     </div>
   {% else %}
-    <div style="text-align: center; color: #808080; font-size: 9px; padding: 20px;">
-      文法クイズのログはありません
-    </div>
+    <div class="admin-empty-text admin-empty-text-padded">文法クイズのログはありません</div>
   {% endif %}
 </div>
 
 <!-- フラッシュカードログ -->
-<div style="border: 2px solid #000; padding: 12px; margin-bottom: 16px; background: #FFFFFF;">
-  <div style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">📚 フラッシュカードログ (最新50件)</div>
-  
+<div class="admin-box">
+  <div class="admin-box-title">📚 フラッシュカードログ (最新50件)</div>
+
   {% if flashcard_logs %}
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 8px;">
+    <div class="admin-table-wrap">
+      <table class="admin-table">
         <thead>
-          <tr style="background: #E0E0E0;">
-            <th style="border: 1px solid #888; padding: 4px;">日時</th>
-            <th style="border: 1px solid #888; padding: 4px;">レベル</th>
-            <th style="border: 1px solid #888; padding: 4px;">単語</th>
-            <th style="border: 1px solid #888; padding: 4px;">意味</th>
-            <th style="border: 1px solid #888; padding: 4px;">結果</th>
+          <tr>
+            <th>日時</th>
+            <th>レベル</th>
+            <th>単語</th>
+            <th>意味</th>
+            <th>結果</th>
           </tr>
         </thead>
         <tbody>
           {% for log in flashcard_logs %}
           <tr>
-            <td style="border: 1px solid #888; padding: 4px;">
-              {{ log.created_at.strftime('%m/%d %H:%M') }}
-            </td>
-            <td style="border: 1px solid #888; padding: 4px; text-align: center;">{{ log.jlpt_level }}</td>
-            <td style="border: 1px solid #888; padding: 4px;">
-              {% if log.vocab %}{{ log.vocab.word }}{% else %}削除済み単語{% endif %}
-            </td>
-            <td style="border: 1px solid #888; padding: 4px;">
-              {% if log.vocab %}{{ log.vocab.meaning }}{% else %}-{% endif %}
-            </td>
-            <td style="border: 1px solid #888; padding: 4px; text-align: center;">
+            <td>{{ log.created_at.strftime('%m/%d %H:%M') }}</td>
+            <td class="admin-center">{{ log.jlpt_level }}</td>
+            <td>{% if log.vocab %}{{ log.vocab.word }}{% else %}削除済み単語{% endif %}</td>
+            <td>{% if log.vocab %}{{ log.vocab.meaning }}{% else %}-{% endif %}</td>
+            <td class="admin-center">
               {% if log.result == 'learned' %}
-                <span style="color: #008000;">✓ 覚えた</span>
+                <span class="admin-status-done">✓ 覚えた</span>
               {% else %}
-                <span style="color: #FF0000;">✗ 覚えていない</span>
+                <span class="admin-status-unread">✗ 覚えていない</span>
               {% endif %}
             </td>
           </tr>
@@ -140,16 +129,14 @@
       </table>
     </div>
   {% else %}
-    <div style="text-align: center; color: #808080; font-size: 9px; padding: 20px;">
-      フラッシュカードのログはありません
-    </div>
+    <div class="admin-empty-text admin-empty-text-padded">フラッシュカードのログはありません</div>
   {% endif %}
 </div>
 
 <!-- 統計情報 -->
-<div style="border: 1px solid #000; padding: 8px; background: #F0F0F0; margin-top: 16px;">
-  <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px;">📊 統計情報</div>
-  <div style="font-size: 8px; line-height: 1.4;">
+<div class="admin-summary">
+  <div class="admin-summary-title">📊 統計情報</div>
+  <div class="admin-summary-text admin-summary-lines">
     <div><strong>文法クイズ回答数:</strong> {{ grammar_logs|length }}件</div>
     <div><strong>フラッシュカード学習数:</strong> {{ flashcard_logs|length }}件</div>
     <div><strong>フィードバック投稿数:</strong> {{ user.feedback|length }}件</div>

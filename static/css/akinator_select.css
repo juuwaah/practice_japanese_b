@@ -1,0 +1,152 @@
+/* Akinator setup page */
+
+.akisel-form-box {
+  border: 2px solid #000;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #F0F0F0;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.akisel-field {
+  margin-bottom: 12px;
+}
+
+.akisel-field-last {
+  margin-bottom: 16px;
+}
+
+label.akisel-label {
+  font-size: 9px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+}
+
+select.akisel-select {
+  width: 100%;
+  font-size: 9px;
+  padding: 2px;
+}
+
+.akisel-level-note {
+  font-size: 7px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.akisel-center {
+  text-align: center;
+}
+
+button.akisel-start-btn {
+  padding: 6px 20px;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+/* How to play */
+.akisel-howto {
+  border: 1px solid #000;
+  padding: 8px;
+  background: #F8F8F8;
+  margin-bottom: 12px;
+}
+
+.akisel-howto-title {
+  font-size: 9px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-decoration: underline;
+}
+
+.akisel-howto-body {
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.akisel-mode {
+  margin-bottom: 6px;
+}
+
+.akisel-mode-title,
+.akisel-tips-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+/* Tips */
+.akisel-tips {
+  border: 1px dotted #808080;
+  padding: 6px;
+  background: #F0F0F0;
+  font-size: 8px;
+  color: #404040;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 768px) {
+  body {
+    margin: 0;
+    padding: 8px;
+  }
+
+  .akisel-form-box {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .akisel-field,
+  .akisel-howto-title,
+  .akisel-mode,
+  .akisel-mode-title,
+  .akisel-tips-title {
+    margin-bottom: 16px !important;
+  }
+
+  select, button {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 8px !important;
+    min-height: 44px; /* Touch target size */
+  }
+
+  label {
+    font-size: 12px !important;
+  }
+
+  #level-note {
+    font-size: 10px !important;
+  }
+
+  .akisel-howto {
+    margin-bottom: 16px !important;
+    padding: 12px !important;
+  }
+
+  .akisel-tips {
+    padding: 8px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 16px !important;
+  }
+
+  .akisel-howto-body,
+  .akisel-tips {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .akisel-howto-title {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+  }
+}

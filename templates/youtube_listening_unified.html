@@ -1,341 +1,41 @@
 {% set hide_sidebar = true %}
 {% extends "base.html" %}
+{% set ja = language == 'ja' %}
+{% set lang_arg = {} if ja else {'lang': 'en'} %}
 
-{% block title %}{% if language == 'ja' %}YouTube リスニング - JLPT練習{% else %}YouTube Listening - JLPT Practice{% endif %}{% endblock %}
+{% block title %}{{ 'YouTube リスニング - JLPT練習' if ja else 'YouTube Listening - JLPT Practice' }}{% endblock %}
+
+{% block body_class %}youtube-listening-page{% endblock %}
 
 {% block extra_head %}
-<style>
-/* YouTube Listening Page Optimization */
-body.youtube-listening-page {
-    font-size: 8px !important; /* Very small but readable fixed size */
-}
-
-body.youtube-listening-page * {
-    font-size: inherit !important;
-}
-
-/* Override specific elements that might have fixed font sizes */
-body.youtube-listening-page h1,
-body.youtube-listening-page h2,
-body.youtube-listening-page h3,
-body.youtube-listening-page h4,
-body.youtube-listening-page h5,
-body.youtube-listening-page h6,
-body.youtube-listening-page p,
-body.youtube-listening-page span,
-body.youtube-listening-page div,
-body.youtube-listening-page a,
-body.youtube-listening-page button,
-body.youtube-listening-page .card-title,
-body.youtube-listening-page .card-text,
-body.youtube-listening-page .btn,
-body.youtube-listening-page .quiz-card,
-body.youtube-listening-page .quiz-title,
-body.youtube-listening-page .quiz-meta {
-    font-size: 8px !important;
-}
-
-.youtube-listening-page .container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
-/* Hide sidebar for full-width display - NUCLEAR OPTION with maximum specificity */
-html body.youtube-listening-page .main-content .sidebar-layout > div:last-child,
-html body.youtube-listening-page div.main-content div.sidebar-layout > div:last-child,
-html body.youtube-listening-page div.window div.main-content div.sidebar-layout > div:last-child,
-body.youtube-listening-page .main-content .sidebar-layout > div:last-child,
-body.youtube-listening-page .sidebar-layout > div:last-child {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
-}
-
-html body.youtube-listening-page .main-content .sidebar-layout > div:first-child,
-html body.youtube-listening-page div.main-content div.sidebar-layout > div:first-child,
-html body.youtube-listening-page div.window div.main-content div.sidebar-layout > div:first-child,
-body.youtube-listening-page .main-content .sidebar-layout > div:first-child,
-body.youtube-listening-page .sidebar-layout > div:first-child {
-    flex: 1 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    min-width: 0 !important;
-}
-
-/* レトロ表形式スタイル */
-.filter-section {
-    margin-bottom: 12px;
-    padding: 8px;
-    background-color: #F0F0F0;
-    border: 1px solid #000000;
-    box-shadow: 1px 1px 0px #808080;
-}
-
-.filter-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.filter-group label {
-    font-size: 14px;
-    font-weight: bold;
-    margin: 0;
-}
-
-.filter-buttons {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    background-color: #F0F0F0;
-    border: 1px solid #000000;
-    color: #000000;
-    padding: 2px 6px;
-    font-size: 12px;
-    text-decoration: none;
-    cursor: pointer;
-    box-shadow: 1px 1px 0px #808080;
-}
-
-.filter-btn:hover {
-    background-color: #E0E0E0;
-    color: #000000;
-    text-decoration: none;
-}
-
-.filter-btn.active {
-    background-color: #000000;
-    color: #FFFFFF;
-    border: 1px solid #FFFFFF;
-}
-
-.retro-table-container {
-    background-color: #FFFFFF;
-    border: 2px solid #000000;
-    box-shadow: 2px 2px 0px #808080;
-    margin: 8px 0;
-    overflow-x: auto;
-}
-
-.retro-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    background-color: #FFFFFF;
-}
-
-.retro-table th {
-    background-color: #C0C0C0;
-    border: 1px solid #000000;
-    padding: 4px 8px;
-    text-align: left;
-    font-weight: bold;
-    font-size: 12px;
-    height: 20px;
-    vertical-align: middle;
-}
-
-.retro-table td {
-    border: 1px solid #808080;
-    padding: 4px 8px;
-    vertical-align: middle;
-    background-color: #FFFFFF;
-    height: 24px;
-}
-
-.retro-table tbody tr:nth-child(even) {
-    background-color: #F8F8F8;
-}
-
-.retro-table tbody tr:nth-child(even) td {
-    background-color: #F8F8F8;
-}
-
-.retro-table tbody tr:hover {
-    background-color: #E0E0E0;
-}
-
-.retro-table tbody tr:hover td {
-    background-color: #E0E0E0;
-}
-
-.clickable-row {
-    cursor: pointer;
-}
-
-.clickable-row:hover {
-    background-color: #D0D0D0 !important;
-}
-
-.clickable-row:hover td {
-    background-color: #D0D0D0 !important;
-}
-
-.sort-link {
-    color: #000000;
-    text-decoration: none;
-    font-size: 12px;
-    margin-right: 4px;
-}
-
-.sort-link:hover {
-    background-color: #808080;
-    color: #FFFFFF;
-    text-decoration: none;
-}
-
-.sort-link.active {
-    background-color: #000000;
-    color: #FFFFFF;
-    padding: 1px 3px;
-}
-
-.level-badge {
-    font-size: 10px;
-    font-weight: bold;
-    padding: 2px 4px;
-    border: 1px solid #000000;
-    background-color: #FFFFFF;
-    color: #000000;
-}
-
-.level-badge.level-n5 { background-color: #00FF00; color: #000000; }
-.level-badge.level-n4 { background-color: #00FFFF; color: #000000; }
-.level-badge.level-n3 { background-color: #FFFF00; color: #000000; }
-.level-badge.level-n2 { background-color: #FF8000; color: #000000; }
-.level-badge.level-n1 { background-color: #FF0000; color: #FFFFFF; }
-
-.action-btn {
-    background-color: #F0F0F0;
-    border: 1px solid #000000;
-    color: #000000;
-    padding: 2px 8px;
-    font-size: 12px;
-    text-decoration: none;
-    cursor: pointer;
-    box-shadow: 1px 1px 0px #808080;
-    display: inline-block;
-}
-
-.action-btn:hover {
-    background-color: #000000;
-    color: #FFFFFF;
-    text-decoration: none;
-}
-
-.col-level { width: 80px; text-align: center; }
-.col-title { 
-    width: auto; 
-    min-width: 200px; 
-    max-width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.col-duration { width: 80px; text-align: center; }
-.col-channel { 
-    width: 120px; 
-    text-align: center;
-    max-width: 120px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.col-played { width: 80px; text-align: center; }
-
-.no-quiz-message {
-    background-color: #FFFFFF;
-    border: 2px solid #000000;
-    padding: 12px;
-    text-align: center;
-    font-size: 14px;
-    margin: 8px 0;
-    box-shadow: 2px 2px 0px #808080;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .retro-table {
-        font-size: 12px;
-    }
-    
-    .retro-table th,
-    .retro-table td {
-        padding: 2px 4px;
-    }
-    
-    .col-title {
-        min-width: 150px;
-    }
-    
-    .filter-buttons {
-        width: 100%;
-    }
-    
-    .filter-btn {
-        flex: 1;
-        text-align: center;
-        min-width: 60px;
-    }
-}
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/listening.css') }}">
 {% endblock %}
+
+{% macro sort_link(key, order, label) %}
+<a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort=key, order=order, **lang_arg) }}"
+   class="sort-link {% if current_sort == key and current_order == order %}active{% endif %}">{{ label }}</a>
+{% endmacro %}
 
 {% block content %}
     <!-- Educational description for AdSense compliance -->
-    <div style="margin-bottom: 12px; padding: 8px; border: 1px solid #000; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
+    <div class="edu-note listening-intro">
       {{ _('youtube_listening_description') }}
     </div>
-    
-{% if language == 'ja' %}
-    <h1>YouTubeリスニングクイズ</h1>
-{% else %}
-    <h1>YouTube Listening Quiz</h1>
-{% endif %}
-    
-{% if language == 'ja' %}
-    <!-- フィルター -->
-{% else %}
+
+    <h1>{{ 'YouTubeリスニングクイズ' if ja else 'YouTube Listening Quiz' }}</h1>
+
     <!-- Filters -->
-{% endif %}
     <div class="filter-section">
         <div class="filter-group">
-{% if language == 'ja' %}
-            <label>レベル選択:</label>
-{% else %}
-            <label>Level Selection:</label>
-{% endif %}
+            <label>{{ 'レベル選択' if ja else 'Level Selection' }}:</label>
             <div class="filter-buttons">
-{% if language == 'ja' %}
-                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order) }}" 
-{% else %}
-                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order, lang='en') }}" 
-{% endif %}
+                <a href="{{ url_for('youtube_listening.listening_levels', level='all', sort=current_sort, order=current_order, **lang_arg) }}"
                    class="filter-btn {% if selected_level == 'all' %}active{% endif %}">
-{% if language == 'ja' %}
-                    全て ({{ level_counts.values() | sum }})
-{% else %}
-                    All ({{ level_counts.values() | sum }})
-{% endif %}
+                    {{ '全て' if ja else 'All' }} ({{ level_counts.values() | sum }})
                 </a>
                 {% for level in ['N5', 'N4', 'N3', 'N2', 'N1', 'N0'] %}
                     {% if level in level_counts %}
-{% if language == 'ja' %}
-                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order) }}" 
-{% else %}
-                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order, lang='en') }}" 
-{% endif %}
+                    <a href="{{ url_for('youtube_listening.listening_levels', level=level, sort=current_sort, order=current_order, **lang_arg) }}"
                        class="filter-btn {% if selected_level == level %}active{% endif %}">
                         {{ level }} ({{ level_counts[level] }})
                     </a>
@@ -344,131 +44,40 @@ body.youtube-listening-page .sidebar-layout > div:first-child {
             </div>
         </div>
     </div>
-    
-{% if language == 'ja' %}
-    <!-- N0レベルの説明 -->
-{% else %}
-    <!-- N0 Level Explanation -->
-{% endif %}
+
+    <!-- N0 level explanation -->
     {% if 'N0' in level_counts %}
-    <div style="margin: 12px 0; padding: 8px; background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 4px; font-size: 9px; color: #856404;">
-{% if language == 'ja' %}
-        <strong>注意:</strong> N0は非公式レベルであり、N1より高い難易度を意味します。
-{% else %}
-        <strong>Note:</strong> N0 is an unofficial level that represents difficulty higher than N1.
-{% endif %}
+    <div class="listening-n0-note">
+        {% if ja %}<strong>注意:</strong> N0は非公式レベルであり、N1より高い難易度を意味します。
+        {% else %}<strong>Note:</strong> N0 is an unofficial level that represents difficulty higher than N1.{% endif %}
     </div>
     {% endif %}
-    
-{% if language == 'ja' %}
-    <!-- レトロ表形式クイズ一覧 -->
-{% else %}
-    <!-- Retro Table Quiz List -->
-{% endif %}
+
+    <!-- Quiz list table -->
     {% if quizzes %}
     <div class="retro-table-container">
         <table class="retro-table">
             <thead>
                 <tr>
-                    <th class="col-level">
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='level', order='asc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='level', order='asc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'level' and current_order == 'asc' %}active{% endif %}">
-{% if language == 'ja' %}
-                            レベル ↑
-{% else %}
-                            Level ↑
-{% endif %}
-                        </a>
-                    </th>
-                    <th class="col-title">
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='title', order='asc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='title', order='asc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'title' and current_order == 'asc' %}active{% endif %}">
-{% if language == 'ja' %}
-                            タイトル ↑
-{% else %}
-                            Title ↑
-{% endif %}
-                        </a>
-                    </th>
+                    <th class="col-level">{{ sort_link('level', 'asc', 'レベル ↑' if ja else 'Level ↑') }}</th>
+                    <th class="col-title">{{ sort_link('title', 'asc', 'タイトル ↑' if ja else 'Title ↑') }}</th>
                     <th class="col-duration">
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='asc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='asc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'length' and current_order == 'asc' %}active{% endif %}">
-{% if language == 'ja' %}
-                            時間 ↑
-{% else %}
-                            Duration ↑
-{% endif %}
-                        </a>
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='desc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='length', order='desc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'length' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
+                        {{ sort_link('length', 'asc', '時間 ↑' if ja else 'Duration ↑') }}
+                        {{ sort_link('length', 'desc', '↓') }}
                     </th>
                     <th class="col-channel">
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='asc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='asc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'channel' and current_order == 'asc' %}active{% endif %}">
-                            Video from ↑
-                        </a>
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='desc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='channel', order='desc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'channel' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
+                        {{ sort_link('channel', 'asc', 'Video from ↑') }}
+                        {{ sort_link('channel', 'desc', '↓') }}
                     </th>
                     <th class="col-played">
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='asc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='asc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'played' and current_order == 'asc' %}active{% endif %}">
-{% if language == 'ja' %}
-                            プレイ回数 ↑
-{% else %}
-                            Played ↑
-{% endif %}
-                        </a>
-{% if language == 'ja' %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='desc') }}" 
-{% else %}
-                        <a href="{{ url_for('youtube_listening.listening_levels', level=selected_level, sort='played', order='desc', lang='en') }}" 
-{% endif %}
-                           class="sort-link {% if current_sort == 'played' and current_order == 'desc' %}active{% endif %}">
-                            ↓
-                        </a>
+                        {{ sort_link('played', 'asc', 'プレイ回数 ↑' if ja else 'Played ↑') }}
+                        {{ sort_link('played', 'desc', '↓') }}
                     </th>
                 </tr>
             </thead>
             <tbody>
                 {% for quiz in quizzes %}
-{% if language == 'ja' %}
-                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id) }}'">
-{% else %}
-                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id, lang='en') }}'">
-{% endif %}
+                <tr class="quiz-row clickable-row" onclick="window.location.href='{{ url_for('youtube_listening.listening_quiz', quiz_id=quiz.id, **lang_arg) }}'">
                     <td class="col-level">
                         <span class="level-badge level-{{ quiz.level.lower() }}">{{ quiz.level }}</span>
                     </td>
@@ -476,10 +85,9 @@ body.youtube-listening-page .sidebar-layout > div:first-child {
                     <td class="col-duration">{{ '%d:%02d'|format(quiz.duration//60, quiz.duration%60) }}</td>
                     <td class="col-channel">
                         {% if quiz.channel_name %}
-                            <div style="display: flex; align-items: center; gap: 4px;">
+                            <div class="listening-channel">
                                 {% if quiz.channel_icon %}
-                                <img src="{{ quiz.channel_icon }}" alt="Channel Icon" 
-                                     style="width: 16px; height: 16px; border-radius: 50%; border: 1px solid #808080;">
+                                <img src="{{ quiz.channel_icon }}" alt="Channel Icon" class="listening-channel-icon">
                                 {% endif %}
                                 <span>{{ quiz.channel_name }}</span>
                             </div>
@@ -488,9 +96,7 @@ body.youtube-listening-page .sidebar-layout > div:first-child {
                         {% endif %}
                     </td>
                     <td class="col-played">
-                        {% if quiz.play_count > 0 %}
-                            {{ quiz.play_count }}
-                        {% endif %}
+                        {% if quiz.play_count > 0 %}{{ quiz.play_count }}{% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -500,54 +106,25 @@ body.youtube-listening-page .sidebar-layout > div:first-child {
     {% else %}
     <div class="no-quiz-message">
         {% if selected_level == 'all' %}
-{% if language == 'ja' %}
-            現在利用可能なクイズがありません。
-{% else %}
-            No quizzes are currently available.
-{% endif %}
+            {{ '現在利用可能なクイズがありません。' if ja else 'No quizzes are currently available.' }}
         {% else %}
-{% if language == 'ja' %}
-            {{ selected_level }}レベルのクイズが見つかりません。
-{% else %}
-            No {{ selected_level }} level quizzes found.
-{% endif %}
+            {{ selected_level ~ 'レベルのクイズが見つかりません。' if ja else 'No ' ~ selected_level ~ ' level quizzes found.' }}
         {% endif %}
     </div>
     {% endif %}
-    
-{% if language == 'ja' %}
-    <!-- YouTube著作権免責事項 -->
-{% else %}
-    <!-- YouTube Copyright Disclaimer -->
-{% endif %}
-    <div style="margin-top: 24px; padding: 12px; border: 1px solid #ccc; background: #f9f9f9; font-size: 8px; line-height: 1.4;">
-{% if language == 'ja' %}
-        <h4 style="font-size: 10px; margin-bottom: 8px; color: #333;">免責事項</h4>
-{% else %}
-        <h4 style="font-size: 10px; margin-bottom: 8px; color: #333;">Disclaimer</h4>
-{% endif %}
-        
-{% if language == 'ja' %}
-        <p style="margin-bottom: 8px;">このページでは、YouTube API を使用して埋め込まれた動画を表示しています。埋め込みプレーヤーを通じて視聴される動画の再生回数や視聴データは、元の YouTube 動画に直接加算されます。</p>
-{% else %}
-        <p style="margin-bottom: 8px;">This page displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.</p>
-{% endif %}
-        
-{% if language == 'ja' %}
-        <p style="margin-bottom: 8px;">本サイトでは、YouTube 公式の埋め込み機能を利用しており、動画の所有権や著作権は<strong>各動画の制作者または権利者</strong>に帰属します。当サイトは動画の内容を変更したり、独自配信しているものではありません。</p>
-{% else %}
-        <p style="margin-bottom: 8px;">We use YouTube's official embedding functionality, and ownership and copyright of the videos belong to <strong>each video's creator or rights holder</strong>. This site does not modify video content or distribute it independently.</p>
-{% endif %}
-        
-{% if language == 'ja' %}
-        <p style="margin-bottom: 8px;">また、当サイトを使用することにより、ユーザーは YouTube の<a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">利用規約</a>および<a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">プライバシーポリシー</a>に同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。</p>
-{% else %}
-        <p style="margin-bottom: 8px;">By using this site, you also agree to YouTube's <a href="https://www.youtube.com/t/terms" target="_blank" style="color: #1976d2;">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank" style="color: #1976d2;">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.</p>
-{% endif %}
-    </div>
 
-<script>
-// Apply YouTube listening page styling
-document.body.classList.add('youtube-listening-page');
-</script>
+    <!-- YouTube copyright disclaimer -->
+    <div class="listening-disclaimer">
+        {% if ja %}
+        <h4>免責事項</h4>
+        <p>このページでは、YouTube API を使用して埋め込まれた動画を表示しています。埋め込みプレーヤーを通じて視聴される動画の再生回数や視聴データは、元の YouTube 動画に直接加算されます。</p>
+        <p>本サイトでは、YouTube 公式の埋め込み機能を利用しており、動画の所有権や著作権は<strong>各動画の制作者または権利者</strong>に帰属します。当サイトは動画の内容を変更したり、独自配信しているものではありません。</p>
+        <p>また、当サイトを使用することにより、ユーザーは YouTube の<a href="https://www.youtube.com/t/terms" target="_blank">利用規約</a>および<a href="https://policies.google.com/privacy" target="_blank">プライバシーポリシー</a>に同意したものとみなされます。当サイトにおける YouTube API の利用については、Google の Developer Policies を遵守しています。</p>
+        {% else %}
+        <h4>Disclaimer</h4>
+        <p>This page displays videos embedded using the YouTube API. View counts and viewing data from the embedded player are directly added to the original YouTube videos.</p>
+        <p>We use YouTube's official embedding functionality, and ownership and copyright of the videos belong to <strong>each video's creator or rights holder</strong>. This site does not modify video content or distribute it independently.</p>
+        <p>By using this site, you also agree to YouTube's <a href="https://www.youtube.com/t/terms" target="_blank">Terms of Service</a> and <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>. We comply with the YouTube API Developer Policies in implementing embedded content.</p>
+        {% endif %}
+    </div>
 {% endblock %}

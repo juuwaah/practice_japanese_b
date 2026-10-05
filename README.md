@@ -10,7 +10,7 @@ A comprehensive Japanese Language Proficiency Test (JLPT) learning application b
 - **Daily Onomatopoeia Quiz**: 100 diverse Japanese onomatopoeia with true randomization and AI-generated examples
 - **Vocabulary Quiz**: JLPT N5-N1 vocabulary with AI-generated context sentences and scoring
 - **Grammar Practice**: Translation exercises (English ↔ Japanese) with detailed feedback
-- **Flashcards**: Interactive spaced repetition system with forgetting curve analytics (Patreon exclusive)
+- **Flashcards**: Interactive spaced repetition system with forgetting curve analytics (Google login required)
 - **YouTube Listening**: Real YouTube video listening comprehension with multi-question support
 
 #### 🎮 Interactive Games
@@ -19,12 +19,11 @@ A comprehensive Japanese Language Proficiency Test (JLPT) learning application b
 
 ### 🔐 Authentication & Access Control
 - **Google OAuth2**: Sign in with Google account
-- **Patreon Integration**: Premium features for supporters (flashcards system)
 - **Guest Access**: Browse and use basic features without account
 - **Admin Dashboard**: User and feedback management system
 
 ### 🤖 AI Integration
-- **OpenAI GPT-4o**: Powers quiz generation, feedback, and translations
+- **Anthropic Claude API**: Powers quiz generation, answer evaluation, feedback, and translations
 - **Smart Context**: AI generates natural example sentences and appropriate distractors
 - **Dynamic Content**: Real-time quiz adaptation based on user performance
 - **Multilingual Support**: Japanese and English interface with automatic translations
@@ -54,12 +53,11 @@ Flask (Web Framework)
 ├── Routes/
 │   ├── vocab.py             # Vocabulary quiz logic
 │   ├── grammar.py           # Grammar translation exercises
-│   ├── flashcard.py         # Flashcard system (Patreon)
+│   ├── flashcard.py         # Flashcard system (Google login)
 │   ├── youtube_listening.py # YouTube listening comprehension
 │   └── akinator.py          # Interactive guessing games
 ├── Authentication/
 │   ├── Google OAuth2        # Google account integration
-│   ├── Patreon OAuth2       # Patreon supporter verification
 │   └── Flask-Login          # Session management
 ├── Templates/
 │   ├── base.html            # Retro UI base template
@@ -79,17 +77,16 @@ Google Sheets ↔ google_sheets_helper.py ↔ Flask Routes ↔ Templates ↔ Use
                        ↕                        ↕
               Excel Files (Fallback)    YouTube Data API
                        ↕
-                OpenAI GPT-4o API
+                Anthropic Claude API
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Python 3.8+
-- OpenAI API Key
+- Anthropic API Key
 - Google Cloud Service Account (for Sheets integration)
 - YouTube Data API Key (for listening features)
-- Patreon OAuth credentials (optional, for premium features)
 
 ### Installation
 1. **Clone Repository**
@@ -100,7 +97,7 @@ Google Sheets ↔ google_sheets_helper.py ↔ Flask Routes ↔ Templates ↔ Use
 
 2. **Install Dependencies**
    ```bash
-   pip install flask openai pandas gspread google-auth python-dotenv APScheduler flask-login flask-dance flask-sqlalchemy requests
+   pip install flask anthropic pandas gspread google-auth python-dotenv APScheduler flask-login flask-dance flask-sqlalchemy requests
    ```
 
 3. **Configure Environment**
@@ -165,7 +162,8 @@ Google Sheets ↔ google_sheets_helper.py ↔ Flask Routes ↔ Templates ↔ Use
 ### Environment Variables
 ```bash
 # Core API Keys
-OPENAI_API_KEY=sk-...                    # OpenAI API for AI features
+ANTHROPIC_API_KEY=sk-ant-...             # Claude API for AI features
+CLAUDE_MODEL=claude-sonnet-5             # Optional model override
 GOOGLE_DRIVE_API_KEY=AIza...            # Google Drive API (optional)
 YOUTUBE_API_KEY=AIza...                 # YouTube Data API v3
 
@@ -179,8 +177,6 @@ GOOGLE_SHEETS_CREDENTIALS_PATH=service.json  # Service account file
 # Authentication
 GOOGLE_OAUTH_CLIENT_ID=your_client_id
 GOOGLE_OAUTH_CLIENT_SECRET=your_client_secret
-PATREON_CLIENT_ID=your_patreon_client_id      # Optional
-PATREON_CLIENT_SECRET=your_patreon_secret     # Optional
 
 # Flask Configuration
 FLASK_SECRET_KEY=your_secret_key        # Session security
@@ -200,9 +196,9 @@ The app uses SQLite by default with the following models:
 ## 🎯 Key Features Explained
 
 ### Authentication System
-- **Multi-Provider OAuth**: Google and Patreon integration
-- **Tiered Access**: Basic (guest) → Google account → Patreon supporter
-- **Premium Features**: Flashcards restricted to Patreon members
+- **Google OAuth**: Google account login
+- **Tiered Access**: Basic (guest) → Google account
+- **Login Features**: Flashcards and grammar logs require a Google login
 - **Feedback System**: Login required for feedback submission
 
 ### Daily Onomatopoeia System
@@ -218,7 +214,7 @@ The app uses SQLite by default with the following models:
 - **Progress Tracking**: User play counts and statistics
 - **Responsive Table**: Clickable rows with text overflow handling
 
-### Flashcard System (Patreon Exclusive)
+### Flashcard System (Google Login Required)
 - **Spaced Repetition**: Forgetting curve-based review scheduling
 - **Progress Tracking**: Individual word mastery tracking
 - **Visual Analytics**: Progress charts and statistics
@@ -289,11 +285,11 @@ ls -la your-service-account.json
 echo $GOOGLE_SHEETS_CREDENTIALS_PATH
 ```
 
-**OpenAI API Errors**
+**Claude API Errors**
 ```python
-# Check API key format (starts with sk-)
-# Monitor usage at https://platform.openai.com/usage
-# Verify model access (gpt-4o required)
+# Check ANTHROPIC_API_KEY (starts with sk-ant-)
+# Monitor usage at https://console.anthropic.com/
+# Verify the model in CLAUDE_MODEL is available to your key
 ```
 
 **YouTube API Issues**
@@ -301,13 +297,6 @@ echo $GOOGLE_SHEETS_CREDENTIALS_PATH
 # Verify YouTube Data API v3 is enabled
 # Check API key quotas and usage
 # Ensure channel URLs are properly formatted
-```
-
-**Patreon OAuth Problems**
-```bash
-# Verify callback URL matches Patreon app settings
-# Check client ID and secret format
-# Ensure proper scopes are requested
 ```
 
 **Database Migration Issues**
@@ -366,7 +355,7 @@ OpenAI-JLPT-practice-app/
 ### Authentication Decorators
 ```python
 @login_required              # Requires any authenticated user
-@patreon_required           # Requires Patreon authentication
+@google_login_required      # Requires Google authentication
 @admin_required             # Requires admin privileges
 ```
 
@@ -420,7 +409,7 @@ This README provides comprehensive context for:
 - **Authentication System**: Multi-provider OAuth implementation
 - **Feature Development**: Patterns for adding new functionality
 - **Database Management**: Models and migration procedures
-- **API Integration**: Google Sheets, YouTube, OpenAI, and Patreon APIs
+- **API Integration**: Google Sheets, Google Drive, YouTube, and Claude APIs
 - **UI/UX Guidelines**: Retro design system and accessibility considerations
 
 ## 📄 License
@@ -429,9 +418,8 @@ MIT License - see LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
-- **OpenAI**: GPT-4o API for intelligent content generation
+- **Anthropic**: Claude API for intelligent content generation
 - **Google**: Sheets API and YouTube Data API for cloud data management
-- **Patreon**: OAuth API for supporter verification
 - **Flask Community**: Web framework and extension ecosystem
 - **Japanese Language Community**: Vocabulary and grammar resources
 - **Retro Design Enthusiasts**: 1980s aesthetic inspiration

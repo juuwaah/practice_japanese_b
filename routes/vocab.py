@@ -53,7 +53,7 @@ def generate_vocab_quiz(level):
     random.shuffle(options)
     # ひらがな（漢字）の形に変換 - 辞書形のまま表示
     options_display = [f"{w}（{k}）" if pd.notna(k) and str(k).strip() else f"{w}" for w, k in options]
-    # 4. Use GPT to generate a Japanese sentence with the blank already in place
+    # 4. Use Claude to generate a Japanese sentence with the blank already in place
     prompt = f"""
 あなたは日本語教師です。以下の単語を使って、語彙クイズの自然な日本語の文を1つ作ってください。
 - 単語: {kanji}（{word}）

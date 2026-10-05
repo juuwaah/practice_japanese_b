@@ -164,10 +164,9 @@ TRANSLATIONS = {
         'tip_3': '• Try asking about word type, usage, or meaning in Mode 2',
         
         # About page additional translations
-        'app_description_full': 'This application is designed to help learners practice Japanese vocabulary and grammar, especially for the JLPT (Japanese Language Proficiency Test) levels N5–N1.<br><br>Features include vocabulary quizzes, grammar translation practice, flashcards, YouTube listening quizzes, and interactive games like word Akinator, all powered by OpenAI API.',
+        'app_description_full': 'This application is designed to help learners practice Japanese vocabulary and grammar, especially for the JLPT (Japanese Language Proficiency Test) levels N5–N1.<br><br>Features include vocabulary quizzes, grammar translation practice, flashcards, YouTube listening quizzes, and interactive games like word Akinator, with AI features powered by the Claude API (Anthropic).',
         'developer_info': 'Created by B, an university student and Japanese teacher on Preply.<br><br>Want to learn Japanese on Preply?<br>',
         'get_30_percent_discount': 'Get 30% Discount',
-        'liked_this_app': 'Did you like this app?<br>Support the developer on Patreon to get access to more advanced grammar expressions, JLPT-level practice exercises, and other interesting Japanese language content.',
         'support_on_patreon': '🎯 Support on Patreon',
         'patreon_support': 'Patreon',
         'preply_coupon': 'Preply 30% Off Coupon',
@@ -239,8 +238,6 @@ TRANSLATIONS = {
         
         # Listening quiz translations
         'premium_feature': 'Premium Feature',
-        'patreon_only_desc': 'Listening quizzes are available for Patreon supporters only.',
-        'login_with_patreon': 'Login with Patreon',
         'login_with_google': 'Login with Google',
         'google_login_privacy_notice': 'Information accessible to administrators: Linked email address, site registration date, last login time.<br>Flashcard and grammar quiz logs are used solely for lesson design and feature improvement and are not shared with third parties.',
         'ebbinghaus_forgetting_curve_note': 'This review schedule is calculated based on the Ebbinghaus forgetting curve to optimize retention.',
@@ -353,7 +350,11 @@ TRANSLATIONS = {
         'api_connection_error': 'Connection error occurred. Please check your internet connection and try again.',
         'database_connection_error': 'Database connection failed. Please try again in a few moments.',
         'service_temporarily_unavailable': 'Service is temporarily unavailable due to high traffic. Please try again later.',
-        'openai_quota_exceeded': 'AI service quota exceeded. Please try again later.',
+        'ai_quota_exceeded': 'AI service quota exceeded. Please try again later.',
+        'loading_thinking': 'Let me think...',
+        'loading_evaluating': 'Let me evaluate your answer...',
+        'loading_checking': 'Let me check your answer...',
+        'ai_disclaimer': 'AI does its best to judge your answers accurately, but it can occasionally make mistakes. Please use the results as a guide.',
         'general_system_error': 'A system error occurred. Please try again.',
         'feature_temporarily_disabled': 'This feature is temporarily unavailable. Please try other features.',
     },
@@ -522,10 +523,9 @@ TRANSLATIONS = {
         'tip_3': '• モード2では単語の種類、使い方、意味について聞いてみてください',
         
         # About page additional translations
-        'app_description_full': 'このアプリケーションは、特にJLPT（日本語能力試験）N5〜N1レベルの日本語語彙と文法の練習をサポートするよう設計されています。<br><br>語彙クイズ、文法翻訳練習、フラッシュカード、YouTubeリスニングクイズ、ことばのアキネーターなど、OpenAI APIを使ったインタラクティブゲームなどの機能があります。',
+        'app_description_full': 'このアプリケーションは、特にJLPT（日本語能力試験）N5〜N1レベルの日本語語彙と文法の練習をサポートするよう設計されています。<br><br>語彙クイズ、文法翻訳練習、フラッシュカード、YouTubeリスニングクイズ、ことばのアキネーターなどのインタラクティブな機能があります。AI機能にはClaude API（Anthropic）を使用しています。',
         'developer_info': 'Preply日本語教師Bによって開発されたWEBアプリです。<br><br>Preplyであたらしい言語を学びませんか？<br>',
         'get_30_percent_discount': '30%割引を受ける',
-        'liked_this_app': 'このアプリを気に入っていただけましたか？<br>Patreonで開発者をサポートすると、より難易度の高い文法表現、JLPTレベルに沿った練習問題などのコンテンツ、その他日本語のおもしろい話などにアクセスできます。',
         'support_on_patreon': '🎯 Patreonでサポート',
         'patreon_support': 'Patreon',
         'preply_coupon': 'Preply30%オフクーポン',
@@ -597,7 +597,6 @@ TRANSLATIONS = {
         
         # Listening quiz translations
         'premium_feature': 'プレミアム機能',
-        'login_with_patreon': 'Patreonでログイン',
         'login_with_google': 'Googleでログイン',
         'google_login_privacy_notice': '管理者が知ることのできる情報：連携したメールアドレス、サイトへの登録日、最終ログイン<br>フラッシュカードや文法クイズなどのログは今後のレッスンデザインや機能改善のためにのみ使用され、第三者に提供されることはありません。',
         'ebbinghaus_forgetting_curve_note': 'この復習スケジュールは、記憶の定着を最適化するためにエビングハウスの忘却曲線をもとに計算されています。',
@@ -711,7 +710,11 @@ TRANSLATIONS = {
         'api_connection_error': '接続エラーが発生しました。インターネット接続を確認して再度お試しください。',
         'database_connection_error': 'データベース接続に失敗しました。しばらくしてから再度お試しください。',
         'service_temporarily_unavailable': 'アクセスが集中しているため、サービスが一時的に利用できません。後でもう一度お試しください。',
-        'openai_quota_exceeded': 'AI サービスの利用上限に達しました。後でもう一度お試しください。',
+        'ai_quota_exceeded': 'AI サービスの利用上限に達しました。後でもう一度お試しください。',
+        'loading_thinking': 'ちょっと考えますね...',
+        'loading_evaluating': 'あなたの回答を評価しますね...',
+        'loading_checking': '答えを確認しますね...',
+        'ai_disclaimer': 'AIによる判定は正確さに最善を尽くしていますが、まれに間違えることがあります。結果は参考としてご利用ください。',
         'general_system_error': 'システムエラーが発生しました。再度お試しください。',
         'feature_temporarily_disabled': 'この機能は一時的に利用できません。他の機能をお試しください。',
     },
@@ -870,10 +873,9 @@ TRANSLATIONS = {
         'tip_3': '• Intenta preguntar sobre el tipo de palabra, uso o significado en el Modo 2',
         
         # About page additional translations
-        'app_description_full': 'Esta aplicación está diseñada para ayudar a los estudiantes a practicar vocabulario y gramática japonesa, especialmente para los niveles JLPT (Examen de Competencia en Idioma Japonés) N5–N1.<br><br>Las características incluyen cuestionarios de vocabulario, práctica de traducción de gramática, tarjetas de memoria, cuestionarios de comprensión auditiva de YouTube y juegos interactivos como Akinator de palabras, todo impulsado por la API de OpenAI.',
+        'app_description_full': 'Esta aplicación está diseñada para ayudar a los estudiantes a practicar vocabulario y gramática japonesa, especialmente para los niveles JLPT (Examen de Competencia en Idioma Japonés) N5–N1.<br><br>Las características incluyen cuestionarios de vocabulario, práctica de traducción de gramática, tarjetas de memoria, cuestionarios de comprensión auditiva de YouTube y juegos interactivos como Akinator de palabras, con funciones de IA impulsadas por la API de Claude (Anthropic).',
         'developer_info': 'Creado por B, estudiante universitario y profesor de japonés en Preply.<br><br>¿Quieres aprender japonés en Preply?<br>',
         'get_30_percent_discount': 'Obtén 30% de descuento',
-        'liked_this_app': '¿Te gustó esta app?<br>Apoya al desarrollador en Patreon para obtener acceso a expresiones gramaticales más avanzadas, ejercicios de práctica de nivel JLPT y otro contenido interesante sobre el idioma japonés.',
         'support_on_patreon': '🎯 Apoyar en Patreon',
         'patreon_support': 'Patreon',
         'preply_coupon': 'Cupón Preply 30% Descuento',
@@ -945,8 +947,6 @@ TRANSLATIONS = {
         
         # Listening quiz translations
         'premium_feature': 'Característica premium',
-        'patreon_only_desc': 'Los cuestionarios de listening están disponibles solo para seguidores de Patreon.',
-        'login_with_patreon': 'Iniciar sesión con Patreon',
         'login_with_google': 'Iniciar sesión con Google',
         'google_login_privacy_notice': 'Información accesible para los administradores: dirección de correo electrónico vinculada, fecha de registro del sitio, última conexión.<br>Los registros de tarjetas de memoria y cuestionarios de gramática se utilizan únicamente para el diseño de lecciones y mejoras de funciones y no se comparten con terceros.',
         'ebbinghaus_forgetting_curve_note': 'Este horario de revisión se calcula basándose en la curva del olvido de Ebbinghaus para optimizar la retención.',
@@ -1061,7 +1061,11 @@ TRANSLATIONS = {
         'api_connection_error': 'Error de conexión. Verifique su conexión a internet e inténtelo de nuevo.',
         'database_connection_error': 'Error de conexión a la base de datos. Inténtelo de nuevo en unos momentos.',
         'service_temporarily_unavailable': 'El servicio no está disponible temporalmente debido al alto tráfico. Inténtelo más tarde.',
-        'openai_quota_exceeded': 'Se excedió la cuota del servicio de IA. Inténtelo más tarde.',
+        'ai_quota_exceeded': 'Se excedió la cuota del servicio de IA. Inténtelo más tarde.',
+        'loading_thinking': 'Déjame pensar...',
+        'loading_evaluating': 'Déjame evaluar tu respuesta...',
+        'loading_checking': 'Déjame revisar tu respuesta...',
+        'ai_disclaimer': 'La IA hace todo lo posible por evaluar tus respuestas con precisión, pero a veces puede equivocarse. Usa los resultados como referencia.',
         'general_system_error': 'Ocurrió un error del sistema. Inténtelo de nuevo.',
         'feature_temporarily_disabled': 'Esta función no está disponible temporalmente. Pruebe otras funciones.',
     }

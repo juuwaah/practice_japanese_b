@@ -4,156 +4,95 @@
 
 {% block window_title %}JLPT {{ _('word_akinator') }}{% endblock %}
 
-{% block content %}
-    <div style="text-align: center; margin-bottom: 12px;">
-      <h1>{{ _('word_akinator') }}</h1>
-      <div style="text-align: right;">
-        <a href="{{ url_for('akinator.akinator_index') }}" 
-           style="font-size: 8px; background: #F0F0F0; border: 1px solid #000; padding: 2px 6px; text-decoration: none;">
-          {{ _('reset_change') }}
-        </a>
-      </div>
-    </div>
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/akinator.css') }}">
+{% endblock %}
 
-<div style="border: 2px solid #000; padding: 8px; margin-bottom: 12px; background: #F8F8F8; 
-            min-height: 120px; max-height: 180px; overflow-y: auto;">
-  <div style="font-size: 9px; font-weight: bold; margin-bottom: 4px; text-decoration: underline;">
-    {{ _('conversation') }}:
+{% block content %}
+<div class="page-heading page-heading-compact">
+  <h1>{{ _('word_akinator') }}</h1>
+  <div class="aki-reset-row">
+    <a href="{{ url_for('akinator.akinator_index') }}" class="aki-reset-link">{{ _('reset_change') }}</a>
   </div>
-  
+</div>
+
+<div class="aki-chat" id="aki-chat">
+  <div class="aki-chat-title">{{ _('conversation') }}:</div>
+
   {% for msg in history %}
-    <div style="margin-bottom: 6px; padding: 4px; border: 1px dotted #808080; 
-                background: {% if msg['role']=='user' %}#FFFFFF{% else %}#F0F0F0{% endif %};">
-      <div style="font-size: 8px; font-weight: bold; margin-bottom: 2px;">
-        {% if msg['role']=='user' %}{{ _('you') }}:{% else %}{{ _('ai') }}:{% endif %}
-      </div>
-      <div style="font-size: 9px;">{{ msg['text'] }}</div>
+    <div class="aki-msg {% if msg['role'] == 'user' %}aki-msg-user{% endif %}">
+      <div class="aki-msg-role">{% if msg['role'] == 'user' %}{{ _('you') }}:{% else %}{{ _('ai') }}:{% endif %}</div>
+      <div class="aki-msg-text">{{ msg['text'] }}</div>
     </div>
   {% endfor %}
 </div>
 
 {% if not gameover %}
   {% if role == 'user' %}
-    <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0;">
+    <div class="aki-panel">
       <form id="chat-form" method="post" action="">
-        <div style="margin-bottom: 8px;">
-          <input type="text" name="message" id="message"
-                 placeholder="{{ _('type_your_question') }}"
-                 style="width: 100%; padding: 2px 4px; font-size: 9px; border: 1px solid #000; box-sizing: border-box;">
+        <div class="aki-input-row">
+          <input type="text" name="message" id="message" class="aki-input"
+                 placeholder="{{ _('type_your_question') }}">
         </div>
-        
-        <div style="display: flex; gap: 4px;">
-          <button type="submit" style="flex: 1; padding: 4px; font-size: 8px; font-weight: bold;">
-            {{ _('submit_press_enter') }}
-          </button>
-          <button type="button" id="hint-btn" 
-                  style="flex: 1; padding: 4px; font-size: 8px; background: #E0E0E0;">
-            {{ _('hint') }}
-          </button>
-          <button type="button" id="giveup-btn" 
-                  style="flex: 1; padding: 4px; font-size: 8px; background: #D0D0D0;">
-            {{ _('give_up') }}
-          </button>
+
+        <div class="aki-chat-buttons">
+          <button type="submit" class="aki-chat-btn aki-submit-btn">{{ _('submit_press_enter') }}</button>
+          <button type="button" id="hint-btn" class="aki-chat-btn aki-hint-btn">{{ _('hint') }}</button>
+          <button type="button" id="giveup-btn" class="aki-chat-btn aki-giveup-btn">{{ _('give_up') }}</button>
         </div>
       </form>
     </div>
-    
-    <div style="text-align: center; margin-top: 8px;">
-      <button id="guess-btn" type="button" 
-              style="width: 80%; padding: 6px; font-size: 9px; font-weight: bold; 
-                     background: #E0FFE0; border: 2px solid #000; margin-bottom: 4px;">
-        {{ _('i_know') }}
-      </button>
+
+    <div class="aki-guess-row">
+      <button id="guess-btn" type="button" class="aki-guess-btn">{{ _('i_know') }}</button>
     </div>
-    
-    <div id="guess-form-container" style="display: none; margin-top: 4px;">
-      <form id="guess-form" method="post" style="display: flex; gap: 4px; align-items: center;">
-        <input type="text" name="user_guess" id="user_guess"
-               placeholder="{{ _('enter_answer') }}"
-               style="flex: 1; padding: 4px; font-size: 8px; border: 1px solid #000;">
-        <button type="submit"
-                style="padding: 4px 8px; font-size: 8px; font-weight: bold; 
-                       background: #D0E0FF; border: 1px solid #000;">
-          {{ _('submit_answer') }}
-        </button>
+
+    <div id="guess-form-container" class="aki-guess-form-container">
+      <form id="guess-form" method="post" class="aki-guess-form">
+        <input type="text" name="user_guess" id="user_guess" class="aki-guess-input"
+               placeholder="{{ _('enter_answer') }}">
+        <button type="submit" class="aki-guess-submit">{{ _('submit_answer') }}</button>
       </form>
-      
     </div>
-    
+
   {% elif role == 'gpt' %}
-    <div style="border: 1px solid #000; padding: 8px; background: #F0F0F0;">
-      <div style="font-size: 9px; font-weight: bold; margin-bottom: 6px; text-align: center;">
-        {{ _('quick_responses') }}:
+    <div class="aki-panel">
+      <div class="aki-quick-title">{{ _('quick_responses') }}:</div>
+
+      <div class="aki-quick-buttons">
+        {% for value, label in [('はい', _('yes')), ('いいえ', _('no')), ('わからない', _('dont_know')), ('ときどき', _('sometimes'))] %}
+        <form method="post" class="aki-quick-form">
+          <input type="hidden" name="message" value="{{ value }}">
+          <button type="submit" class="aki-quick-btn">{{ label }}</button>
+        </form>
+        {% endfor %}
       </div>
-      
-      <div style="display: flex; gap: 4px; margin-bottom: 8px;">
-        <form method="post" style="flex: 1;">
-          <input type="hidden" name="message" value="はい">
-          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
-            {{ _('yes') }}
-          </button>
-        </form>
-        
-        <form method="post" style="flex: 1;">
-          <input type="hidden" name="message" value="いいえ">
-          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
-            {{ _('no') }}
-          </button>
-        </form>
-        
-        <form method="post" style="flex: 1;">
-          <input type="hidden" name="message" value="わからない">
-          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
-            {{ _('dont_know') }}
-          </button>
-        </form>
-        
-        <form method="post" style="flex: 1;">
-          <input type="hidden" name="message" value="ときどき">
-          <button type="submit" style="width: 100%; padding: 4px; font-size: 8px; background: #E0E0E0;">
-            {{ _('sometimes') }}
-          </button>
-        </form>
-      </div>
-      
-      
-      <div style="text-align: center;">
-        <form method="post" style="display: inline-block; width: 80%;">
+
+      <div class="aki-center">
+        <form method="post" class="aki-correct-form">
           <input type="hidden" name="message" value="正解！">
-          <button type="submit" 
-                  style="width: 100%; padding: 6px; font-size: 9px; font-weight: bold; 
-                         background: #000; color: #FFF; border: 2px solid #000;">
-            {{ _('correct_exclamation') }}
-          </button>
+          <button type="submit" class="aki-correct-btn">{{ _('correct_exclamation') }}</button>
         </form>
       </div>
     </div>
   {% endif %}
-  
+
 {% else %}
-  <div class="akinator-game-over" style="border: 2px solid #000; padding: 12px; background: #FFFFFF; text-align: center;">
-    <div style="font-size: 10px; font-weight: bold; margin-bottom: 8px;">
-      {{ _('game_over') }}
-    </div>
-    
-    <div style="display: flex; gap: 8px; justify-content: center;">
-      <a href="{{ url_for('akinator.akinator_restart') }}" 
-         style="display: inline-block; padding: 4px 12px; font-size: 9px; 
-                background: #C0C0C0; border: 2px outset #C0C0C0; text-decoration: none; color: black;">
-        {{ _('play_again') }}
-      </a>
-      
-      <a href="{{ url_for('akinator.akinator_index') }}" 
-         style="display: inline-block; padding: 4px 12px; font-size: 9px; 
-                background: #C0C0C0; border: 2px outset #C0C0C0; text-decoration: none; color: black;">
-        {{ _('change_settings') }}
-      </a>
+  <div class="akinator-game-over">
+    <div class="aki-over-title">{{ _('game_over') }}</div>
+
+    <div class="aki-over-buttons">
+      <a href="{{ url_for('akinator.akinator_restart') }}" class="aki-over-btn">{{ _('play_again') }}</a>
+      <a href="{{ url_for('akinator.akinator_index') }}" class="aki-over-btn">{{ _('change_settings') }}</a>
     </div>
   </div>
 {% endif %}
 
-<div style="border: 1px dotted #808080; padding: 4px; background: #F0F0F0; font-size: 8px; margin-top: 12px;">
-  <div style="font-weight: bold; margin-bottom: 2px;">{{ _('instructions') }}:</div>
+<p class="ai-disclaimer">ⓘ {{ _('ai_disclaimer') }}</p>
+
+<div class="aki-instructions">
+  <div class="aki-instructions-title">{{ _('instructions') }}:</div>
   <div>
     {% if role == 'user' %}
       {{ _('ask_questions_about_ai_word') }}
@@ -161,21 +100,17 @@
       {{ _('think_of_jlpt_word') | replace('{level}', session.level or 'N5') }}
     {% endif %}
   </div>
-  
-    <!-- Educational description for AdSense compliance -->
-    <div style="margin-top: 12px; padding: 6px; border: 1px solid #999; background: #F0F8F0; font-size: 8px; line-height: 1.4; color: #333; text-align: left;">
-      {{ _('akinator_learning_purpose') }}
-    </div>
-    
-</div> <!-- Close the instructions div from line 161 -->
+
+  <!-- Educational description for AdSense compliance -->
+  <div class="edu-note aki-edu">{{ _('akinator_learning_purpose') }}</div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-
 <script>
-// Auto-scroll to bottom
+// Keep the conversation scrolled to the latest message
 function scrollToBottom() {
-  const chatArea = document.querySelector('div[style*="overflow-y: auto"]');
+  const chatArea = document.getElementById('aki-chat');
   if (chatArea) {
     setTimeout(function() {
       chatArea.scrollTop = chatArea.scrollHeight;
@@ -183,20 +118,19 @@ function scrollToBottom() {
   }
 }
 
-// Auto-focus message input
 document.addEventListener('DOMContentLoaded', function() {
   scrollToBottom();
-  
+
   const messageInput = document.getElementById('message');
   if (messageInput) {
     messageInput.focus();
   }
-  
+
   // 「わかった！」ボタンの処理
   const guessInput = document.getElementById('user_guess');
   const guessBtn = document.getElementById('guess-btn');
   const guessFormContainer = document.getElementById('guess-form-container');
-  
+
   if (guessBtn && guessFormContainer && guessInput) {
     guessBtn.addEventListener('click', function() {
       guessBtn.style.display = 'none';
@@ -204,10 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
       guessInput.focus();
     });
   }
-  
+
   // すべてのフォーム送信後にスクロール
-  const forms = document.querySelectorAll('form');
-  forms.forEach(function(form) {
+  document.querySelectorAll('form').forEach(function(form) {
     form.addEventListener('submit', function() {
       setTimeout(scrollToBottom, 200);
     });
@@ -231,132 +164,4 @@ document.getElementById('giveup-btn')?.addEventListener('click', function() {
   }
 });
 </script>
-
-<style>
-/* Mobile responsive styles for Akinator game - only apply on small screens */
-@media (max-width: 768px) {
-  /* Main content adjustments */
-  body {
-    margin: 0;
-    padding: 4px;
-  }
-  
-  /* Title area */
-  h1 {
-    font-size: 16px !important;
-    margin-bottom: 8px !important;
-  }
-  
-  /* Reset/Change button */
-  a[style*="font-size: 8px"] {
-    font-size: 12px !important;
-    padding: 4px 8px !important;
-  }
-  
-  /* Conversation area */
-  div[style*="min-height: 120px"] {
-    min-height: 150px !important;
-    max-height: 250px !important;
-    margin-bottom: 16px !important;
-  }
-  
-  /* Conversation messages */
-  div[style*="margin-bottom: 6px"] {
-    margin-bottom: 8px !important;
-    padding: 8px !important;
-  }
-  
-  /* Message text */
-  div[style*="font-size: 9px"] {
-    font-size: 12px !important;
-    line-height: 1.4 !important;
-  }
-  
-  div[style*="font-size: 8px"] {
-    font-size: 11px !important;
-    line-height: 1.4 !important;
-  }
-  
-  /* Input fields and buttons */
-  input[type="text"] {
-    font-size: 16px !important; /* Prevent zoom on iOS */
-    padding: 12px 8px !important;
-    min-height: 44px !important; /* Touch target size */
-    box-sizing: border-box !important;
-  }
-  
-  button {
-    font-size: 14px !important;
-    padding: 12px 8px !important;
-    min-height: 44px !important;
-    cursor: pointer;
-  }
-  
-  /* Quick response buttons (GPT mode) */
-  form[method="post"] button {
-    padding: 12px 4px !important;
-    font-size: 12px !important;
-  }
-  
-  /* "I Know" button */
-  button[id="guess-btn"] {
-    width: 90% !important;
-    padding: 12px !important;
-    font-size: 14px !important;
-  }
-  
-  /* Form containers */
-  div[style*="border: 1px solid #000"] {
-    padding: 12px !important;
-    margin-bottom: 16px !important;
-  }
-  
-  /* Flex containers for buttons only - more specific selectors */
-  form[method="post"] > div[style*="display: flex"],
-  .akinator-game-over div[style*="display: flex"] {
-    gap: 8px !important;
-    flex-wrap: wrap;
-  }
-  
-  /* Instructions */
-  div[style*="border: 1px dotted #808080"] {
-    padding: 8px !important;
-    font-size: 10px !important;
-    line-height: 1.4 !important;
-  }
-  
-  /* Game over buttons */
-  a[style*="padding: 4px 12px"] {
-    padding: 12px 16px !important;
-    font-size: 12px !important;
-    margin: 4px !important;
-  }
-}
-
-/* Very small screens (phones in portrait) */
-@media (max-width: 480px) {
-  /* Make conversation area taller on very small screens */
-  div[style*="min-height: 120px"] {
-    min-height: 200px !important;
-    max-height: 300px !important;
-  }
-  
-  /* Adjust button sizes for small screens - specific to form containers */
-  form[method="post"] > div[style*="display: flex"] button {
-    flex: 1;
-    min-width: 0;
-    word-wrap: break-word;
-  }
-  
-  /* Stack game over buttons vertically on very small screens */
-  .akinator-game-over div[style*="display: flex; gap: 8px; justify-content: center"] {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
-  
-  .akinator-game-over div[style*="display: flex; gap: 8px; justify-content: center"] a {
-    text-align: center !important;
-  }
-}
-</style>
 {% endblock %}
