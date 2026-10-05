@@ -15,6 +15,7 @@ import datetime as dt
 import random
 import json
 import os
+import hashlib
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -45,6 +46,25 @@ def get_blog_article_title(ref_link):
     return None
 
 app = Flask(__name__)
+
+# Static cache busting: url_for('static', ...) adds ?v=<content hash>, so browsers and
+# Cloudflare fetch CSS/JS again whenever the file changes (static files are cached for hours).
+_static_versions = {}
+
+@app.url_defaults
+def add_static_version(endpoint, values):
+    if endpoint != 'static' or 'filename' not in values or 'v' in values:
+        return
+    filename = values['filename']
+    if filename not in _static_versions:
+        path = os.path.join(app.static_folder, filename)
+        try:
+            with open(path, 'rb') as f:
+                _static_versions[filename] = hashlib.md5(f.read()).hexdigest()[:8]
+        except OSError:
+            _static_versions[filename] = None
+    if _static_versions[filename]:
+        values['v'] = _static_versions[filename]
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'fallback-key-for-development-only')
 
 # Fix Railway reverse proxy for HTTPS
@@ -85,7 +105,12 @@ app.register_blueprint(google_bp, url_prefix="/auth")
 # Database configuration - Railway compatible
 database_url = os.getenv('DATABASE_URL')
 if database_url:
-    # Use Railway PostgreSQL
+    # Use Railway PostgreSQL. Pin the driver to psycopg2 (the one in requirements.txt)
+    # so the URL does not depend on SQLAlchemy's default PostgreSQL driver.
+    for prefix in ('postgres://', 'postgresql://'):
+        if database_url.startswith(prefix):
+            database_url = 'postgresql+psycopg2://' + database_url[len(prefix):]
+            break
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
     # Railway SQLite fallback - use current directory which is persistent

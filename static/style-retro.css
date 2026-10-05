@@ -1183,43 +1183,18 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
   min-width: 120px;
 }
 
-.retro-spinner {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #808080;
-  border-top: 1px solid #000000;
-  border-radius: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    #FFFFFF,
-    #FFFFFF 2px,
-    #C0C0C0 2px,
-    #C0C0C0 4px
-  );
-  animation: retro-spin 1s linear infinite;
-  position: relative;
-}
-
-.retro-spinner::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2px;
-  height: 2px;
-  background: #000000;
-  transform: translate(-50%, -50%);
-  animation: retro-pulse 0.5s ease-in-out infinite alternate;
+/* Spinning capybara logo (the logo is wide, so it spins inside a square box) */
+.loading-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* logo2.png has a white (not transparent) background */
+  animation: retro-spin 1.2s linear infinite;
 }
 
 @keyframes retro-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-@keyframes retro-pulse {
-  0% { opacity: 1; }
-  100% { opacity: 0.3; }
 }
 
 .loading-text {
