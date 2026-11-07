@@ -19,8 +19,12 @@
     {# YouTube video #}
     <div class="yt-section">
         <div class="yt-player">
-            <iframe src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+            {# Before answering, the video starts only after the learner dismisses the range popup #}
+            <iframe {% if show_answer %}src="https://www.youtube.com/embed/{{ quiz.video_id }}?start={{ quiz.start }}&end={{ quiz.end }}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"{% endif %}
                     allow="autoplay"></iframe>
+        </div>
+        <div class="yt-player-controls">
+            <button type="button" class="yt-replay-btn" onclick="replayRange()">🔁 {{ 'もう一度再生' if ja else 'Replay' }}</button>
         </div>
         <div class="yt-playback-range">
             <strong>📺 {{ '再生範囲' if ja else 'Playback Range' }}:</strong>
@@ -127,12 +131,52 @@
     </div>
 </div>
 
+{# Playback range popup (shown before the video starts) #}
+{% if not show_answer %}
+<div id="yt-range-modal" class="yt-modal" role="dialog" aria-modal="true" aria-labelledby="yt-modal-title">
+    <div class="yt-modal-box">
+        <h2 id="yt-modal-title" class="yt-modal-title">📺 {{ '再生範囲について' if ja else 'About the Playback Range' }}</h2>
+        {% if ja %}
+        <p>この問題では、動画の
+            <strong>{{ quiz.start|int // 60 }}分{{ quiz.start|int % 60 }}秒</strong> から
+            <strong>{{ quiz.end|int // 60 }}分{{ quiz.end|int % 60 }}秒</strong> までが自動で再生されます。</p>
+        <p class="yt-modal-note">動画の途中から始まりますが、正常です。シークバーは動かさずに、そのまま聞いてください。聞き逃したときは、動画の下の「もう一度再生」を押すと最初から聞き直せます。</p>
+        {% else %}
+        <p>This question plays the video automatically from
+            <strong>{{ quiz.start|int // 60 }}m {{ quiz.start|int % 60 }}s</strong> to
+            <strong>{{ quiz.end|int // 60 }}m {{ quiz.end|int % 60 }}s</strong>.</p>
+        <p class="yt-modal-note">The video starts partway through on purpose. Please don't move the seek bar. If you miss something, press "Replay" under the video to hear the range again from the start.</p>
+        {% endif %}
+        <button type="button" id="yt-modal-ok">{{ 'OK（再生開始）' if ja else 'OK (Start)' }}</button>
+    </div>
+</div>
+{% endif %}
+
 <script>
-function jumpToTime(seconds) {
+const YT_BASE = 'https://www.youtube.com/embed/{{ quiz.video_id }}';
+const YT_START = {{ quiz.start }};
+const YT_END = {{ quiz.end }};
+const YT_OPTS = 'controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0';
+
+function playFrom(seconds) {
     const iframe = document.querySelector('.yt-player iframe');
-    const videoId = '{{ quiz.video_id }}';
-    const endTime = {{ quiz.end }};
-    iframe.src = `https://www.youtube.com/embed/${videoId}?start=${seconds}&end=${endTime}&autoplay=1&controls=1&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0`;
+    iframe.src = `${YT_BASE}?start=${seconds}&end=${YT_END}&autoplay=1&${YT_OPTS}`;
 }
+
+function jumpToTime(seconds) { playFrom(seconds); }
+
+// Replay the quiz's playback range from its start
+function replayRange() { playFrom(YT_START); }
+
+(function () {
+    const modal = document.getElementById('yt-range-modal');
+    if (!modal) return;
+    const ok = document.getElementById('yt-modal-ok');
+    ok.addEventListener('click', function () {
+        modal.style.display = 'none';
+        replayRange();
+    });
+    ok.focus();
+})();
 </script>
 {% endblock %}

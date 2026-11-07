@@ -2508,16 +2508,16 @@ a.pager-link:hover {
 }
 
 .yt-question-title {
-  font-size: 1.1rem;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: underline;
   margin-bottom: 4px;
 }
 
 .yt-question-text {
-  font-size: 1.1rem;
+  font-size: 15px;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .yt-question-video {
@@ -2537,7 +2537,7 @@ a.pager-link:hover {
 }
 
 .yt-choice label {
-  font-size: 1rem;
+  font-size: 14px;
   font-weight: normal;
   line-height: 1.5;
   margin-bottom: 0;
@@ -2562,7 +2562,7 @@ a.pager-link:hover {
 }
 
 .yt-score h3 {
-  font-size: 1.5rem;
+  font-size: 20px;
 }
 
 .yt-result {
@@ -2580,7 +2580,7 @@ a.pager-link:hover {
 }
 
 .yt-result-header h4 {
-  font-size: 1.1rem;
+  font-size: 15px;
   font-weight: 600;
 }
 
@@ -2598,7 +2598,7 @@ a.pager-link:hover {
   gap: 8px;
   margin-bottom: 8px;
   padding: 8px 12px;
-  font-size: 1rem;
+  font-size: 14px;
   line-height: 1.5;
   border: 2px solid #e9ecef;
   background: #f8f9fa;
@@ -2623,7 +2623,7 @@ a.pager-link:hover {
 .yt-badge {
   display: inline-block;
   padding: 2px 8px;
-  font-size: 0.85rem;
+  font-size: 12px;
   border: 1px solid #000;
   background: #FFFFFF;
   white-space: nowrap;
@@ -2647,13 +2647,13 @@ a.pager-link:hover {
 }
 
 .yt-explanation h5 {
-  font-size: 1.1rem;
+  font-size: 15px;
   font-weight: 600;
   margin-bottom: 6px;
 }
 
 .yt-explanation p {
-  font-size: 1rem;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -2672,7 +2672,7 @@ a.pager-link:hover {
 .yt-action-btn {
   display: inline-block;
   padding: 6px 16px;
-  font-size: 1rem;
+  font-size: 14px;
   color: #000;
   text-decoration: none;
   background: #F0F0F0;
@@ -2685,6 +2685,76 @@ a.pager-link:hover {
   color: #FFF;
 }
 
+
+/* Replay button under the player */
+.yt-player-controls {
+  max-width: 800px;
+  margin: 6px auto 0;
+  text-align: center;
+}
+
+.yt-player-controls-small {
+  margin: 4px 0;
+  text-align: left;
+}
+
+.yt-replay-btn {
+  padding: 4px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.yt-player {
+  background: #000;
+}
+
+/* Playback range popup */
+.yt-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.yt-modal-box {
+  width: 100%;
+  max-width: 440px;
+  padding: 20px;
+  background: #FFFFFF;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0px #808080;
+}
+
+.yt-modal-box p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.yt-modal-box .yt-modal-title {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.yt-modal-box .yt-modal-note {
+  padding: 8px 10px;
+  background: #FFF8D0;
+  border: 1px solid #808080;
+  font-size: 13px;
+}
+
+.yt-modal-box button {
+  display: block;
+  margin: 12px auto 0;
+  padding: 6px 24px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .yt-channel {
   text-align: center;
   padding: 12px;
@@ -2693,7 +2763,7 @@ a.pager-link:hover {
 
 .yt-channel p,
 .yt-channel h6 {
-  font-size: 1rem;
+  font-size: 14px;
   color: #6c757d;
   margin-bottom: 8px;
 }
